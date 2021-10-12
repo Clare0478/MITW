@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    @*<meta name="viewport" content="width=device-width, initial-scale=1.0">*@
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="Free Datta Able Admin Template come up with latest Bootstrap 4 framework with basic components, form elements and lots of pre-made layout options" />
+    <meta name="keywords" content="admin templates, bootstrap admin templates, bootstrap 4, dashboard, dashboard templets, sass admin templets, html admin templates, responsive, bootstrap admin templates free download,premium bootstrap admin templates, datta able, datta able bootstrap admin template, free admin theme, free dashboard template" />
+    <meta name="author" content="CodedThemes" />
+    <title>@ViewBag.Title - HYGEA</title>
+
+    @* 平台的ICON圖片 *@
+    <link rel="SHORTCUT ICON" href="@Url.Content("~/favicon.ico")" type="image/x-icon " />
+
+    @*  這種呼叫方式是需要在"App_Start/BundleConfig.cs"宣告
+        但這種方式再套別人模板時，會造成路徑問題
+        所以後來就沒有再使用了
+        @Styles.Render("~/Content/assets/icon")
+        @Styles.Render("~/Content/assets/fontawesome")
+        @Styles.Render("~/Content/assets/animation")
+        @Styles.Render("~/Content/assets/css")*@
+
+    @* HTML模板套件 *@
+    <!-- fontawesome icon -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/fonts/fontawesome/css/fontawesome-all.min.css")">
+    <!-- animation css -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/plugins/animation/css/animate.min.css")">
+    <!-- vendor css -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/css/style.css")">
+
+    @* 空汙地圖使用的圖資套件 *@
+    <!-- Leafret -->
+    @RenderSection("Styles", required: false)
+
+</head>
+<body>
+    <!-- [ Pre-loader ] start -->
+    <div class="loader-bg">
+        <div class="loader-track">
+            <div class="loader-fill"></div>
+        </div>
+    </div>
+    <!-- [ Pre-loader ] End -->
+    <!-- [ navigation menu ] start -->
+    @* 畫面左側功能清單 *@
+    <nav class="pcoded-navbar">
+        <div class="navbar-wrapper">
+            <div class="navbar-brand header-logo">
+                <a href="@Url.Action("Index", "Home")" class="b-brand">
+                    <div class="b-bg">
+                        <i class="feather icon-trending-up"></i>
+                    </div>
+                    <span class="b-title">HYGEA</span>
+                </a>
+                <a class="mobile-menu" id="mobile-collapse" href="javascript:"><span></span></a>
+            </div>
+            <div class="navbar-content scroll-div">
+                <ul class="nav pcoded-inner-navbar">
+                    <li class="nav-item pcoded-menu-caption">
+                        <label>Home</label>
+                    </li>
+                    <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Home" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Home")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">我的儀錶板</span></a>
+                    </li>
+                    <li class="nav-item pcoded-menu-caption">
+                        <label>Application</label>
+                    </li>
+                    <li data-username="basic components Button Alert Badges breadcrumb Paggination progress Tooltip popovers Carousel Cards Collapse Tabs pills Modal Grid System Typography Extra Shadows Embeds" class="nav-item pcoded-hasmenu">
+                        <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="fas fa-file-medical"></i></span><span class="pcoded-mtext">健康管理</span></a>
+                        <ul class="pcoded-submenu">
+                            <li class="@(ViewContext.RouteData.Values["Controller"].ToString()== "Home" & ViewContext.RouteData.Values["Action"].ToString() == "Upload" ? "active" : "")">
+                                <a href="@Url.Action("Upload", "Home")" class="">上傳健康存摺</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Version" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Version")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-alert-circle"></i></span><span class="pcoded-mtext">版本資訊</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- [ navigation menu ] end -->
+    @* View的內容 *@
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <!-- [ breadcrumb ] start -->
+                    <!-- [ breadcrumb ] end -->
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            @RenderBody()
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <hr />
+        <footer>
+            <p>
+                &copy; @DateTime.Now.Year - Medical Integration Co., Ltd.
+            </p>
+        </footer>
+    </div>
+
+    <!-- Required Js -->
+    @Scripts.Render("~/bundles/jquery")
+    <script src="~/Content/assets/js/vendor-all.min.js"></script>
+    <script src="~/Content/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Content/assets/js/pcoded.min.js"></script>
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>
