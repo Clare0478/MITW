@@ -22,31 +22,31 @@ namespace FHIR_Demo.Controllers
         }
         //解析健康存摺XML檔案
         //儲存健康存摺內容陣列
-        Bundle Bun = new Bundle();
-        Patient Pat = new Patient();
-        Composition Comp = new Composition();
-        Encounter Enc = new Encounter();
-        Condition Con = new Condition();
-        Observation Obs = new Observation();
-        Procedure Pro = new Procedure();
-        MedicationRequest Med = new MedicationRequest();
-        AllergyIntolerance Allergy = new AllergyIntolerance();
-        Immunization Immun = new Immunization();
-        Coverage Cov = new Coverage();
-        Organization Org = new Organization();
+        Bundle_MHB Bun = new Bundle_MHB();
+        Patient_MHB Pat = new Patient_MHB();
+        Composition_MHB Comp = new Composition_MHB();
+        Encounter_MHB Enc = new Encounter_MHB();
+        Condition_MHB Con = new Condition_MHB();
+        Observation_MHB Obs = new Observation_MHB();
+        Procedure_MHB Pro = new Procedure_MHB();
+        MedicationRequest_MHB Med = new MedicationRequest_MHB();
+        AllergyIntolerance_MHB Allergy = new AllergyIntolerance_MHB();
+        Immunization_MHB Immun = new Immunization_MHB();
+        Coverage_MHB Cov = new Coverage_MHB();
+        Organization_MHB Org = new Organization_MHB();
 
         //list 用來儲存所有資料的
         //List<Patient> patlist = new List<Patient>();
-        List<Composition> complist = new List<Composition>();
-        List<Encounter> enclist = new List<Encounter>();
-        List<Condition> conlist = new List<Condition>();
-        List<Observation> obslist = new List<Observation>();
-        List<Procedure> prolist = new List<Procedure>();
-        List<MedicationRequest> medlist = new List<MedicationRequest>();
-        List<AllergyIntolerance> allergylist = new List<AllergyIntolerance>();
-        List<Immunization> immlist = new List<Immunization>();
-        List<Coverage> covlist = new List<Coverage>();
-        List<Organization> orglist = new List<Organization>();
+        List<Composition_MHB> complist = new List<Composition_MHB>();
+        List<Encounter_MHB> enclist = new List<Encounter_MHB>();
+        List<Condition_MHB> conlist = new List<Condition_MHB>();
+        List<Observation_MHB> obslist = new List<Observation_MHB>();
+        List<Procedure_MHB> prolist = new List<Procedure_MHB>();
+        List<MedicationRequest_MHB> medlist = new List<MedicationRequest_MHB>();
+        List<AllergyIntolerance_MHB> allergylist = new List<AllergyIntolerance_MHB>();
+        List<Immunization_MHB> immlist = new List<Immunization_MHB>();
+        List<Coverage_MHB> covlist = new List<Coverage_MHB>();
+        List<Organization_MHB> orglist = new List<Organization_MHB>();
 
         string fhir = ""; //轉檔後fhir檔案名稱
 
@@ -156,16 +156,16 @@ namespace FHIR_Demo.Controllers
                 time_end = "";
 
                 //重製struct 資料
-                Comp = new Composition();
-                Enc = new Encounter();
-                Con = new Condition();
+                Comp = new Composition_MHB();
+                Enc = new Encounter_MHB();
+                Con = new Condition_MHB();
                 //Obs = new Observation();
-                Pro = new Procedure();
-                Med = new MedicationRequest();
+                Pro = new Procedure_MHB();
+                Med = new MedicationRequest_MHB();
                 //Allergy = new AllergyIntolerance();
                 //Immun = new Immunization();
-                Cov = new Coverage();
-                Org = new Organization();
+                Cov = new Coverage_MHB();
+                Org = new Organization_MHB();
 
 
                 //判斷組織是否存在
@@ -304,7 +304,7 @@ namespace FHIR_Demo.Controllers
                     //數字開頭 處置 
                     if (System.Text.RegularExpressions.Regex.IsMatch(r1_1_nodes[j].SelectSingleNode("r1_1.1").InnerText, @"^[0-9]"))
                     {
-                        Pro = new Procedure();
+                        Pro = new Procedure_MHB();
                         Pro.id = num_id.ToString();
                         num_id++;
                         Pro.code_code = r1_1_nodes[j].SelectSingleNode("r1_1.1").InnerText;
@@ -339,7 +339,7 @@ namespace FHIR_Demo.Controllers
                     //字母開頭 藥物
                     else if (System.Text.RegularExpressions.Regex.IsMatch(r1_1_nodes[j].SelectSingleNode("r1_1.1").InnerText, @"^[a-zA-Z]"))
                     {
-                        Med = new MedicationRequest();
+                        Med = new MedicationRequest_MHB();
                         //Medecation 藥品名 
                         Med.Medication_id = r1_1_nodes[j].SelectSingleNode("r1_1.1").InnerText;
                         Med.Medication_code = r1_1_nodes[j].SelectSingleNode("r1_1.1").InnerText;
@@ -385,7 +385,7 @@ namespace FHIR_Demo.Controllers
                 Comp.section_entry[com_num - 1] = "Coverage/" + Cov.id;
 
                 //健保給付
-                Cov = new Coverage();
+                Cov = new Coverage_MHB();
                 Cov.id = num_id.ToString();
                 num_id++;
                 Cov.subscriber = "Patient/" + Pat.id;
@@ -432,16 +432,16 @@ namespace FHIR_Demo.Controllers
                 time_end = "";
 
                 //重製struct 資料
-                Comp = new Composition();
-                Enc = new Encounter();
-                Con = new Condition();
+                Comp = new Composition_MHB();
+                Enc = new Encounter_MHB();
+                Con = new Condition_MHB();
                 //Obs = new Observation();
-                Pro = new Procedure();
-                Med = new MedicationRequest();
+                Pro = new Procedure_MHB();
+                Med = new MedicationRequest_MHB();
                 //Allergy = new AllergyIntolerance();
                 //Immun = new Immunization();
-                Cov = new Coverage();
-                Org = new Organization();
+                Cov = new Coverage_MHB();
+                Org = new Organization_MHB();
 
 
                 //判斷組織是否存在
@@ -582,7 +582,7 @@ namespace FHIR_Demo.Controllers
                     //數字開頭 處置 放到encounter type  因為是住院
                     if (System.Text.RegularExpressions.Regex.IsMatch(r2_1_nodes[j].SelectSingleNode("r2_1.4").InnerText, @"^[0-9]"))
                     {
-                        Pro = new Procedure();
+                        Pro = new Procedure_MHB();
                         Pro.id = num_id.ToString();
                         num_id++;
                         Pro.code_code = r2_1_nodes[j].SelectSingleNode("r2_1.4").InnerText;
@@ -617,7 +617,7 @@ namespace FHIR_Demo.Controllers
                     //字母開頭 藥物
                     else if (System.Text.RegularExpressions.Regex.IsMatch(r2_1_nodes[j].SelectSingleNode("r2_1.4").InnerText, @"^[a-zA-Z]"))
                     {
-                        Med = new MedicationRequest();
+                        Med = new MedicationRequest_MHB();
                         //Medecation 藥品名 
                         Med.Medication_id = r2_1_nodes[j].SelectSingleNode("r2_1.4").InnerText;
                         Med.Medication_code = r2_1_nodes[j].SelectSingleNode("r2_1.4").InnerText;
@@ -663,7 +663,7 @@ namespace FHIR_Demo.Controllers
                 Comp.section_entry[com_num - 1] = "Coverage/" + Cov.id;
 
                 //健保給付
-                Cov = new Coverage();
+                Cov = new Coverage_MHB();
                 Cov.id = num_id.ToString();
                 num_id++;
                 Cov.subscriber = "Patient/" + Pat.id;
@@ -715,16 +715,16 @@ namespace FHIR_Demo.Controllers
                 time_end = "";
 
                 //重製struct 資料
-                Comp = new Composition();
-                Enc = new Encounter();
-                Con = new Condition();
+                Comp = new Composition_MHB();
+                Enc = new Encounter_MHB();
+                Con = new Condition_MHB();
                 //Obs = new Observation();
-                Pro = new Procedure();
-                Med = new MedicationRequest();
+                Pro = new Procedure_MHB();
+                Med = new MedicationRequest_MHB();
                 //Allergy = new AllergyIntolerance();
                 //Immun = new Immunization();
-                Cov = new Coverage();
-                Org = new Organization();
+                Cov = new Coverage_MHB();
+                Org = new Organization_MHB();
 
 
                 //判斷組織是否存在
@@ -854,7 +854,7 @@ namespace FHIR_Demo.Controllers
                     //數字開頭 處置 
                     if (System.Text.RegularExpressions.Regex.IsMatch(r3_1_nodes[j].SelectSingleNode("r3_1.1").InnerText, @"^[0-9]"))
                     {
-                        Pro = new Procedure();
+                        Pro = new Procedure_MHB();
                         Pro.id = num_id.ToString();
                         num_id++;
                         Pro.code_code = r3_1_nodes[j].SelectSingleNode("r3_1.1").InnerText;
@@ -894,7 +894,7 @@ namespace FHIR_Demo.Controllers
                     //字母開頭 藥物
                     else if (System.Text.RegularExpressions.Regex.IsMatch(r3_1_nodes[j].SelectSingleNode("r3_1.1").InnerText, @"^[a-zA-Z]"))
                     {
-                        Med = new MedicationRequest();
+                        Med = new MedicationRequest_MHB();
                         //Medecation 藥品名 
                         Med.Medication_id = r3_1_nodes[j].SelectSingleNode("r3_1.1").InnerText;
                         Med.Medication_code = r3_1_nodes[j].SelectSingleNode("r3_1.1").InnerText;
@@ -940,7 +940,7 @@ namespace FHIR_Demo.Controllers
                 Comp.section_entry[com_num - 1] = "Coverage/" + Cov.id;
 
                 //健保給付
-                Cov = new Coverage();
+                Cov = new Coverage_MHB();
                 Cov.id = num_id.ToString();
                 num_id++;
                 Cov.subscriber = "Patient/" + Pat.id;
@@ -989,16 +989,16 @@ namespace FHIR_Demo.Controllers
                 time_end = "";
 
                 //重製struct 資料
-                Comp = new Composition();
-                //Enc = new Encounter();
-                //Con = new Condition();
-                //Obs = new Observation();
-                //Pro = new Procedure();
-                //Med = new MedicationRequest();
-                Allergy = new AllergyIntolerance();
-                //Immun = new Immunization();
-                //Cov = new Coverage();
-                Org = new Organization();
+                Comp = new Composition_MHB();
+                //Enc = new Encounter_MHB();
+                //Con = new Condition_MHB();
+                //Obs = new Observation_MHB();
+                //Pro = new Procedure_MHB();
+                //Med = new MedicationRequest_MHB();
+                Allergy = new AllergyIntolerance_MHB();
+                //Immun = new Immunization_MHB();
+                //Cov = new Coverage_MHB();
+                Org = new Organization_MHB();
 
                 //判斷組織是否存在
                 int org_yn = 0; //0代表有  1代表沒有
@@ -1124,16 +1124,16 @@ namespace FHIR_Demo.Controllers
                 time_end = "";
 
                 //重製struct 資料
-                Comp = new Composition();
-                Enc = new Encounter();
-                //Con = new Condition();
-                //Obs = new Observation();
-                //Pro = new Procedure();
-                //Med = new MedicationRequest();
-                //Allergy = new AllergyIntolerance();
-                Immun = new Immunization();
-                //Cov = new Coverage();
-                //Org = new Organization();
+                Comp = new Composition_MHB();
+                Enc = new Encounter_MHB();
+                //Con = new Condition_MHB();
+                //Obs = new Observation_MHB();
+                //Pro = new Procedure_MHB();
+                //Med = new MedicationRequest_MHB();
+                //Allergy = new AllergyIntolerance_MHB();
+                Immun = new Immunization_MHB();
+                //Cov = new Coverage_MHB();
+                //Org = new Organization_MHB();
 
                 //時間
                 time_start = nodes[i].SelectSingleNode("r6.1").InnerText;
@@ -1223,16 +1223,16 @@ namespace FHIR_Demo.Controllers
                 time_end = "";
 
                 //重製struct 資料
-                Comp = new Composition();
-                Enc = new Encounter();
-                //Con = new Condition();
-                Obs = new Observation();
-                //Pro = new Procedure();
-                //Med = new MedicationRequest();
-                //Allergy = new AllergyIntolerance();
-                //Immun = new Immunization();
-                //Cov = new Coverage();
-                Org = new Organization();
+                Comp = new Composition_MHB();
+                Enc = new Encounter_MHB();
+                //Con = new Condition_MHB();
+                Obs = new Observation_MHB();
+                //Pro = new Procedure_MHB();
+                //Med = new MedicationRequest_MHB();
+                //Allergy = new AllergyIntolerance_MHB();
+                //Immun = new Immunization_MHB();
+                //Cov = new Coverage_MHB();
+                Org = new Organization_MHB();
 
                 //判斷組織是否存在
                 int org_yn = 0; //0代表有  1代表沒有
@@ -1376,16 +1376,16 @@ namespace FHIR_Demo.Controllers
                 time_end = "";
 
                 //重製struct 資料
-                Comp = new Composition();
-                Enc = new Encounter();
-                //Con = new Condition();
-                Obs = new Observation();
-                //Pro = new Procedure();
-                //Med = new MedicationRequest();
-                //Allergy = new AllergyIntolerance();
-                //Immun = new Immunization();
-                //Cov = new Coverage();
-                Org = new Organization();
+                Comp = new Composition_MHB();
+                Enc = new Encounter_MHB();
+                //Con = new Condition_MHB();
+                Obs = new Observation_MHB();
+                //Pro = new Procedure_MHB();
+                //Med = new MedicationRequest_MHB();
+                //Allergy = new AllergyIntolerance_MHB();
+                //Immun = new Immunization_MHB();
+                //Cov = new Coverage_MHB();
+                Org = new Organization_MHB();
 
                 //判斷組織是否存在
                 int org_yn = 0; //0代表有  1代表沒有
@@ -1505,16 +1505,16 @@ namespace FHIR_Demo.Controllers
                 time_end = "";
 
                 //重製struct 資料
-                Comp = new Composition();
-                Enc = new Encounter();
-                Con = new Condition();
-                //Obs = new Observation();
-                Pro = new Procedure();
-                Med = new MedicationRequest();
-                //Allergy = new AllergyIntolerance();
-                //Immun = new Immunization();
-                Cov = new Coverage();
-                Org = new Organization();
+                Comp = new Composition_MHB();
+                Enc = new Encounter_MHB();
+                Con = new Condition_MHB();
+                //Obs = new Observation_MHB();
+                Pro = new Procedure_MHB();
+                Med = new MedicationRequest_MHB();
+                //Allergy = new AllergyIntolerance_MHB();
+                //Immun = new Immunization_MHB();
+                Cov = new Coverage_MHB();
+                Org = new Organization_MHB();
 
 
                 //判斷組織是否存在
@@ -1644,7 +1644,7 @@ namespace FHIR_Demo.Controllers
                     //數字開頭 處置 
                     if (System.Text.RegularExpressions.Regex.IsMatch(r9_1_nodes[j].SelectSingleNode("r9_1.1").InnerText, @"^[0-9]"))
                     {
-                        Pro = new Procedure();
+                        Pro = new Procedure_MHB();
                         Pro.id = num_id.ToString();
                         num_id++;
                         Pro.code_code = r9_1_nodes[j].SelectSingleNode("r9_1.1").InnerText;
@@ -1679,7 +1679,7 @@ namespace FHIR_Demo.Controllers
                     //字母開頭 藥物
                     else if (System.Text.RegularExpressions.Regex.IsMatch(r9_1_nodes[j].SelectSingleNode("r9_1.1").InnerText, @"^[a-zA-Z]"))
                     {
-                        Med = new MedicationRequest();
+                        Med = new MedicationRequest_MHB();
                         //Medecation 藥品名 
                         Med.Medication_id = r9_1_nodes[j].SelectSingleNode("r9_1.1").InnerText;
                         Med.Medication_code = r9_1_nodes[j].SelectSingleNode("r9_1.1").InnerText;
@@ -1725,7 +1725,7 @@ namespace FHIR_Demo.Controllers
                 Comp.section_entry[com_num - 1] = "Coverage/" + Cov.id;
 
                 //健保給付
-                Cov = new Coverage();
+                Cov = new Coverage_MHB();
                 Cov.id = num_id.ToString();
                 num_id++;
                 Cov.subscriber = "Patient/" + Pat.id;
@@ -1776,16 +1776,16 @@ namespace FHIR_Demo.Controllers
                 time_end = "";
 
                 //重製struct 資料
-                Comp = new Composition();
-                Enc = new Encounter();
+                Comp = new Composition_MHB();
+                Enc = new Encounter_MHB();
                 //Con = new Condition();
-                Obs = new Observation();
+                Obs = new Observation_MHB();
                 //Pro = new Procedure();
                 //Med = new MedicationRequest();
                 //Allergy = new AllergyIntolerance();
                 //Immun = new Immunization();
                 //Cov = new Coverage();
-                Org = new Organization();
+                Org = new Organization_MHB();
 
                 //判斷組織是否存在
                 int org_yn = 0; //0代表有  1代表沒有
@@ -2485,16 +2485,16 @@ namespace FHIR_Demo.Controllers
                     time_end = "";
 
                     //重製struct 資料
-                    Comp = new Composition();
-                    Enc = new Encounter();
+                    Comp = new Composition_MHB();
+                    Enc = new Encounter_MHB();
                     //Con = new Condition();
-                    Obs = new Observation();
+                    Obs = new Observation_MHB();
                     //Pro = new Procedure();
                     //Med = new MedicationRequest();
                     //Allergy = new AllergyIntolerance();
                     //Immun = new Immunization();
                     //Cov = new Coverage();
-                    Org = new Organization();
+                    Org = new Organization_MHB();
 
                     //判斷組織是否存在
                     int org_yn = 0; //0代表有  1代表沒有
@@ -3737,7 +3737,7 @@ namespace FHIR_Demo.Controllers
                     //Composition
                     else if (entry["resource"]["resourceType"].ToString() == "Composition")
                     {
-                        Comp = new Composition();
+                        Comp = new Composition_MHB();
                         //陣列變數初始化
                         int com_num = 0;
                         Comp.section_entry = new string[com_num];
@@ -3769,7 +3769,7 @@ namespace FHIR_Demo.Controllers
                     //Condition
                     else if (entry["resource"]["resourceType"].ToString() == "Condition")
                     {
-                        Con = new Condition();
+                        Con = new Condition_MHB();
                         Con.id = entry["resource"]["id"].ToString();
                         Con.code_code = entry["resource"]["code"]["coding"][0]["code"].ToString();
                         Con.code_diplay = entry["resource"]["code"]["coding"][0]["display"].ToString();
@@ -3781,7 +3781,7 @@ namespace FHIR_Demo.Controllers
                     //Observation
                     else if (entry["resource"]["resourceType"].ToString() == "Observation")
                     {
-                        Obs = new Observation();
+                        Obs = new Observation_MHB();
                         //陣列變數初始化
                         int obs_comp_num = 0;
                         Obs.com_code = new string[obs_comp_num];
@@ -3831,7 +3831,7 @@ namespace FHIR_Demo.Controllers
                     //Procedure
                     else if (entry["resource"]["resourceType"].ToString() == "Procedure")
                     {
-                        Pro = new Procedure();
+                        Pro = new Procedure_MHB();
                         Pro.id = entry["resource"]["id"].ToString();
                         Pro.code_code = entry["resource"]["code"]["coding"][0]["code"].ToString();
                         Pro.code_diplay = entry["resource"]["code"]["coding"][0]["display"].ToString();
@@ -3848,7 +3848,7 @@ namespace FHIR_Demo.Controllers
                     //MedicationRequest
                     else if (entry["resource"]["resourceType"].ToString() == "MedicationRequest")
                     {
-                        Med = new MedicationRequest();
+                        Med = new MedicationRequest_MHB();
                         Med.id = entry["resource"]["id"].ToString();
                         Med.Medication_id = entry["resource"]["contained"][0]["id"].ToString();
                         Med.Medication_code = entry["resource"]["contained"][0]["code"]["coding"][0]["code"].ToString();
@@ -3864,7 +3864,7 @@ namespace FHIR_Demo.Controllers
                     //AllergyIntolerance
                     else if (entry["resource"]["resourceType"].ToString() == "AllergyIntolerance")
                     {
-                        Allergy = new AllergyIntolerance();
+                        Allergy = new AllergyIntolerance_MHB();
                         Allergy.id = entry["resource"]["id"].ToString();
                         Allergy.code = entry["resource"]["code"]["text"].ToString();
                         Allergy.patient = entry["resource"]["patient"]["reference"].ToString();
@@ -3875,7 +3875,7 @@ namespace FHIR_Demo.Controllers
                     //ImmunizationRecommendation
                     else if (entry["resource"]["resourceType"].ToString() == "ImmunizationRecommendation")
                     {
-                        Immun = new Immunization();
+                        Immun = new Immunization_MHB();
                         Immun.id = entry["resource"]["id"].ToString();
                         Immun.vaccineCode = entry["resource"]["recommendation"][0]["vaccineCode"][0]["text"].ToString();
                         Immun.occurrenceDateTime = entry["resource"]["date"].ToString();
@@ -3884,7 +3884,7 @@ namespace FHIR_Demo.Controllers
                     //Coverage
                     else if (entry["resource"]["resourceType"].ToString() == "Coverage")
                     {
-                        Cov = new Coverage();
+                        Cov = new Coverage_MHB();
                         Cov.id = entry["resource"]["id"].ToString();
                         Cov.subscriber = entry["resource"]["subscriber"]["reference"].ToString();
                         Cov.beneficiary = entry["resource"]["beneficiary"]["reference"].ToString();
@@ -3897,7 +3897,7 @@ namespace FHIR_Demo.Controllers
                     //Organization
                     else if (entry["resource"]["resourceType"].ToString() == "Organization")
                     {
-                        Org = new Organization();
+                        Org = new Organization_MHB();
                         Org.id = entry["resource"]["id"].ToString();
                         Org.type = entry["resource"]["type"] != null ? entry["resource"]["type"][0]["text"].ToString() : null;
                         Org.name = entry["resource"]["name"].ToString();
