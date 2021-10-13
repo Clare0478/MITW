@@ -146,6 +146,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\FHIRViewModels.cs" />
     <Compile Include="Models\MHB2FHIR.cs" />
     <Compile Include="Models\MHB_Convert.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
