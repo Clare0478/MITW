@@ -9,14 +9,18 @@ namespace FHIR_Demo.Models
 {
     public class PatientViewModel 
     {
+        public string Id { get; set; }
+
         [Required]
         [Display(Name = "姓名")]
         public string name { get; set; }
+
         [Required]
         [Display(Name = "生日")]
         [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public string birthDate { get; set; }
+
         [Required]
         [Display(Name = "性別")]
         public Gender Gender { get; set; }
@@ -48,8 +52,8 @@ namespace FHIR_Demo.Models
          * F	Federal Agency	聯邦機構
          * I	Insurance Company	保險公司
          * N	Next-of-Kin	近親
-         * S	State Agency	國家機關
-         * U	Unknown未知	
+         * S	State Agency    國家機關
+         * U	Unknown 未知	
          */
 
         [Required]
@@ -61,42 +65,57 @@ namespace FHIR_Demo.Models
         [Display(Name = "電子信箱")]
         public string email { get; set; }
 
-        public PatientViewModel(Patient patient) 
+
+        public PatientViewModel PatientViewModelMapping(Patient patient)
         {
-            this.name = patient.Name[0].ToString();
-            this.birthDate = patient.BirthDate;
+            this.Id = patient.Id;
+            if (patient.Name.Count > 0)
+                this.name = patient.Name[0].ToString();
+            this.birthDate = patient.BirthDate ?? "";
             //switch (patient.Gender) 
             //{
             //    case AdministrativeGender.Male:
-            //        this.Gender = Gender.男;
+            //        patientView.Gender = Gender.男;
             //        break;
             //    case AdministrativeGender.Female:
-            //        this.Gender = Gender.女;
+            //        patientView.Gender = Gender.女;
             //        break;
             //    case AdministrativeGender.Other:
-            //        this.Gender = Gender.其他;
+            //        patientView.Gender = Gender.其他;
             //        break;
             //    default:
-            //        this.Gender = Gender.不知道;
+            //        patientView.Gender = Gender.不知道;
             //        break;
             //}
-            this.Gender = (Gender)patient.Gender;
-            this.identifier = patient.Identifier[0].ToString();
-            if(patient.Telecom.Count > 0) 
+            this.Gender = patient.Gender != null ? (Gender)patient.Gender: Gender.不知道;
+            if (patient.Identifier.Count > 0)
+                this.identifier = patient.Identifier[0].Value;
+            if (patient.Telecom.Count > 0)
             {
-                foreach(var telecom in patient.Telecom) 
+                foreach (var telecom in patient.Telecom)
                 {
-                    if(telecom.System == ContactPoint.ContactPointSystem.Phone)
-                        this.telecom = telecom.ToString();
+                    if (telecom.System == ContactPoint.ContactPointSystem.Phone)
+                        this.telecom = telecom.Value;
                     else if (telecom.System == ContactPoint.ContactPointSystem.Email)
-                        this.email = telecom.ToString();
+                        this.email = telecom.Value;
                 }
             }
-            this.address = patient.Address[0].Text;
-            this.contact_name = patient.Contact[0].Name.ToString();
-            this.contact_relationship = patient.Contact[0].Relationship[0].Coding[0].Code;
-            this.contact_telecom = patient.Contact[0].Telecom[0].ToString();
+            if (patient.Address.Count > 0)
+                this.address = patient.Address[0].Text;
+            if (patient.Contact.Count > 0) 
+            {
+                if (patient.Contact[0].Name != null)
+                    this.contact_name = patient.Contact[0].Name.ToString();
+                if (patient.Contact[0].Relationship.Count > 0)
+                    if (patient.Contact[0].Relationship[0].Coding.Count > 0)
+                        this.contact_relationship = patient.Contact[0].Relationship[0].Coding[0].Code ?? "";
+                if (patient.Contact[0].Telecom.Count > 0)
+                    this.contact_telecom = patient.Contact[0].Telecom[0].Value;
+            }
+
+            return this;
         }
+
     }
 
     public enum Gender
@@ -106,4 +125,5 @@ namespace FHIR_Demo.Models
         其他 = 2,
         不知道 = 3
     }
+
 }

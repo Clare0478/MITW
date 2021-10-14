@@ -40,90 +40,105 @@ namespace FHIR_Demo.Controllers
         }
 
 
-        public ActionResult Patient()
+        public ActionResult New_Patient()
         {
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Patient(PatientViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                Patient patient = new Patient()
-                {
-                    Name = new List<HumanName>()
-                    {
-                        new HumanName()
-                        {
-                            Text = model.name,
-                            Given = new List<string>
-                            {
-                                model.name,
-                            }
-                        }
-                    },
-                    BirthDate = model.birthDate,
-                    Gender = (AdministrativeGender)model.Gender,
-                    Identifier = new List<Identifier> {
-                        new Identifier
-                        {
-                            Value = model.identifier
-                        }
-                    },
-                    Telecom = new List<ContactPoint>
-                    {
-                        new ContactPoint
-                        {
-                            System = ContactPoint.ContactPointSystem.Phone,
-                            Value = model.telecom
-                        },
-                        new ContactPoint
-                        {
-                            System = ContactPoint.ContactPointSystem.Email,
-                            Value = model.email
-                        },
-                    },
-                    Address = new List<Address>
-                    {
-                        new Address
-                        {
-                            Text = model.address
-                        }
-                    },
-                    Contact = new List<Patient.ContactComponent>
-                    {
-                        new Patient.ContactComponent
-                        {
-                            Name = new HumanName()
-                            {
-                                Text = model.contact_name,
-                                Given = new List<string>
-                                {
-                                    model.contact_name,
-                                }
-                            },
-                            Relationship = new List<CodeableConcept>
-                            {
-                                new CodeableConcept("http://hl7.org/fhir/v2/0131/index.html", "N", model.contact_relationship)
-                            },
-                            Telecom = new List<ContactPoint>
-                            {
-                                new ContactPoint
-                                {
-                                    System = ContactPoint.ContactPointSystem.Phone,
-                                    Value = model.contact_telecom
-                                },
-                            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult New_Patient(PatientViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var settings = new FhirClientSettings
+        //        {
+        //            Timeout = 12000,
+        //            PreferredFormat = ResourceFormat.Json,
+        //            VerifyFhirVersion = true,
+        //        };
 
-                        },
-                    }
+        //        var client = new FhirClient(URL, settings);
 
-                };
-            }
-            return View(model);
-        }
+        //        Patient patient = new Patient()
+        //        {
+        //            Name = new List<HumanName>()
+        //            {
+        //                new HumanName()
+        //                {
+        //                    Text = model.name,
+        //                    Given = new List<string>
+        //                    {
+        //                        model.name,
+        //                    }
+        //                }
+        //            },
+        //            BirthDate = model.birthDate,
+        //            Gender = (AdministrativeGender)model.Gender,
+        //            Identifier = new List<Identifier> {
+        //                new Identifier
+        //                {
+        //                    Value = model.identifier
+        //                }
+        //            },
+        //            Telecom = new List<ContactPoint>
+        //            {
+        //                new ContactPoint
+        //                {
+        //                    System = ContactPoint.ContactPointSystem.Phone,
+        //                    Value = model.telecom
+        //                },
+        //                new ContactPoint
+        //                {
+        //                    System = ContactPoint.ContactPointSystem.Email,
+        //                    Value = model.email
+        //                },
+        //            },
+        //            Address = new List<Address>
+        //            {
+        //                new Address
+        //                {
+        //                    Text = model.address
+        //                }
+        //            },
+        //            Contact = new List<Patient.ContactComponent>
+        //            {
+        //                new Patient.ContactComponent
+        //                {
+        //                    Name = new HumanName()
+        //                    {
+        //                        Text = model.contact_name,
+        //                        Given = new List<string>
+        //                        {
+        //                            model.contact_name,
+        //                        }
+        //                    },
+        //                    Relationship = new List<CodeableConcept>
+        //                    {
+        //                        new CodeableConcept("http://terminology.hl7.org/CodeSystem/v2-0131", "N", model.contact_relationship)
+        //                    },
+        //                    Telecom = new List<ContactPoint>
+        //                    {
+        //                        new ContactPoint
+        //                        {
+        //                            System = ContactPoint.ContactPointSystem.Phone,
+        //                            Value = model.contact_telecom
+        //                        },
+        //                    }
+
+        //                },
+        //            }
+
+        //        };
+
+        //        var conditions = new SearchParams();
+        //        conditions.Add("identifier", model.identifier);
+
+        //        var patient_ToJson = patient.ToJson();
+        //        var created_pat_A = client.Create<Patient>(patient, conditions);
+        //    }
+        //    return View(model);
+        //}
 
 
     }
