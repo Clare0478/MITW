@@ -130,10 +130,11 @@ namespace FHIR_Demo.Controllers
             if (ModelState.IsValid)
             {
                 FhirClient client = new FhirClient(FHIR_URL_Cookie(), settings);
-
-                Patient patient = new Patient()
+                try
                 {
-                    Name = new List<HumanName>()
+                    Patient patient = new Patient()
+                    {
+                        Name = new List<HumanName>()
                     {
                         new HumanName()
                         {
@@ -144,15 +145,15 @@ namespace FHIR_Demo.Controllers
                             }
                         }
                     },
-                    BirthDate = model.birthDate,
-                    Gender = (AdministrativeGender)model.Gender,
-                    Identifier = new List<Identifier> {
+                        BirthDate = model.birthDate,
+                        Gender = (AdministrativeGender)model.Gender,
+                        Identifier = new List<Identifier> {
                         new Identifier
                         {
                             Value = model.identifier
                         }
                     },
-                    Telecom = new List<ContactPoint>
+                        Telecom = new List<ContactPoint>
                     {
                         new ContactPoint
                         {
@@ -165,14 +166,14 @@ namespace FHIR_Demo.Controllers
                             Value = model.email
                         },
                     },
-                    Address = new List<Address>
+                        Address = new List<Address>
                     {
                         new Address
                         {
                             Text = model.address
                         }
                     },
-                    Contact = new List<Patient.ContactComponent>
+                        Contact = new List<Patient.ContactComponent>
                     {
                         new Patient.ContactComponent
                         {
@@ -200,26 +201,24 @@ namespace FHIR_Demo.Controllers
                         },
                     }
 
-                };
+                    };
 
-                var conditions = new SearchParams();
-                conditions.Add("identifier", model.identifier);
+                    var conditions = new SearchParams();
+                    conditions.Add("identifier", model.identifier);
 
-                var patient_ToJson = patient.ToJson();
-                var created_pat_A = client.Create<Patient>(patient, conditions);
+                    var patient_ToJson = patient.ToJson();
+                    //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
+                    var created_pat_A = client.Create<Patient>(patient, conditions);
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    return View();
+                }
             }
             return View(model);
 
-            //try
-            //{
-            //    // TODO: Add insert logic here
-
-            //    return RedirectToAction("Index");
-            //}
-            //catch
-            //{
-            //    return View();
-            //}
+            
         }
 
         // GET: Patient/Edit/5
@@ -236,7 +235,7 @@ namespace FHIR_Demo.Controllers
                 var pat_view = new PatientViewModel().PatientViewModelMapping(pat_A);
                 return View(pat_view);
             }
-            catch
+            catch (Exception e)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
