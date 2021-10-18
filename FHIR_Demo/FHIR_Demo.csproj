@@ -149,6 +149,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CookiesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MedicationAdministrationController.cs" />
+    <Compile Include="Controllers\MedicationRequestController.cs" />
     <Compile Include="Controllers\MHBController.cs" />
     <Compile Include="Controllers\ObservationController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
@@ -298,6 +300,10 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Cookies\" />
+    <Folder Include="Views\MedAdim\" />
+    <Folder Include="Views\MedicationAdministration\" />
+    <Folder Include="Views\MedicationRequest\" />
+    <Folder Include="Views\MedReq\" />
     <Folder Include="Views\MHB\" />
   </ItemGroup>
   <ItemGroup>
