@@ -13,51 +13,17 @@ namespace FHIR_Demo.Controllers
 {
     public class PatientController : Controller
     {
-        public string FHIR_url = "https://hapi.fhir.tw/fhir";
-        public FhirClientSettings settings = new FhirClientSettings
-        {
-            Timeout = 120000,
-            PreferredFormat = ResourceFormat.Json,
-        };
-
-        public string FHIR_URL_Cookie()
-        {
-            string FHIR_URL_Cookie;
-            HttpCookie Cookie = Request.Cookies["FHIR_url"];
-            if (Cookie == null || Cookie.Value == "")
-            {
-                Cookie = new HttpCookie("FHIR_url", FHIR_url);
-            }
-            FHIR_URL_Cookie = Cookie.Value;
-            Cookie.Expires = DateTime.Now.AddDays(1); //設置Cookie到期時間
-            HttpContext.Response.Cookies.Add(Cookie);
-            return FHIR_URL_Cookie;
-        }
-
-        public string FHIR_URL_Cookie(string FHIR_url_update)
-        {
-            HttpCookie Cookie = Request.Cookies["FHIR_url"];
-            if (Cookie == null || Cookie.Value == "")
-            {
-                Cookie = new HttpCookie("FHIR_url", FHIR_url_update);
-            }
-            else
-            {
-                Cookie.Value  = FHIR_url_update;
-            }
-            Cookie.Expires = DateTime.Now.AddDays(1); //設置Cookie到期時間
-            Response.Cookies.Add(Cookie);
-            return FHIR_url_update;
-        }
+        private CookiesController cookies = new CookiesController();
 
         // GET: Patient
         public ActionResult Index()
         {
-            FhirClient client = new FhirClient(FHIR_URL_Cookie(), settings);
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
+            ViewBag.status = TempData["status"];
             try
             {
                 Bundle PatientSearchBundle = client.Search<Patient>(null);
-                var json = PatientSearchBundle.ToJson();
+                //var json = PatientSearchBundle.ToJson();
                 List<PatientViewModel> patientViewModels = new List<PatientViewModel>();
                 foreach (var entry in PatientSearchBundle.Entry)
                 {
@@ -78,7 +44,8 @@ namespace FHIR_Demo.Controllers
         {
             try
             {
-                FhirClient client = new FhirClient(FHIR_URL_Cookie(url), settings);
+                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings);
+
                 Bundle PatientSearchBundle = client.Search<Patient>(null);
                 var json = PatientSearchBundle.ToJson();
                 List<PatientViewModel> patientViewModels = new List<PatientViewModel>();
@@ -89,7 +56,7 @@ namespace FHIR_Demo.Controllers
 
                 return PartialView("_GetRecord", patientViewModels);
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 ViewBag.Error = e.ToString();
                 return PartialView("_GetRecord");
@@ -103,18 +70,17 @@ namespace FHIR_Demo.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            FhirClient client = new FhirClient(FHIR_URL_Cookie(), settings);
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
             try
             {
-                var pat_A = client.Read<Patient>("Patient/"+id);
+                var pat_A = client.Read<Patient>("Patient/" + id);
                 var pat_view = new PatientViewModel().PatientViewModelMapping(pat_A);
                 return View(pat_view);
             }
-            catch 
+            catch
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            
         }
 
         // GET: Patient/Create
@@ -129,78 +95,81 @@ namespace FHIR_Demo.Controllers
         {
             if (ModelState.IsValid)
             {
-                FhirClient client = new FhirClient(FHIR_URL_Cookie(), settings);
+                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
                 try
                 {
                     Patient patient = new Patient()
                     {
                         Name = new List<HumanName>()
-                    {
-                        new HumanName()
                         {
-                            Text = model.name,
-                            Given = new List<string>
+                            new HumanName()
                             {
-                                model.name,
+                                Text = model.name,
+                                Given = new List<string>
+                                {
+                                    model.name,
+                                }
                             }
-                        }
-                    },
+                        },
                         BirthDate = model.birthDate,
                         Gender = (AdministrativeGender)model.Gender,
                         Identifier = new List<Identifier> {
-                        new Identifier
-                        {
-                            Value = model.identifier
-                        }
-                    },
-                        Telecom = new List<ContactPoint>
-                    {
-                        new ContactPoint
-                        {
-                            System = ContactPoint.ContactPointSystem.Phone,
-                            Value = model.telecom
-                        },
-                        new ContactPoint
-                        {
-                            System = ContactPoint.ContactPointSystem.Email,
-                            Value = model.email
-                        },
-                    },
-                        Address = new List<Address>
-                    {
-                        new Address
-                        {
-                            Text = model.address
-                        }
-                    },
-                        Contact = new List<Patient.ContactComponent>
-                    {
-                        new Patient.ContactComponent
-                        {
-                            Name = new HumanName()
+                            new Identifier
                             {
-                                Text = model.contact_name,
-                                Given = new List<string>
-                                {
-                                    model.contact_name,
-                                }
-                            },
-                            Relationship = new List<CodeableConcept>
-                            {
-                                new CodeableConcept("http://terminology.hl7.org/CodeSystem/v2-0131", "N", model.contact_relationship)
-                            },
-                            Telecom = new List<ContactPoint>
-                            {
-                                new ContactPoint
-                                {
-                                    System = ContactPoint.ContactPointSystem.Phone,
-                                    Value = model.contact_telecom
-                                },
+                                Value = model.identifier
                             }
-
                         },
-                    }
+                        Telecom = new List<ContactPoint>
+                        {
+                            new ContactPoint
+                            {
+                                System = ContactPoint.ContactPointSystem.Phone,
+                                Value = model.telecom
+                            },
+                            new ContactPoint
+                            {
+                                System = ContactPoint.ContactPointSystem.Email,
+                                Value = model.email
+                            },
+                        },
+                        Address = new List<Address>
+                        {
+                            new Address
+                            {
+                                Text = model.address
+                            }
+                        },
+                        Contact = new List<Patient.ContactComponent>
+                        {
+                            new Patient.ContactComponent
+                            {
+                                Name = new HumanName()
+                                {
+                                    Text = model.contact_name,
+                                    Given = new List<string>
+                                    {
+                                        model.contact_name,
+                                    }
+                                },
+                                Relationship = new List<CodeableConcept>
+                                {
+                                    new CodeableConcept("http://terminology.hl7.org/CodeSystem/v2-0131", "N", model.contact_relationship)
+                                },
+                                Telecom = new List<ContactPoint>
+                                {
+                                    new ContactPoint
+                                    {
+                                        System = ContactPoint.ContactPointSystem.Phone,
+                                        Value = model.contact_telecom
+                                    },
+                                }
 
+                            },
+                        },
+                        ManagingOrganization = new ResourceReference
+                        {
+                            Reference = model.managingOrganization
+                        }
                     };
 
                     var conditions = new SearchParams();
@@ -209,6 +178,7 @@ namespace FHIR_Demo.Controllers
                     var patient_ToJson = patient.ToJson();
                     //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
                     var created_pat_A = client.Create<Patient>(patient, conditions);
+                    TempData["status"] = "Create succcess! Reference url:" + created_pat_A.Id;
                     return RedirectToAction("Index");
                 }
                 catch (Exception e)
@@ -217,8 +187,6 @@ namespace FHIR_Demo.Controllers
                 }
             }
             return View(model);
-
-            
         }
 
         // GET: Patient/Edit/5
@@ -228,7 +196,7 @@ namespace FHIR_Demo.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            FhirClient client = new FhirClient(FHIR_URL_Cookie(), settings);
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
             try
             {
                 var pat_A = client.Read<Patient>("Patient/" + id);
@@ -247,7 +215,7 @@ namespace FHIR_Demo.Controllers
         {
             if (ModelState.IsValid)
             {
-                FhirClient client = new FhirClient(FHIR_URL_Cookie(), settings);
+                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
                 try
                 {
                     var pat_A = client.Read<Patient>("Patient/" + id);
@@ -320,11 +288,12 @@ namespace FHIR_Demo.Controllers
                     };
                     var a = pat_A.ToJson();
                     var updated_pat = client.Update<Patient>(pat_A);
+
                     return RedirectToAction("Index");
                 }
                 catch
                 {
-                    return View();
+                    return View(model);
                 }
             }
             return View(model);

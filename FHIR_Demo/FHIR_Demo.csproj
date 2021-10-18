@@ -147,12 +147,15 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CookiesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MHBController.cs" />
+    <Compile Include="Controllers\ObservationController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\FHIRCode_Select.cs" />
     <Compile Include="Models\FHIRViewModels.cs" />
     <Compile Include="Models\MHB2FHIR.cs" />
     <Compile Include="Models\MHB_Convert.cs" />
@@ -281,15 +284,20 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Home\New_Patient.cshtml" />
     <Content Include="Views\Patient\Index.cshtml" />
     <Content Include="Views\Patient\Details.cshtml" />
     <Content Include="Views\Patient\_GetRecord.cshtml" />
     <Content Include="Views\Patient\Update.cshtml" />
     <Content Include="Views\Patient\Create.cshtml" />
+    <Content Include="Views\Home\New_Patient.cshtml" />
+    <Content Include="Views\Observation\Index.cshtml" />
+    <Content Include="Views\Observation\_GetRecord.cshtml" />
+    <Content Include="Views\Observation\Create.cshtml" />
+    <Content Include="Views\Observation\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Cookies\" />
     <Folder Include="Views\MHB\" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,4 @@
-﻿//using FHIR_Demo.Models;
-using FHIR_Demo.Models;
+﻿using FHIR_Demo.Models;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
@@ -17,6 +16,7 @@ namespace FHIR_Demo.Controllers
 {
     public class HomeController : Controller
     {
+
         public ActionResult Index()
         {
             return View();
@@ -42,7 +42,21 @@ namespace FHIR_Demo.Controllers
 
         public ActionResult New_Patient()
         {
-            return View();
+            var settings = new FhirClientSettings
+            {
+                Timeout = 120,
+                PreferredFormat = ResourceFormat.Json,
+                VerifyFhirVersion = true,
+            };
+
+            var client = new FhirClient("https://hapi.fhir.tw/fhir", settings);
+            var bundle = client.Search<Patient>(null);
+            List<Patient> Patients = new List<Patient>();
+            foreach (var entry in bundle.Entry)
+            {
+                Patients.Add((Patient)entry.Resource);
+            }
+            return View(Patients);
         }
 
         //[HttpPost]
