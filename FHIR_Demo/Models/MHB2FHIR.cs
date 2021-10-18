@@ -6,13 +6,13 @@ using System.Web;
 namespace FHIR_Demo.Models
 {
     //FHIR Resource
-    public class Bundle
+    public class Bundle_MHB
     {
         public string meta { get; set; } //Myhealth bank download's date
         public string id { get; set; } //uploader's id 
     }
 
-    public class Patient
+    public class Patient_MHB
     {
         public string id { get; set; }
         public string[] valueDate { get; set; }
@@ -22,7 +22,7 @@ namespace FHIR_Demo.Models
         public string birthDate { get; set; }
     }
 
-    public class Composition
+    public class Composition_MHB
     {
         public string id { get; set; }
         public string patient { get; set; }
@@ -34,7 +34,7 @@ namespace FHIR_Demo.Models
         public string[] section_entry { get; set; }
     }
 
-    public class Encounter
+    public class Encounter_MHB
     {
         public string id { get; set; }
         public string en_class { get; set; }
@@ -48,7 +48,7 @@ namespace FHIR_Demo.Models
         public string Organization { get; set; }
     }
 
-    public class Condition
+    public class Condition_MHB
     {
         public string id { get; set; }
         public string code_code { get; set; }
@@ -59,7 +59,7 @@ namespace FHIR_Demo.Models
     }
 
     //未來可以將組織資料存進資料庫  減少重複輸入
-    public class Observation
+    public class Observation_MHB
     {
         public string id { get; set; }
         public string category { get; set; }
@@ -79,7 +79,7 @@ namespace FHIR_Demo.Models
         public string[] referenceRange_text { get; set; }//r7
     }
 
-    public class Procedure
+    public class Procedure_MHB
     {
         public string id { get; set; }
         public string code_code { get; set; }
@@ -94,7 +94,7 @@ namespace FHIR_Demo.Models
         public string bodySite_display { get; set; }
     }
 
-    public class MedicationRequest
+    public class MedicationRequest_MHB
     {
         public string id { get; set; }
         public string Medication_id { get; set; }  //藥品後續可新增資料庫  減少重複性
@@ -108,7 +108,7 @@ namespace FHIR_Demo.Models
         public string expectedSupplyDuration { get; set; } //天數
     }
 
-    public class AllergyIntolerance
+    public class AllergyIntolerance_MHB
     {
         public string id { get; set; }
         public string code { get; set; }
@@ -117,7 +117,7 @@ namespace FHIR_Demo.Models
         public string recorder { get; set; } //doctor
     }
 
-    public class Immunization
+    public class Immunization_MHB
     {
         public string id { get; set; }
         public string vaccineCode { get; set; } //疫苗名稱
@@ -126,7 +126,7 @@ namespace FHIR_Demo.Models
         public string occurrenceDateTime { get; set; }
     }
 
-    public class Coverage
+    public class Coverage_MHB
     {
         public string id { get; set; }
         public string subscriber { get; set; } //patient
@@ -137,7 +137,7 @@ namespace FHIR_Demo.Models
         public string valueMoney { get; set; } //money <value value="20.00"/>  <currency value = "USD" />
     }
 
-    public class Organization
+    public class Organization_MHB
     {
         public string id { get; set; }
         public string type { get; set; } //r1.2

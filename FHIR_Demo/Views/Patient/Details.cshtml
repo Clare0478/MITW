@@ -1,0 +1,90 @@
+﻿@model FHIR_Demo.Models.PatientViewModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>PatientViewModel</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.birthDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.birthDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.identifier)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.identifier)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.telecom)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.telecom)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.contact_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.contact_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.contact_relationship)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.contact_relationship)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.contact_telecom)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.contact_telecom)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.email)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Update", "Update", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
