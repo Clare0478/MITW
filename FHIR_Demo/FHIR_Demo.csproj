@@ -161,7 +161,6 @@
     <Compile Include="Models\FHIRViewModels.cs" />
     <Compile Include="Models\MHB2FHIR.cs" />
     <Compile Include="Models\MHB_Convert.cs" />
-    <Compile Include="Models\test\Resource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
