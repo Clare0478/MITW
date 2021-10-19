@@ -68,7 +68,9 @@ namespace FHIR_Demo.Models
         [Required]
         [Display(Name = "組織")]
         public string managingOrganization { get; set; }
-
+        
+        [Display(Name = "是否死亡")]
+        public string deceased { get; set; }
 
 
 
@@ -120,7 +122,12 @@ namespace FHIR_Demo.Models
             }
             if (patient.ManagingOrganization != null)
                 this.managingOrganization = patient.ManagingOrganization.Reference;
-
+            
+            if (patient.Deceased != null)
+                if (patient.Deceased.TypeName == "boolean")
+                    this.deceased = ((FhirBoolean)patient.Deceased).Value.ToString();
+                else if (patient.Deceased.TypeName == "dateTime")
+                    this.deceased = ((FhirDateTime)patient.Deceased).ToString();
             return this;
         }
 
@@ -167,34 +174,42 @@ namespace FHIR_Demo.Models
             this.subject = observation.Subject.Reference ?? "";
             this.effectiveDateTime = DateTime.Parse(observation.Effective.ToString());
             this.Code_value = new Obser_Code_Value();
-            if (observation.Code.Coding.Count > 0) 
+            if (observation.Code != null)
             {
-                this.Code_value.code_display = new ObservationCode().observationCode().
-                    Where(o=> o.code.Contains(observation.Code.Coding[0].Code)).FirstOrDefault().chinese ?? observation.Code.Coding[0].Display ?? "";
-            }
-                //this.Code_value.code_display = observation.Code.Coding[0].Display ?? "";
-            if (observation.Value.GetType() == typeof(Quantity))
-            {
-                this.Code_value.value = ((Quantity)observation.Value).Value;
-                this.Code_value.unit = ((Quantity)observation.Value).Unit;
-            }
-            if (observation.Component.Count > 0)
-            {
-                this.component = new Obser_Code_Value[observation.Component.Count];
-                for (var i = 0; i < observation.Component.Count; i++)
+                if (observation.Code.Coding.Count > 0)
                 {
-                    this.component[i] = new Obser_Code_Value();
-                    if (observation.Component[i].Code.Coding.Count > 0)
-                        this.component[i].code_display = new ObservationCode().observationCode().
-                             Where(o => o.code.Contains(observation.Component[i].Code.Coding[0].Code)).FirstOrDefault().chinese ?? observation.Component[i].Code.Coding[0].Display ?? "";
-                    if (observation.Component[i].Value.GetType() == typeof(Quantity))
+                    this.Code_value.code_display = new ObservationCode().observationCode().
+                        Where(o => o.code.Contains(observation.Code.Coding[0].Code)).FirstOrDefault().chinese ?? observation.Code.Coding[0].Display ?? "";
+                }
+            }
+            //this.Code_value.code_display = observation.Code.Coding[0].Display ?? "";
+            if (observation.Value != null)
+            {
+                if (observation.Value.GetType() == typeof(Quantity))
+                {
+                    this.Code_value.value = ((Quantity)observation.Value).Value;
+                    this.Code_value.unit = ((Quantity)observation.Value).Unit;
+                }
+            }
+            if (observation.Component != null)
+            {
+                if (observation.Component.Count > 0)
+                {
+                    this.component = new Obser_Code_Value[observation.Component.Count];
+                    for (var i = 0; i < observation.Component.Count; i++)
                     {
-                        this.component[i].value = ((Quantity)observation.Component[i].Value).Value;
-                        this.component[i].unit = ((Quantity)observation.Component[i].Value).Unit;
+                        this.component[i] = new Obser_Code_Value();
+                        if (observation.Component[i].Code.Coding.Count > 0)
+                            this.component[i].code_display = new ObservationCode().observationCode().
+                                 Where(o => o.code.Contains(observation.Component[i].Code.Coding[0].Code)).FirstOrDefault().chinese ?? observation.Component[i].Code.Coding[0].Display ?? "";
+                        if (observation.Component[i].Value.GetType() == typeof(Quantity))
+                        {
+                            this.component[i].value = ((Quantity)observation.Component[i].Value).Value;
+                            this.component[i].unit = ((Quantity)observation.Component[i].Value).Unit;
+                        }
                     }
                 }
             }
-
             return this;
         }
     }
@@ -357,5 +372,134 @@ namespace FHIR_Demo.Models
         public ObservationCategory_Value Distolic_Blood_Pressure(decimal? value_Distolic) { return ObservationCategory_Data("vital-signs", "Vital Signs",  "8462-4", "Distolic Blood Pressure", "mmHg", value_Distolic); }
 
     }
+    
+    public class ImmunizationViewModel
+    {
+        public string Id { get; set; }
 
+        [Required]
+        [Display(Name = "狀態")]
+        public Obser_Status status { get; set; }
+
+        [Required]
+        [Display(Name = "姓名")]
+        public string name { get; set; }
+
+        [Required]
+        [Display(Name = "生日")]
+        [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public string birthDate { get; set; }
+
+        [Required]
+        [Display(Name = "性別")]
+        public Gender Gender { get; set; }
+
+        [Required]
+        [Display(Name = "身分證")]
+        [RegularExpression(@"^[A-Z]{1}[A-Da-d1289]{1}[0-9]{8}$", ErrorMessage = "身分證字號錯誤")]
+        public string identifier { get; set; }
+
+        //以後要可以多個
+        [Required]
+        [Display(Name = "連絡電話")]
+        public string telecom { get; set; }
+
+        [Required]
+        [Display(Name = "聯絡地址")]
+        public string address { get; set; }
+
+        [Required]
+        [Display(Name = "緊急聯絡人")]
+        public string contact_name { get; set; }
+
+        [Required]
+        [Display(Name = "關係")]
+        public string contact_relationship { get; set; }
+        /*
+         * C	緊急聯繫人	
+         * E	Employer 雇主
+         * F	Federal Agency	聯邦機構
+         * I	Insurance Company	保險公司
+         * N	Next-of-Kin	近親
+         * S	State Agency    國家機關
+         * U	Unknown 未知	
+         */
+
+        [Required]
+        [Display(Name = "聯絡人聯絡電話")]
+        public string contact_telecom { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "電子信箱")]
+        public string email { get; set; }
+
+        [Required]
+        [Display(Name = "組織")]
+        public string managingOrganization { get; set; }
+
+        [Display(Name = "是否死亡")]
+        public string deceased { get; set; }
+
+
+
+        public PatientViewModel PatientViewModelMapping(Patient patient)
+        {
+            this.Id = patient.Id;
+            if (patient.Name.Count > 0)
+                this.name = patient.Name[0].ToString();
+            this.birthDate = patient.BirthDate ?? "";
+            //switch (patient.Gender) 
+            //{
+            //    case AdministrativeGender.Male:
+            //        patientView.Gender = Gender.男;
+            //        break;
+            //    case AdministrativeGender.Female:
+            //        patientView.Gender = Gender.女;
+            //        break;
+            //    case AdministrativeGender.Other:
+            //        patientView.Gender = Gender.其他;
+            //        break;
+            //    default:
+            //        patientView.Gender = Gender.不知道;
+            //        break;
+            //}
+            this.Gender = patient.Gender != null ? (Gender)patient.Gender : Gender.不知道;
+            if (patient.Identifier.Count > 0)
+                this.identifier = patient.Identifier[0].Value;
+            if (patient.Telecom.Count > 0)
+            {
+                foreach (var telecom in patient.Telecom)
+                {
+                    if (telecom.System == ContactPoint.ContactPointSystem.Phone)
+                        this.telecom = telecom.Value;
+                    else if (telecom.System == ContactPoint.ContactPointSystem.Email)
+                        this.email = telecom.Value;
+                }
+            }
+            if (patient.Address.Count > 0)
+                this.address = patient.Address[0].Text;
+            if (patient.Contact.Count > 0)
+            {
+                if (patient.Contact[0].Name != null)
+                    this.contact_name = patient.Contact[0].Name.ToString();
+                if (patient.Contact[0].Relationship.Count > 0)
+                    if (patient.Contact[0].Relationship[0].Coding.Count > 0)
+                        this.contact_relationship = patient.Contact[0].Relationship[0].Coding[0].Code ?? "";
+                if (patient.Contact[0].Telecom.Count > 0)
+                    this.contact_telecom = patient.Contact[0].Telecom[0].Value;
+            }
+            if (patient.ManagingOrganization != null)
+                this.managingOrganization = patient.ManagingOrganization.Reference;
+
+            if (patient.Deceased != null)
+                if (patient.Deceased.TypeName == "boolean")
+                    this.deceased = ((FhirBoolean)patient.Deceased).Value.ToString();
+                else if (patient.Deceased.TypeName == "dateTime")
+                    this.deceased = ((FhirDateTime)patient.Deceased).ToString();
+            return this;
+        }
+
+    }
 }
