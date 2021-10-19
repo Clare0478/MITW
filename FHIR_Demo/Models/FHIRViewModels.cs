@@ -375,76 +375,35 @@ namespace FHIR_Demo.Models
     
     public class ImmunizationViewModel
     {
+        
+        public List<ProtocolAppliedComponent> ProtocolApplied { get; set; }
         public string Id { get; set; }
+        
+        [Display(Name = "疫苗或預防措施")]
+        public List<Identifier> Identifier { get; set; }
 
         [Required]
-        [Display(Name = "狀態")]
-        public Obser_Status status { get; set; }
+        [Display(Name = "疫苗代碼")]
+        public CodeableConcept VaccineCode { get; set; }
 
         [Required]
-        [Display(Name = "姓名")]
-        public string name { get; set; }
+        [Display(Name = "製造商")]
+        public ResourceReference Manufacturer { get; set; }
 
         [Required]
-        [Display(Name = "生日")]
-        [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public string birthDate { get; set; }
+        [Display(Name = "批號")]
+        public string LotNumber { get; set; }
 
         [Required]
-        [Display(Name = "性別")]
-        public Gender Gender { get; set; }
+        [Display(Name = "接種日期")]
+        public string Occurrence { get; set; }
 
         [Required]
-        [Display(Name = "身分證")]
-        [RegularExpression(@"^[A-Z]{1}[A-Da-d1289]{1}[0-9]{8}$", ErrorMessage = "身分證字號錯誤")]
-        public string identifier { get; set; }
+        [Display(Name = "注射單位")]
+        public ResourceReference Location { get; set; }
+        public List<PerformerComponent> Performer { get; set; }
 
-        //以後要可以多個
-        [Required]
-        [Display(Name = "連絡電話")]
-        public string telecom { get; set; }
-
-        [Required]
-        [Display(Name = "聯絡地址")]
-        public string address { get; set; }
-
-        [Required]
-        [Display(Name = "緊急聯絡人")]
-        public string contact_name { get; set; }
-
-        [Required]
-        [Display(Name = "關係")]
-        public string contact_relationship { get; set; }
-        /*
-         * C	緊急聯繫人	
-         * E	Employer 雇主
-         * F	Federal Agency	聯邦機構
-         * I	Insurance Company	保險公司
-         * N	Next-of-Kin	近親
-         * S	State Agency    國家機關
-         * U	Unknown 未知	
-         */
-
-        [Required]
-        [Display(Name = "聯絡人聯絡電話")]
-        public string contact_telecom { get; set; }
-
-        [Required]
-        [EmailAddress]
-        [Display(Name = "電子信箱")]
-        public string email { get; set; }
-
-        [Required]
-        [Display(Name = "組織")]
-        public string managingOrganization { get; set; }
-
-        [Display(Name = "是否死亡")]
-        public string deceased { get; set; }
-
-
-
-        public PatientViewModel PatientViewModelMapping(Patient patient)
+        public ImmunizationViewModel ImmunizationViewModelMapping(Immunization Immunization)
         {
             this.Id = patient.Id;
             if (patient.Name.Count > 0)
@@ -501,5 +460,33 @@ namespace FHIR_Demo.Models
             return this;
         }
 
+    }
+    public class ProtocolAppliedComponent
+    {
+        [Required]
+        [Display(Name = "疫苗系列名稱")]
+        public string Series { get; set; }
+
+        [Display(Name = "誰負責發佈建議")] 
+        public ResourceReference Authority { get; set; }
+
+        [Display(Name = "疫苗可預防疾病的")] 
+        public List<CodeableConcept> TargetDisease { get; set; }
+
+        [Required]
+        [Display(Name = "劑別")]
+        public string DoseNumber { get; set; }
+        
+        [Display(Name = "免疫的推薦劑量數")]
+        public string SeriesDoses { get; set; }
+    }
+
+    public class PerformerComponent
+    {
+        public CodeableConcept Function { get; set; }
+        
+        [Required]
+        [Display(Name = "注射單位")]
+        public ResourceReference Actor { get; set; }
     }
 }
