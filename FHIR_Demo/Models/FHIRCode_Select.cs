@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hl7.Fhir.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -109,4 +110,69 @@ namespace FHIR_Demo.Models
     //    收縮壓,  //Systolic blood pressure
     //    舒張壓   //Distolic blood pressure
     //}
+
+    public enum medicationrequestStatus_Ch
+    {
+        活躍 = 0,
+        保持 = 1,
+        取消 = 2,
+        完成 = 3,
+        輸入錯誤 = 4,
+        停止 = 5,
+        草稿 = 6,
+        未知 = 7
+    }
+
+    public enum medicationRequestIntent_Ch
+    {
+        提案 = 0,
+        計劃 = 1,
+        訂單 = 2,
+        原始訂單 = 3,
+        反射順序 = 4,
+        填充順序 = 5,
+        實例順序 = 6,
+        選項 = 7
+    }
+
+    public class MedicationRequestCategory
+    {
+        public string System { get => "http://terminology.hl7.org/CodeSystem/medicationrequest-category"; }
+        public string Code { get; set; }
+        public string Display { get; set; }
+        public string Chinese { get; set; }
+
+        public List<MedicationRequestCategory> MedicationRequestCategory_list()
+        {
+            var obser_code_lists = new List<MedicationRequestCategory>
+            {
+                new MedicationRequestCategory {Code = "inpatient", Display = "Inpatient", Chinese = "住院病人"},
+                new MedicationRequestCategory {Code = "outpatient", Display = "Outpatient", Chinese = "門診病人"},
+                new MedicationRequestCategory {Code = "community", Display = "Community", Chinese = "機構/家中"},
+                new MedicationRequestCategory {Code = "discharge", Display = "Discharge", Chinese = "出院"},
+            };
+            return obser_code_lists;
+        }
+
+        public List<CodeableConcept> MedicationRequestCategory_Create(string Category)
+        {
+            var MedicationRequestCategory = MedicationRequestCategory_list().Where(c => c.Chinese.Contains(Category)).First();
+            return new List<CodeableConcept> { new CodeableConcept(MedicationRequestCategory.System, MedicationRequestCategory.Code, MedicationRequestCategory.Display, null) };
+        }
+    }
+
+    public enum MedicationAdministrationStatusCodes_Ch
+    {
+        進行中 = 0,
+        未完成 = 1,
+        保持 = 2,
+        完成 = 3,
+        輸入錯誤 = 4,
+        停止 = 5,
+        未知 = 6
+    }
+
+
+
+
 }

@@ -1,4 +1,5 @@
 ﻿using Hl7.Fhir.Model;
+using Hl7.Fhir.Serialization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -357,5 +358,175 @@ namespace FHIR_Demo.Models
         public ObservationCategory_Value Distolic_Blood_Pressure(decimal? value_Distolic) { return ObservationCategory_Data("vital-signs", "Vital Signs",  "8462-4", "Distolic Blood Pressure", "mmHg", value_Distolic); }
 
     }
+
+    public class MedicationRequestViewModels : MedicationRequest
+    {
+        [Required]
+        [Display(Name = "狀態")]
+        public medicationrequestStatus_Ch status { get => (medicationrequestStatus_Ch)Status; set => Status = (medicationrequestStatus)value; }
+
+        [Required]
+        [Display(Name = "資料用途")]
+        public medicationRequestIntent_Ch intent { get => (medicationRequestIntent_Ch)Intent; set => Intent = (medicationRequestIntent)value; }
+
+        [Display(Name = "類別")]
+        public string categorys
+        {
+            get => new MedicationRequestCategory().MedicationRequestCategory_list().Where(c => c.Code.Contains(Category[0].Coding[0].Code)).First().Chinese;
+            set => Category = new MedicationRequestCategory().MedicationRequestCategory_Create(value);
+        }
+        //public List<CodeableConcept> categorys { get => Category; set => Category = categorys; }
+
+        [Display(Name = "藥物")]
+        public string medicationReference
+        {
+            get
+            {
+                if (Medication.TypeName == "Reference")
+                    return ((ResourceReference)Medication).Url.ToString();
+                else
+                    return null;
+            }
+            set => Medication = new ResourceReference(value);
+        }
+
+        [Display(Name = "藥物")]
+        public Coding medicationCodeableConcept
+        {
+            get
+            {
+                if (Medication.TypeName == "Reference")
+                    return null;
+                else
+                    return ((CodeableConcept)Medication).Coding[0];
+            }
+            set => Medication = new CodeableConcept(value.System, value.Code, value.Display);
+        }
+
+        [Required]
+        [Display(Name = "患者")]
+        public string subject
+        {
+            get => Subject.Url.ToString();
+
+            set => Subject = new ResourceReference(value);
+        }
+
+        [Required]
+        [Display(Name = "給藥日期")]
+        [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public string authoredOn
+        {
+            get => AuthoredOn;
+            set => AuthoredOn = value;
+        }
+        //重新思考
+        //public MedDosage dosageInstruction
+        //重新思考
+        public string dispenseRequest
+        {
+            get => DispenseRequest.ToJson();
+            set => DispenseRequest = new FhirJsonParser().Parse<DispenseRequestComponent>(value);
+        }
+
+    }
+
+    public class MedDosage : Dosage
+    {
+        //給藥次序
+        public int? Sequence { get; set; }
+        //用藥描述
+        public string Text { get; set; }
+        //用藥方式
+        public Code Timing_Code { get; set; }
+        //用藥途徑
+        public CodeableConcept Route { get; set; }
+
+    }
+
+    public class MedicationAdministrationViewModels : MedicationAdministration 
+    {
+        [Required]
+        [Display(Name = "狀態")]
+        public MedicationAdministrationStatusCodes_Ch status { get => (MedicationAdministrationStatusCodes_Ch)Status; set => Status = (MedicationAdministrationStatusCodes)value; }
+
+        [Display(Name = "藥物")]
+        public string medicationReference
+        {
+            get
+            {
+                if (Medication.TypeName == "Reference")
+                    return ((ResourceReference)Medication).Url.ToString();
+                else
+                    return null;
+            }
+            set => Medication = new ResourceReference(value);
+        }
+
+        [Display(Name = "藥物")]
+        public Coding medicationCodeableConcept
+        {
+            get
+            {
+                if (Medication.TypeName == "Reference")
+                    return null;
+                else
+                    return ((CodeableConcept)Medication).Coding[0];
+            }
+            set => Medication = new CodeableConcept(value.System, value.Code, value.Display);
+        }
+
+        [Required]
+        [Display(Name = "患者")]
+        public string subject
+        {
+            get => Subject.Url.ToString();
+
+            set => Subject = new ResourceReference(value);
+        }
+
+        [Required]
+        [Display(Name = "服藥開始日期")]
+        [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public string effectivePeriod_start
+        {
+            get => ((Period)Effective).Start;
+            set => ((Period)Effective).Start = value;
+        }
+
+        [Required]
+        [Display(Name = "服藥結束日期")]
+        [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public string effectivePeriod_end
+        {
+            get => ((Period)Effective).End;
+            set => ((Period)Effective).End = value;
+        }
+
+        [Required]
+        [Display(Name = "處方籤")]
+        public string request
+        {
+            get => Request.Url.ToString();
+
+            set => Request = new ResourceReference(value);
+        }
+
+        //重新思考
+        [Required]
+        [Display(Name = "劑量")]
+        public DosageComponent dosage
+        {
+            get => Dosage;
+
+            set => Dosage = new DosageComponent() { Text = value.Text, Dose = value.Dose };
+        }
+
+
+    }
+
 
 }

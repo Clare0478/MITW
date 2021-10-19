@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Hl7.Fhir.Model;
+using Hl7.Fhir.Rest;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,10 +10,32 @@ namespace FHIR_Demo.Controllers
 {
     public class MedicationAdministrationController : Controller
     {
+        private CookiesController cookies = new CookiesController();
+
         // GET: MedicationAdministration
         public ActionResult Index()
         {
-            return View();
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
+            ViewBag.status = TempData["status"];
+            try
+            {
+                Bundle MedicationAdministrationBundle = client.Search<MedicationAdministration>(null);
+                //var json = PatientSearchBundle.ToJson();
+                //List<PatientViewModel> patientViewModels = new List<PatientViewModel>();
+                List<MedicationAdministration> MedicationAdministrations = new List<MedicationAdministration>();
+                foreach (var entry in MedicationAdministrationBundle.Entry)
+                {
+                    var a = ((MedicationAdministration)entry.Resource).Effective;
+                    MedicationAdministrations.Add((MedicationAdministration)entry.Resource);
+                }
+
+                return View(MedicationAdministrations);
+            }
+            catch (Exception e)
+            {
+                ViewBag.Error = e.ToString();
+                return View();
+            }
         }
 
         // GET: MedicationAdministration/Details/5

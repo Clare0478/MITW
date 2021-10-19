@@ -75,6 +75,7 @@ namespace FHIR_Demo.Controllers
             {
                 var Obser = client.Read<Observation>("Observation/" + id);
                 var Obser_view = new ObservationViewModel().ObservationViewModelMapping(Obser);
+
                 return View(Obser_view);
             }
             catch
