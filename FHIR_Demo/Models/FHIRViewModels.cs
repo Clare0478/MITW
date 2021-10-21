@@ -520,7 +520,7 @@ namespace FHIR_Demo.Models
         [Display(Name = "服藥開始日期")]
         [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public string effectivePeriod_start { get => effectivePeriod.Start; set => effectivePeriod.Start = value; }
+        public string effectivePeriod_start { get  => effectivePeriod.Start; set => effectivePeriod.Start = value; }
         //{
         //    get => ((Period)Effective).Start;
         //    set => ((Period)Effective).Start = value;
@@ -559,10 +559,14 @@ namespace FHIR_Demo.Models
         {
             this.Id = medicationAdministration.Id;
             this.status = (MedicationAdministrationStatusCodes_Ch)medicationAdministration.Status;
-            if (medicationAdministration.Medication.TypeName == "Reference")
-                this.medicationReference = ((ResourceReference)medicationAdministration.Medication).Url.ToString();
-            if (medicationAdministration.Medication.TypeName == "CodeableConcept")
-                this.medicationCodeableConcept = ((CodeableConcept)medicationAdministration.Medication).Coding[0];
+            if (medicationAdministration.Medication != null)
+            {
+                if (medicationAdministration.Medication.TypeName == "Reference")
+                    this.medicationReference = ((ResourceReference)medicationAdministration.Medication).Url.ToString();
+                if (medicationAdministration.Medication.TypeName == "CodeableConcept")
+                    this.medicationCodeableConcept = ((CodeableConcept)medicationAdministration.Medication).Coding[0];
+            }
+            
             this.subject = medicationAdministration.Subject.Url.ToString();
             if (medicationAdministration.Effective.TypeName == "Period")
                 this.effectivePeriod = (Period)medicationAdministration.Effective;

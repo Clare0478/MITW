@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Hl7.Fhir.Model.MedicationAdministration>
+﻿@model IEnumerable<FHIR_Demo.Models.MedicationAdministrationViewModel>
 
 @{
     ViewBag.Title = "Index";
@@ -59,24 +59,31 @@
                                     <table class="table table-hover text-center align-middle align-content-center">
                                         <thead class="thead-dark">
                                             <tr>
-                                                <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.Status)
+                                                <th class="text-center align-middle">
+                                                    @Html.DisplayNameFor(model => model.status)
                                                 </th>
-                                                <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.Subject)
+                                                <th class="text-center align-middle">
+                                                    @Html.DisplayNameFor(model => model.medicationReference)
                                                 </th>
-                                                @*<th class="text-center align-middle" style="width:5%">
-                                                        @Html.DisplayNameFor(model => model.catogory)
-                                                    </th>*@
-                                                <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.Effective)
+                                                <th class="text-center align-middle">
+                                                    @Html.DisplayNameFor(model => model.medicationCodeableConcept)
                                                 </th>
-                                                <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.Medication)
+                                                <th class="text-center align-middle">
+                                                    @Html.DisplayNameFor(model => model.subject)
                                                 </th>
-                                                <th class="text-center align-middle" style="width:5%">
+                                                <th class="text-center align-middle">
+                                                    @Html.DisplayNameFor(model => model.effectivePeriod_start)
                                                 </th>
-                                                <th class="text-center align-middle" style="width:5%">Action</th>
+                                                <th class="text-center align-middle">
+                                                    @Html.DisplayNameFor(model => model.effectivePeriod_end)
+                                                </th>
+                                                <th class="text-center align-middle">
+                                                    @Html.DisplayNameFor(model => model.request)
+                                                </th>
+                                                <th class="text-center align-middle">
+                                                    @Html.DisplayNameFor(model => model.dosage)
+                                                </th>
+                                                <th class="text-center align-middle">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -84,21 +91,45 @@
                                             {
                                                 <tr>
                                                     <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.Status)
+                                                        @Html.DisplayFor(modelItem => item.status)
                                                     </td>
                                                     <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.Subject.Reference)
-                                                    </td>
-                                                    @*<td class="text-center align-middle">
-                                                            @Html.DisplayFor(modelItem => item.catogory)
-                                                        </td>*@
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.Effective)
+                                                        @Html.DisplayFor(modelItem => item.medicationReference)
                                                     </td>
                                                     <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.Medication)
+                                                        @if (item.medicationCodeableConcept != null)
+                                                        {
+                                                            @:Code：@Html.DisplayFor(modelItem => item.medicationCodeableConcept.Code)<br>
+                                                            @:Name：@Html.DisplayFor(modelItem => item.medicationCodeableConcept.Display)
+                                                        }
                                                     </td>
                                                     <td class="text-center align-middle">
+                                                        @Html.DisplayFor(modelItem => item.subject)
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        @Html.DisplayFor(modelItem => item.effectivePeriod_start)
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        @Html.DisplayFor(modelItem => item.effectivePeriod_end)
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        @Html.DisplayFor(modelItem => item.request)
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        <table class="table table-hover text-center align-middle align-content-center">
+                                                            <thead class="thead-light">
+                                                                <tr>
+                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dosage.Text)</th>
+                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dosage.Dose)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td class="text-center align-middle">@item.dosage.Text</td>
+                                                                    <td class="text-center align-middle">@item.dosage.Dose.Value @item.dosage.Dose.Unit</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
                                                     </td>
                                                     <td class="text-center align-middle">
                                                         @*@Html.ActionLink("Update", "Update", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })*@

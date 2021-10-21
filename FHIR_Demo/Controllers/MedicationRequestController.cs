@@ -39,6 +39,30 @@ namespace FHIR_Demo.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult GetRecord(string url)
+        {
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings);
+            try
+            {
+
+                Bundle MedicationRequestBundle = client.Search<MedicationRequest>(null);
+                //var json = PatientSearchBundle.ToJson();
+                List<MedicationRequestViewModel> medicationRequestViewModels = new List<MedicationRequestViewModel>();
+                foreach (var entry in MedicationRequestBundle.Entry)
+                {
+                    medicationRequestViewModels.Add(new MedicationRequestViewModel().MedicationRequestViewModelMapping((MedicationRequest)entry.Resource));
+                }
+
+                return PartialView("_GetRecord", medicationRequestViewModels);
+            }
+            catch (Exception e)
+            {
+                ViewBag.Error = e.ToString();
+                return PartialView("_GetRecord");
+            }
+        }
+
         // GET: MedicationRequest/Details/5
         public ActionResult Details(string id)
         {
@@ -84,7 +108,8 @@ namespace FHIR_Demo.Controllers
                         });
                     }
 
-                    TempData["status"] = "Create succcess! Reference url:";
+                    var created_MedReq = client.Create<MedicationRequest>(medicationRequest);
+                    TempData["status"] = "Create succcess! Reference url:" + created_MedReq.Id;
                     return RedirectToAction("Index");
                 }
                 catch (Exception e)
@@ -125,7 +150,7 @@ namespace FHIR_Demo.Controllers
 
         // POST: MedicationRequest/Delete/5
         [HttpPost]
-        public ActionResult Delete(string id, FormCollection collection)
+        public ActionResult Delete(string id, MedicationRequestViewModel model)
         {
             try
             {

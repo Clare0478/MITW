@@ -299,6 +299,9 @@
     <Content Include="Views\MedicationRequest\Index.cshtml" />
     <Content Include="Views\MedicationAdministration\Index.cshtml" />
     <Content Include="Views\MedicationRequest\Create.cshtml" />
+    <Content Include="Views\MedicationRequest\_GetRecord.cshtml" />
+    <Content Include="Views\MedicationAdministration\_GetRecord.cshtml" />
+    <Content Include="Views\MedicationAdministration\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
