@@ -20,6 +20,7 @@ namespace FHIR_Demo.Controllers
         {
             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
             ViewBag.status = TempData["status"];
+            ViewBag.Error = TempData["Error"];
             try
             {
                 Bundle PatientSearchBundle = client.Search<Patient>(null);
@@ -183,7 +184,9 @@ namespace FHIR_Demo.Controllers
                 }
                 catch (Exception e)
                 {
-                    return View();
+                    TempData["Error"] = e.ToString();
+                    return RedirectToAction("Index");
+                    //return View();
                 }
             }
             return View(model);

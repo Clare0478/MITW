@@ -1,21 +1,70 @@
-﻿using System;
+﻿using FHIR_Demo.Models;
+using Hl7.Fhir.Model;
+using Hl7.Fhir.Rest;
+using Hl7.Fhir.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using static Hl7.Fhir.Model.MedicationRequest;
 
 namespace FHIR_Demo.Controllers
 {
     public class MedicationRequestController : Controller
     {
+        private CookiesController cookies = new CookiesController();
+
         // GET: MedicationRequest
         public ActionResult Index()
         {
-            return View();
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
+            ViewBag.status = TempData["status"];
+            try
+            {
+                Bundle MedicationRequestBundle = client.Search<MedicationRequest>(null);
+                //var json = PatientSearchBundle.ToJson();
+                List<MedicationRequestViewModel> medicationRequestViewModels = new List<MedicationRequestViewModel>();
+                foreach (var entry in MedicationRequestBundle.Entry)
+                {
+                    medicationRequestViewModels.Add(new MedicationRequestViewModel().MedicationRequestViewModelMapping((MedicationRequest)entry.Resource));
+                }
+
+                return View(medicationRequestViewModels);
+            }
+            catch (Exception e)
+            {
+                ViewBag.Error = e.ToString();
+                return View();
+            }
+        }
+
+        [HttpPost]
+        public ActionResult GetRecord(string url)
+        {
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings);
+            try
+            {
+
+                Bundle MedicationRequestBundle = client.Search<MedicationRequest>(null);
+                //var json = PatientSearchBundle.ToJson();
+                List<MedicationRequestViewModel> medicationRequestViewModels = new List<MedicationRequestViewModel>();
+                foreach (var entry in MedicationRequestBundle.Entry)
+                {
+                    medicationRequestViewModels.Add(new MedicationRequestViewModel().MedicationRequestViewModelMapping((MedicationRequest)entry.Resource));
+                }
+
+                return PartialView("_GetRecord", medicationRequestViewModels);
+            }
+            catch (Exception e)
+            {
+                ViewBag.Error = e.ToString();
+                return PartialView("_GetRecord");
+            }
         }
 
         // GET: MedicationRequest/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(string id)
         {
             return View();
         }
@@ -28,29 +77,58 @@ namespace FHIR_Demo.Controllers
 
         // POST: MedicationRequest/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(MedicationRequestViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add insert logic here
+                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
+                try
+                {
+                    MedicationRequest medicationRequest = new MedicationRequest();
+                    medicationRequest.Status = (medicationrequestStatus)model.status;
+                    medicationRequest.Intent = (medicationRequestIntent)model.intent;
+                    medicationRequest.Category = model.categorys.ToList();
+                    if (model.medicationReference != null)
+                        medicationRequest.Medication = new ResourceReference(model.medicationReference);
+                    if (model.medicationCodeableConcept != null)
+                        medicationRequest.Medication = new CodeableConcept(model.medicationCodeableConcept.System, model.medicationCodeableConcept.Code, model.medicationCodeableConcept.Display);
+                    medicationRequest.Subject = new ResourceReference(model.subject);
+                    medicationRequest.AuthoredOn = model.authoredOn;
+                    foreach (var dosag in model.dosageInstruction) 
+                    {
+                        medicationRequest.DosageInstruction.Add(new Dosage 
+                        {
+                            Sequence = dosag.sequence,
+                            Text = dosag.text,
+                            Timing = new Timing 
+                            {
+                                Code = new CodeableConcept(dosag.timing_Code.System, dosag.timing_Code.Code, dosag.timing_Code.Display, null)
+                            },
+                            Route = new CodeableConcept(dosag.route.System, dosag.route.Code, dosag.route.Display, null)
+                        });
+                    }
 
-                return RedirectToAction("Index");
+                    var created_MedReq = client.Create<MedicationRequest>(medicationRequest);
+                    TempData["status"] = "Create succcess! Reference url:" + created_MedReq.Id;
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    return View(model);
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View(model);
         }
 
         // GET: MedicationRequest/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(string id)
         {
             return View();
         }
 
         // POST: MedicationRequest/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(string id, MedicationRequestViewModel model)
         {
             try
             {
@@ -65,14 +143,14 @@ namespace FHIR_Demo.Controllers
         }
 
         // GET: MedicationRequest/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(string id)
         {
             return View();
         }
 
         // POST: MedicationRequest/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public ActionResult Delete(string id, MedicationRequestViewModel model)
         {
             try
             {
