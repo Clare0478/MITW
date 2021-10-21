@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Hl7.Fhir.Model.MedicationRequest>
+﻿@model IEnumerable<FHIR_Demo.Models.MedicationRequestViewModel>
 
 @{
     ViewBag.Title = "Index";
@@ -60,25 +60,33 @@
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.Status)
+                                                    @Html.DisplayNameFor(model => model.status)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.Subject)
+                                                    @Html.DisplayNameFor(model => model.intent)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.BasedOn)
-                                                </th>
-                                                @*<th class="text-center align-middle" style="width:5%">
-                                                        @Html.DisplayNameFor(model => model.catogory)
-                                                    </th>*@
-                                                <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.AuthoredOn)
+                                                    @Html.DisplayNameFor(model => model.categorys)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.Medication)
+                                                    @Html.DisplayNameFor(model => model.medicationReference)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:5%">
+                                                    @Html.DisplayNameFor(model => model.medicationCodeableConcept)
                                                 </th>
+                                                <th class="text-center align-middle" style="width:5%">
+                                                    @Html.DisplayNameFor(model => model.subject)
+                                                </th>
+                                                <th class="text-center align-middle" style="width:5%">
+                                                    @Html.DisplayNameFor(model => model.authoredOn)
+                                                </th>
+                                                <th class="text-center align-middle">
+                                                    @Html.DisplayNameFor(model => model.dosageInstruction)
+                                                </th>
+                                                <th class="text-center align-middle">
+                                                    @Html.DisplayNameFor(model => model.dispenseRequest)
+                                                </th>
+
                                                 <th class="text-center align-middle" style="width:5%">Action</th>
                                             </tr>
                                         </thead>
@@ -87,25 +95,74 @@
                                             {
                                                 <tr>
                                                     <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.Status)
+                                                        @Html.DisplayFor(modelItem => item.status)
                                                     </td>
                                                     <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.Subject.Reference)
+                                                        @Html.DisplayFor(modelItem => item.intent)
                                                     </td>
                                                     <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.BasedOn)
-                                                    </td>
-                                                    @*<td class="text-center align-middle">
-                                                            @Html.DisplayFor(modelItem => item.catogory)
-                                                        </td>*@
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.AuthoredOn)
+                                                        @Html.DisplayFor(modelItem => item.categorys)
                                                     </td>
                                                     <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.Medication)
+                                                        @Html.DisplayFor(modelItem => item.medicationReference)
                                                     </td>
                                                     <td class="text-center align-middle">
+                                                        @if (item.medicationCodeableConcept != null)
+                                                        {
+                                                            @:Code：@Html.DisplayFor(modelItem => item.medicationCodeableConcept.Code)<br>
+                                                            @:Name：@Html.DisplayFor(modelItem => item.medicationCodeableConcept.Display)
+                                                        }
 
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        @Html.DisplayFor(modelItem => item.subject)
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        @Html.DisplayFor(modelItem => item.authoredOn)
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        <table class="table table-hover text-center align-middle align-content-center">
+                                                            <thead class="thead-light">
+                                                                <tr>
+                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dosageInstruction.First().sequence)</th>
+                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dosageInstruction.First().text)</th>
+                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dosageInstruction.First().timing_Code)</th>
+                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dosageInstruction.First().route)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var dosage in item.dosageInstruction)
+                                                                {
+                                                                    <tr>
+                                                                        <td class="text-center align-middle">@dosage.sequence</td>
+                                                                        <td class="text-center align-middle">@dosage.text</td>
+                                                                        <td class="text-center align-middle">@dosage.timing_Code</td>
+                                                                        <td class="text-center align-middle">@dosage.route</td>
+
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        <table class="table table-hover text-center align-middle align-content-center">
+                                                            <thead class="thead-light">
+                                                                <tr>
+                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dispenseRequest.validityPeriod_start)</th>
+                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dispenseRequest.validityPeriod_end)</th>
+                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dispenseRequest.quantity)</th>
+                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dispenseRequest.expectedSupplyDuration)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td class="text-center align-middle">@item.dispenseRequest.validityPeriod_start</td>
+                                                                    <td class="text-center align-middle">@item.dispenseRequest.validityPeriod_end</td>
+                                                                    <td class="text-center align-middle">@item.dispenseRequest.quantity.Value @item.dispenseRequest.quantity.Unit</td>
+                                                                    <td class="text-center align-middle">@item.dispenseRequest.expectedSupplyDuration.Value @item.dispenseRequest.expectedSupplyDuration.Unit</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
                                                     </td>
                                                     <td class="text-center align-middle">
                                                         @*@Html.ActionLink("Update", "Update", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })*@

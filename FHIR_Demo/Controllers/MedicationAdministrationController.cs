@@ -25,6 +25,7 @@ namespace FHIR_Demo.Controllers
                 List<MedicationAdministration> MedicationAdministrations = new List<MedicationAdministration>();
                 foreach (var entry in MedicationAdministrationBundle.Entry)
                 {
+                    var b = new FhirDateTime().TypeName;
                     var a = ((MedicationAdministration)entry.Resource).Effective;
                     MedicationAdministrations.Add((MedicationAdministration)entry.Resource);
                 }
@@ -39,7 +40,7 @@ namespace FHIR_Demo.Controllers
         }
 
         // GET: MedicationAdministration/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(string id)
         {
             return View();
         }
@@ -67,14 +68,14 @@ namespace FHIR_Demo.Controllers
         }
 
         // GET: MedicationAdministration/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(string id)
         {
             return View();
         }
 
         // POST: MedicationAdministration/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(string id, FormCollection collection)
         {
             try
             {
@@ -89,14 +90,14 @@ namespace FHIR_Demo.Controllers
         }
 
         // GET: MedicationAdministration/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(string id)
         {
             return View();
         }
 
         // POST: MedicationAdministration/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public ActionResult Delete(string id, FormCollection collection)
         {
             try
             {
