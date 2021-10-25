@@ -5,6 +5,7 @@ using Hl7.Fhir.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Mvc;
 using static Hl7.Fhir.Model.MedicationRequest;
@@ -14,11 +15,16 @@ namespace FHIR_Demo.Controllers
     public class MedicationRequestController : Controller
     {
         private CookiesController cookies = new CookiesController();
+        private HttpClientEventHandler handler = new HttpClientEventHandler();
 
         // GET: MedicationRequest
         public ActionResult Index()
         {
-            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
             ViewBag.status = TempData["status"];
             try
             {
@@ -40,9 +46,13 @@ namespace FHIR_Demo.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetRecord(string url)
+        public ActionResult GetRecord(string url, string token)
         {
-            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings);
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, token));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings, handler);
             try
             {
 
@@ -81,7 +91,11 @@ namespace FHIR_Demo.Controllers
         {
             if (ModelState.IsValid)
             {
-                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
                 try
                 {
                     MedicationRequest medicationRequest = new MedicationRequest();
