@@ -168,18 +168,22 @@ namespace FHIR_Demo.Models
                 if (observation.Category[0].Coding.Count > 0)
                     this.catogory = observation.Category[0].Coding[0].Display;
             this.subject = observation.Subject.Reference ?? "";
-            this.effectiveDateTime = DateTime.Parse(observation.Effective.ToString());
+            if (observation.Effective != null)
+                this.effectiveDateTime = DateTime.Parse(observation.Effective.ToString());
             this.Code_value = new Obser_Code_Value();
             if (observation.Code.Coding.Count > 0)
             {
                 this.Code_value.code_display = new ObservationCode().observationCode().
-                    Where(o => o.code.Contains(observation.Code.Coding[0].Code)).FirstOrDefault().chinese ?? observation.Code.Coding[0].Display ?? "";
+                    Where(o => o.code.Contains(observation.Code.Coding[0].Code)).FirstOrDefault().chinese ?? (observation.Code.Coding[0].Display ?? "");
             }
             //this.Code_value.code_display = observation.Code.Coding[0].Display ?? "";
-            if (observation.Value.GetType() == typeof(Quantity))
+            if(observation.Value != null) 
             {
-                this.Code_value.value = ((Quantity)observation.Value).Value;
-                this.Code_value.unit = ((Quantity)observation.Value).Unit;
+                if (observation.Value.GetType() == typeof(Quantity))
+                {
+                    this.Code_value.value = ((Quantity)observation.Value).Value;
+                    this.Code_value.unit = ((Quantity)observation.Value).Unit;
+                }
             }
             if (observation.Component.Count > 0)
             {

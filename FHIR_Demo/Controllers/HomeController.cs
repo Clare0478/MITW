@@ -24,7 +24,7 @@ namespace FHIR_Demo.Controllers
 
 
         [HttpPost]
-        public ActionResult Index(string url)
+        public ActionResult Index(string url, string search)
         {
             var settings = new FhirClientSettings
             {
@@ -34,8 +34,9 @@ namespace FHIR_Demo.Controllers
             };
 
             var client = new FhirClient(url, settings);
-            var q = new SearchParams().LimitTo(20);
-            Bundle results = client.Search<Patient>(q);
+            var q = SearchParams.FromUriParamList(UriParamList.FromQueryString(search)).LimitTo(20);
+            //q = 
+            Bundle results = client.Search<Observation>(q);
             return Content(results.ToJson());
         }
 
