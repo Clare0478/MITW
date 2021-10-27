@@ -49,8 +49,8 @@ namespace FHIR_Demo.Controllers
                 {
 
                     //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
-                    var created_obser = client.Create<>();
-                    TempData["status"] = "Create succcess! Reference url:" + created_obser.Id;
+                    //var created_obser = client.Create<>();
+                    //TempData["status"] = "Create succcess! Reference url:" + created_obser.Id;
                     return RedirectToAction("Index");
                 }
                 catch (Exception e)
