@@ -375,118 +375,94 @@ namespace FHIR_Demo.Models
     
     public class ImmunizationViewModel
     {
-        
-        public List<ProtocolAppliedComponent> ProtocolApplied { get; set; }
-        public string Id { get; set; }
-        
-        [Display(Name = "疫苗或預防措施")]
-        public List<Identifier> Identifier { get; set; }
+        public string Com_Id { get; set; }
 
         [Required]
+        [Display(Name = "類別")]
+        public string Type { get; set; }
+
+        [Required]
+        [Display(Name = "患者")]
+        public ResourceReference Patient { get; set; } = new ResourceReference();
+
+        [Required]
+        [Display(Name = "時間")]
+        [DataType(System.ComponentModel.DataAnnotations.DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm:ss}", ApplyFormatInEditMode = true)]
+        public DateTime Date { get; set; }
+
+        [Display(Name = "醫事機構")]
+        public ResourceReference Hospital { get; set; } = new ResourceReference();
+
+
+        public string Obs_Id { get; set; }
+
+        [Display(Name = "檢驗代碼與名稱")]
+        public CodeableConcept Obs_Coding { get; set; } = new CodeableConcept();
+
+        [Display(Name = "檢驗結果")]
+        public string value { get; set; }
+
+
+        public string Imm_Id { get; set; }
+
+        //[Display(Name = "疫苗或預防措施")]
+        //public List<Identifier> Imm_Identifier { get; set; }
+
+        //[Display(Name = "施打患者")]
+        //public ResourceReference Imm_Patient { get; set; } = new ResourceReference();
+
+        //[Required]
         [Display(Name = "疫苗代碼")]
-        public CodeableConcept VaccineCode { get; set; }
+        public CodeableConcept Imm_VaccineCode { get; set; } = new CodeableConcept();
 
-        [Required]
+        //[Required]
         [Display(Name = "製造商")]
-        public ResourceReference Manufacturer { get; set; }
+        public ResourceReference Imm_Manufacturer { get; set; } = new ResourceReference();
 
-        [Required]
+        //[Required]
         [Display(Name = "批號")]
-        public string LotNumber { get; set; }
+        public string Imm_LotNumber { get; set; }
 
-        [Required]
-        [Display(Name = "接種日期")]
-        public string Occurrence { get; set; }
+        //[Required]
+        //[Display(Name = "接種日期")]
+        //public string Imm_Occurrence { get; set; }
 
-        [Required]
-        [Display(Name = "注射單位")]
-        public ResourceReference Location { get; set; }
-        public List<PerformerComponent> Performer { get; set; }
+        //[Required]
+        //[Display(Name = "注射單位")]
+        //public ResourceReference Location { get; set; }
 
-        public ImmunizationViewModel ImmunizationViewModelMapping(Immunization Immunization)
-        {
-            this.Id = patient.Id;
-            if (patient.Name.Count > 0)
-                this.name = patient.Name[0].ToString();
-            this.birthDate = patient.BirthDate ?? "";
-            //switch (patient.Gender) 
-            //{
-            //    case AdministrativeGender.Male:
-            //        patientView.Gender = Gender.男;
-            //        break;
-            //    case AdministrativeGender.Female:
-            //        patientView.Gender = Gender.女;
-            //        break;
-            //    case AdministrativeGender.Other:
-            //        patientView.Gender = Gender.其他;
-            //        break;
-            //    default:
-            //        patientView.Gender = Gender.不知道;
-            //        break;
-            //}
-            this.Gender = patient.Gender != null ? (Gender)patient.Gender : Gender.不知道;
-            if (patient.Identifier.Count > 0)
-                this.identifier = patient.Identifier[0].Value;
-            if (patient.Telecom.Count > 0)
-            {
-                foreach (var telecom in patient.Telecom)
-                {
-                    if (telecom.System == ContactPoint.ContactPointSystem.Phone)
-                        this.telecom = telecom.Value;
-                    else if (telecom.System == ContactPoint.ContactPointSystem.Email)
-                        this.email = telecom.Value;
-                }
-            }
-            if (patient.Address.Count > 0)
-                this.address = patient.Address[0].Text;
-            if (patient.Contact.Count > 0)
-            {
-                if (patient.Contact[0].Name != null)
-                    this.contact_name = patient.Contact[0].Name.ToString();
-                if (patient.Contact[0].Relationship.Count > 0)
-                    if (patient.Contact[0].Relationship[0].Coding.Count > 0)
-                        this.contact_relationship = patient.Contact[0].Relationship[0].Coding[0].Code ?? "";
-                if (patient.Contact[0].Telecom.Count > 0)
-                    this.contact_telecom = patient.Contact[0].Telecom[0].Value;
-            }
-            if (patient.ManagingOrganization != null)
-                this.managingOrganization = patient.ManagingOrganization.Reference;
+        [Display(Name = "相關資訊")]
+        public List<ProtocolAppliedComponent> Imm_ProtocolApplied { get; set; } = new List<ProtocolAppliedComponent>() { new ProtocolAppliedComponent() };
 
-            if (patient.Deceased != null)
-                if (patient.Deceased.TypeName == "boolean")
-                    this.deceased = ((FhirBoolean)patient.Deceased).Value.ToString();
-                else if (patient.Deceased.TypeName == "dateTime")
-                    this.deceased = ((FhirDateTime)patient.Deceased).ToString();
-            return this;
-        }
+        [Display(Name = "醫事人員姓名")]
+        public string Imm_Performer_acotr_display { get; set; }
 
     }
     public class ProtocolAppliedComponent
     {
-        [Required]
-        [Display(Name = "疫苗系列名稱")]
-        public string Series { get; set; }
+        //[Required]
+        //[Display(Name = "疫苗系列名稱")]
+        //public string Series { get; set; }
 
-        [Display(Name = "誰負責發佈建議")] 
-        public ResourceReference Authority { get; set; }
+        //[Display(Name = "誰負責發佈建議")] 
+        //public ResourceReference Authority { get; set; }
 
-        [Display(Name = "疫苗可預防疾病的")] 
-        public List<CodeableConcept> TargetDisease { get; set; }
+        [Display(Name = "疫苗可預防疾病的")]
+        public List<CodeableConcept> TargetDisease { get; set; } = new List<CodeableConcept> { new CodeableConcept { Coding = new List<Coding> { new Coding { } } } };
 
-        [Required]
+        //[Required]
         [Display(Name = "劑別")]
         public string DoseNumber { get; set; }
         
-        [Display(Name = "免疫的推薦劑量數")]
+        [Display(Name = "疫苗的完整劑數")]
         public string SeriesDoses { get; set; }
     }
 
-    public class PerformerComponent
-    {
-        public CodeableConcept Function { get; set; }
-        
-        [Required]
-        [Display(Name = "注射單位")]
-        public ResourceReference Actor { get; set; }
-    }
+    //public class PerformerComponent
+    //{      
+    //    [Required]
+    //    [Display(Name = "注射單位")]
+    //    public ResourceReference Actor { get; set; }
+    //}
 }

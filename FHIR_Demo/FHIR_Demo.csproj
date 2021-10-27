@@ -150,6 +150,7 @@
     <Compile Include="Controllers\CookiesController.cs" />
     <Compile Include="Controllers\EMSController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ImmunizationController.cs" />
     <Compile Include="Controllers\MedicationAdministrationController.cs" />
     <Compile Include="Controllers\MedicationRequestController.cs" />
     <Compile Include="Controllers\MHBController.cs" />
@@ -303,6 +304,7 @@
     <Content Include="Views\EMS\Update.cshtml" />
     <Content Include="Views\EMS\_GetRecord.cshtml" />
     <Content Include="Views\EMS\CreateObservation.cshtml" />
+    <Content Include="Views\Immunization\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
