@@ -175,7 +175,8 @@ namespace FHIR_Demo.Models
                 if (observation.Category[0].Coding.Count > 0)
                     this.catogory = observation.Category[0].Coding[0].Display;
             this.subject = observation.Subject.Reference ?? "";
-            this.effectiveDateTime = DateTime.Parse(observation.Effective.ToString());
+            if (observation.Effective != null)
+                this.effectiveDateTime = DateTime.Parse(observation.Effective.ToString());
             this.Code_value = new Obser_Code_Value();
             if (observation.Code != null)
             {

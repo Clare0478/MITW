@@ -46,7 +46,7 @@ namespace FHIR_Demo.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetRecord(string url, string token)
+        public ActionResult GetRecord(string url, string token, string search)
         {
             handler.OnBeforeRequest += (sender, e) =>
             {
@@ -55,8 +55,9 @@ namespace FHIR_Demo.Controllers
             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings, handler);
             try
             {
+                var q = SearchParams.FromUriParamList(UriParamList.FromQueryString(search)).LimitTo(20);
 
-                Bundle MedicationAdministrationBundle = client.Search<MedicationAdministration>(null);
+                Bundle MedicationAdministrationBundle = client.Search<MedicationAdministration>(q);
                 //var json = PatientSearchBundle.ToJson();
                 //List<PatientViewModel> patientViewModels = new List<PatientViewModel>();
                 List<MedicationAdministrationViewModel> medicationAdministrationViewModels = new List<MedicationAdministrationViewModel>();

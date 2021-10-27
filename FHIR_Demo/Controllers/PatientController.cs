@@ -48,17 +48,19 @@ namespace FHIR_Demo.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetRecord(string url, string token)
+        public ActionResult GetRecord(string url, string token, string search)
         {
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, token));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings, handler);
+
             try
             {
-                handler.OnBeforeRequest += (sender, e) =>
-                {
-                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, token));
-                };
-                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings, handler);
+                var q = SearchParams.FromUriParamList(UriParamList.FromQueryString(search)).LimitTo(20);
 
-                Bundle PatientSearchBundle = client.Search<Patient>(null);
+                Bundle PatientSearchBundle = client.Search<Patient>(q);
                 var json = PatientSearchBundle.ToJson();
                 List<PatientViewModel> patientViewModels = new List<PatientViewModel>();
                 foreach (var entry in PatientSearchBundle.Entry)
