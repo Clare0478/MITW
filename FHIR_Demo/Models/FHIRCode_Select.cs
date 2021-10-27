@@ -26,6 +26,28 @@ namespace FHIR_Demo.Models
         未知 = 7
     }
 
+    public enum Imm_Status
+    {
+        //
+        // 摘要:
+        //     The event has now concluded. (system: http://hl7.org/fhir/event-status)
+        Completed = 0,
+        //
+        // 摘要:
+        //     This electronic record should never have existed, though it is possible that
+        //     real-world decisions were based on it. (If real-world activity has occurred,
+        //     the status should be "stopped" rather than "entered-in-error".). (system: http://hl7.org/fhir/event-status)
+        EnteredInError = 1,
+        //
+        // 摘要:
+        //     The event was terminated prior to any activity beyond preparation. I.e. The 'main'
+        //     activity has not yet begun. The boundary between preparatory and the 'main' activity
+        //     is context-specific. (system: http://hl7.org/fhir/event-status)
+        NotDone = 2
+    }
+
+
+
     public class ObservationCode
     {
         public string code { get; set; }
@@ -52,6 +74,7 @@ namespace FHIR_Demo.Models
             return obser_code_lists;
         }
     }
+
 
     //public enum ObservationCode
     //{

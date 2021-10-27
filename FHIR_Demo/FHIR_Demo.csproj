@@ -148,7 +148,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CookiesController.cs" />
+    <Compile Include="Controllers\EMSController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ImmunizationController.cs" />
     <Compile Include="Controllers\MedicationAdministrationController.cs" />
     <Compile Include="Controllers\MedicationRequestController.cs" />
     <Compile Include="Controllers\MHBController.cs" />
@@ -296,6 +298,13 @@
     <Content Include="Views\Observation\_GetRecord.cshtml" />
     <Content Include="Views\Observation\Create.cshtml" />
     <Content Include="Views\Observation\Details.cshtml" />
+    <Content Include="Views\EMS\Index.cshtml" />
+    <Content Include="Views\EMS\Create.cshtml" />
+    <Content Include="Views\EMS\Details.cshtml" />
+    <Content Include="Views\EMS\Update.cshtml" />
+    <Content Include="Views\EMS\_GetRecord.cshtml" />
+    <Content Include="Views\EMS\CreateObservation.cshtml" />
+    <Content Include="Views\Immunization\Create.cshtml" />
     <Content Include="Views\MedicationRequest\Index.cshtml" />
     <Content Include="Views\MedicationAdministration\Index.cshtml" />
     <Content Include="Views\MedicationRequest\Create.cshtml" />

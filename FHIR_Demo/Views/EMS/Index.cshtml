@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<FHIR_Demo.Models.PatientViewModel>
+@using FHIR_Demo.Models;
 @{
     ViewBag.Title = "Index";
     string FHIR_url = "";
@@ -6,12 +7,8 @@
     {
         FHIR_url = Request.Cookies["FHIR_url"].Value;
     }
-    string FHIR_Token = "";
-    if (Request.Cookies["FHIR_Token"] != null)
-    {
-        FHIR_Token = Request.Cookies["FHIR_Token"].Value;
-    }
 }
+
 <div class="row">
     <div class="col-sm-12">
         <div class="card">
@@ -24,10 +21,9 @@
                             UpdateTargetId = "ajaxTargetDiv",
                         }))
                         {
-                            <label for="exampleInputEmail1">FHIR Server URL & Token</label>
+                            <label for="exampleInputEmail1">FHIR Server URL</label>
                             <div class="input-group mb-3">
                                 <input type="url" name="url" class="form-control" placeholder="http://hapi.fhir.org/baseR4" value="@FHIR_url">
-                                <input type="text" name="token" class="form-control" placeholder="token" value="@FHIR_Token">
                                 <div class="input-group-append">
                                     <button type="Submit" class="btn btn-primary">Submit</button>
                                 </div>
@@ -36,12 +32,12 @@
                         <hr>
                         <div class="table-border-style" id="ajaxTargetDiv">
                             @*@if (!string.IsNullOrEmpty(ViewBag.AlertMessage))
-        {
-            <script type="text/javascript">
-               alert("@ViewBag.AlertMessage");
-               ViewBag.AlertMessage = "";
-            </script>
-        }*@
+                                {
+                                    <script type="text/javascript">
+                                       alert("@ViewBag.AlertMessage");
+                                       ViewBag.AlertMessage = "";
+                                    </script>
+                                }*@
                             @if (ViewBag.status != null)
                             {
                                 <div class="alert alert-success" role="alert">
@@ -56,11 +52,12 @@
                             }
                             else
                             {
-                      
+
                                 @*<pre class="json-card"></pre>*@
                                 <p>
                                     @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
                                 </p>
+                             
                                 <div class="table-responsive">
                                     <table class="table table-hover text-center align-middle align-content-center">
                                         <thead class="thead-dark">
@@ -91,6 +88,9 @@
                                                 </th>
                                                 <th class="text-center align-middle" style="width:5%">
                                                     @Html.DisplayNameFor(model => model.email)
+                                                </th>
+                                                <th class="text-center align-middle" style="width:5%">
+                                                    @Html.DisplayNameFor(model => model.deceased)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:15%">
                                                     @Html.DisplayNameFor(model => model.managingOrganization)
@@ -130,10 +130,13 @@
                                                         @Html.DisplayFor(modelItem => item.email)
                                                     </td>
                                                     <td class="text-center align-middle">
+                                                        @Html.DisplayFor(modelItem => item.deceased)
+                                                    </td>
+                                                    <td class="text-center align-middle">
                                                         @Html.DisplayFor(modelItem => item.managingOrganization)
                                                     </td>
                                                     <td class="text-center align-middle">
-                                                        @Html.ActionLink("Update", "Update", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })
+                                                        @*@Html.ActionLink("Update", "Update", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })*@
                                                         @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-secondary btn-sm" })
                                                         @*@Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })*@
                                                     </td>
