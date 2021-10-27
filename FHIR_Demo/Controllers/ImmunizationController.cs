@@ -1,7 +1,9 @@
 ﻿using Hl7.Fhir.Model;
+using Hl7.Fhir.Rest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Mvc;
 
@@ -9,6 +11,9 @@ namespace FHIR_Demo.Controllers
 {
     public class ImmunizationController : Controller
     {
+        private CookiesController cookies = new CookiesController();
+        private HttpClientEventHandler handler = new HttpClientEventHandler();
+
         // GET: Immunization
         public ActionResult Index()
         {
@@ -33,16 +38,27 @@ namespace FHIR_Demo.Controllers
         [HttpPost]
         public ActionResult Create(Immunization model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add insert logic here
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
+                try
+                {
 
-                return RedirectToAction("Index");
+                    //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
+                    var created_obser = client.Create<>();
+                    TempData["status"] = "Create succcess! Reference url:" + created_obser.Id;
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    return View(model);
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View(model);
         }
 
         // GET: Immunization/Edit/5
