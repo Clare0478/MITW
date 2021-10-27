@@ -71,7 +71,7 @@ namespace FHIR_Demo.Models
         [Required]
         [Display(Name = "組織")]
         public string managingOrganization { get; set; }
-        
+
         [Display(Name = "是否死亡")]
         public string deceased { get; set; }
 
@@ -125,7 +125,7 @@ namespace FHIR_Demo.Models
             }
             if (patient.ManagingOrganization != null)
                 this.managingOrganization = patient.ManagingOrganization.Reference;
-            
+
             if (patient.Deceased != null)
                 if (patient.Deceased.TypeName == "boolean")
                     this.deceased = ((FhirBoolean)patient.Deceased).Value.ToString();
@@ -186,7 +186,7 @@ namespace FHIR_Demo.Models
                         Where(o => o.code.Contains(observation.Code.Coding[0].Code)).FirstOrDefault().chinese ?? observation.Code.Coding[0].Display ?? "";
                 }
             }
-                //this.Code_value.code_display = observation.Code.Coding[0].Display ?? "";
+            //this.Code_value.code_display = observation.Code.Coding[0].Display ?? "";
             if (observation.Value.GetType() == typeof(Quantity))
             {
                 this.Code_value.value = ((Quantity)observation.Value).Value;
@@ -405,7 +405,7 @@ namespace FHIR_Demo.Models
         public string authoredOn { get; set; }
 
         [Display(Name = "用量說明")]
-        public MedReqDosage [] dosageInstruction { get; set; }
+        public MedReqDosage[] dosageInstruction { get; set; }
 
         [Display(Name = "配藥說明")]
         public DispenseRequest dispenseRequest { get; set; } = new DispenseRequest();
@@ -416,14 +416,14 @@ namespace FHIR_Demo.Models
             this.status = (medicationrequestStatus_Ch)medicationRequest.Status;
             this.intent = (medicationRequestIntent_Ch)medicationRequest.Intent;
             this.categorys = medicationRequest.Category.ToArray();
-            if (medicationRequest.Medication != null) 
+            if (medicationRequest.Medication != null)
             {
                 if (medicationRequest.Medication.TypeName == "Reference")
                     this.medicationReference = ((ResourceReference)medicationRequest.Medication).Url.ToString();
                 if (medicationRequest.Medication.TypeName == "CodeableConcept")
                     this.medicationCodeableConcept = ((CodeableConcept)medicationRequest.Medication).Coding[0];
             }
-            
+
             this.subject = medicationRequest.Subject.Url.ToString();
             this.authoredOn = medicationRequest.AuthoredOn;
             var MedReqDosage_list = new List<MedReqDosage>();
@@ -531,7 +531,7 @@ namespace FHIR_Demo.Models
         [Display(Name = "服藥開始日期")]
         [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public string effectivePeriod_start { get  => effectivePeriod.Start; set => effectivePeriod.Start = value; }
+        public string effectivePeriod_start { get => effectivePeriod.Start; set => effectivePeriod.Start = value; }
         //{
         //    get => ((Period)Effective).Start;
         //    set => ((Period)Effective).Start = value;
@@ -577,11 +577,11 @@ namespace FHIR_Demo.Models
                 if (medicationAdministration.Medication.TypeName == "CodeableConcept")
                     this.medicationCodeableConcept = ((CodeableConcept)medicationAdministration.Medication).Coding[0];
             }
-            
+
             this.subject = medicationAdministration.Subject.Url.ToString();
             if (medicationAdministration.Effective.TypeName == "Period")
                 this.effectivePeriod = (Period)medicationAdministration.Effective;
-            if (medicationAdministration.Effective.TypeName == "dateTime") 
+            if (medicationAdministration.Effective.TypeName == "dateTime")
             {
                 this.effectivePeriod.Start = medicationAdministration.Effective.ToString();
                 this.effectivePeriod.End = medicationAdministration.Effective.ToString();
@@ -591,8 +591,10 @@ namespace FHIR_Demo.Models
             if (medicationAdministration.Dosage != null)
                 this.dosage = medicationAdministration.Dosage;
 
+            return this;
+        }
     }
-    
+
     public class ImmunizationViewModel
     {
         public string Com_Id { get; set; }
@@ -659,6 +661,7 @@ namespace FHIR_Demo.Models
         public string Imm_Performer_acotr_display { get; set; }
 
     }
+
     public class ProtocolAppliedComponent
     {
         //[Required]
@@ -674,7 +677,7 @@ namespace FHIR_Demo.Models
         //[Required]
         [Display(Name = "劑別")]
         public string DoseNumber { get; set; }
-        
+
         [Display(Name = "疫苗的完整劑數")]
         public string SeriesDoses { get; set; }
     }
@@ -685,4 +688,5 @@ namespace FHIR_Demo.Models
     //    [Display(Name = "注射單位")]
     //    public ResourceReference Actor { get; set; }
     //}
+
 }
