@@ -29,8 +29,8 @@ namespace FHIR_Demo.Models
         public Gender Gender { get; set; }
 
         [Required]
-        [Display(Name = "身分證")]
-        [RegularExpression(@"^[A-Z]{1}[A-Da-d1289]{1}[0-9]{8}$", ErrorMessage = "身分證字號錯誤")]
+        [Display(Name = "身分證/病歷號")]
+        //[RegularExpression(@"^[A-Z]{1}[A-Da-d1289]{1}[0-9]{8}$", ErrorMessage = "身分證字號錯誤")]
         public string identifier { get; set; }
 
         //以後要可以多個
@@ -597,7 +597,7 @@ namespace FHIR_Demo.Models
 
     public class ImmunizationViewModel
     {
-        public string Com_Id { get; set; }
+        //public string Com_Id { get; set; }
 
         [Required]
         [Display(Name = "類別")]
@@ -617,7 +617,7 @@ namespace FHIR_Demo.Models
         public ResourceReference Hospital { get; set; } = new ResourceReference();
 
 
-        public string Obs_Id { get; set; }
+        //public string Obs_Id { get; set; }
 
         [Display(Name = "檢驗代碼與名稱")]
         public CodeableConcept Obs_Coding { get; set; } = new CodeableConcept();
@@ -626,7 +626,7 @@ namespace FHIR_Demo.Models
         public string value { get; set; }
 
 
-        public string Imm_Id { get; set; }
+        //public string Imm_Id { get; set; }
 
         //[Display(Name = "疫苗或預防措施")]
         //public List<Identifier> Imm_Identifier { get; set; }
@@ -655,7 +655,7 @@ namespace FHIR_Demo.Models
         //public ResourceReference Location { get; set; }
 
         [Display(Name = "相關資訊")]
-        public List<ProtocolAppliedComponent> Imm_ProtocolApplied { get; set; } = new List<ProtocolAppliedComponent>() { new ProtocolAppliedComponent() };
+        public ProtocolAppliedComponent Imm_ProtocolApplied { get; set; } =  new ProtocolAppliedComponent() ;
 
         [Display(Name = "醫事人員姓名")]
         public string Imm_Performer_acotr_display { get; set; }

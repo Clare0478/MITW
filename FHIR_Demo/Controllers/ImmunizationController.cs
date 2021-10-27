@@ -1,4 +1,5 @@
-﻿using Hl7.Fhir.Model;
+﻿using FHIR_Demo.Models;
+using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
 using System;
 using System.Collections.Generic;
@@ -17,8 +18,6 @@ namespace FHIR_Demo.Controllers
         // GET: Immunization
         public ActionResult Index()
         {
-            Immunization a = new Immunization();
-            Composition composition = new Composition();
             return View();
         }
 
@@ -36,7 +35,7 @@ namespace FHIR_Demo.Controllers
 
         // POST: Immunization/Create
         [HttpPost]
-        public ActionResult Create(Immunization model)
+        public ActionResult Create(ImmunizationViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -47,7 +46,129 @@ namespace FHIR_Demo.Controllers
                 FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
                 try
                 {
+                    var patient = client.Read<Patient>(model.Patient.Reference);
+                    var organization = client.Read<Organization>(model.Hospital.Reference);
 
+                    Composition composition = new Composition();
+                    Observation observation = new Observation();
+                    Immunization immunization = new Immunization();
+                    Bundle bundle = new Bundle();
+
+                    bundle.Identifier = new Identifier
+                    {
+                        System = "https://www.vghtc.gov.tw",
+                        Value = $"TW.{organization.Identifier[0].Value}.{new FhirDateTime(model.Date).Value}",
+                        Period = new Period(new FhirDateTime(model.Date), new FhirDateTime(model.Date.AddYears(5)))
+                    };
+                    bundle.Type = Bundle.BundleType.Document;
+                    bundle.Timestamp = model.Date;
+                    bundle.Entry = new List<Bundle.EntryComponent>();
+
+                    composition.Status = CompositionStatus.Final;
+                    composition.Type = new CodeableConcept
+                    {
+                        Coding = new List<Coding>
+                        {
+                            new Coding
+                            {
+                                System = "http://loinc.org"
+                            }
+                        }
+                    };
+
+                    composition.Subject = model.Patient;
+                    composition.Date = new FhirDateTime(model.Date).Value;
+                    composition.Author = new List<ResourceReference>
+                    {
+                        model.Hospital
+                    };
+
+                    composition.Section = new List<Composition.SectionComponent> {
+                        new Composition.SectionComponent
+                        {
+                            Entry = new List<ResourceReference>
+                            {
+                                new ResourceReference($"{organization.TypeName}/{organization.Id}"),
+                                new ResourceReference($"{patient.TypeName}/{patient.Id}")
+                            }
+                        }
+                    };
+
+                    if (model.Type == "疫苗")
+                    {
+                        composition.Type.Coding[0].Code = "82593-5";
+                        composition.Type.Coding[0].Display = "Immunization summary report";
+
+                        immunization.Patient = model.Patient;
+                        immunization.VaccineCode = model.Imm_VaccineCode;
+                        immunization.Manufacturer = model.Imm_Manufacturer;
+                        immunization.ProtocolApplied = new List<Immunization.ProtocolAppliedComponent>
+                        {
+                            new Immunization.ProtocolAppliedComponent
+                            {
+                                TargetDisease = model.Imm_ProtocolApplied.TargetDisease,
+                                DoseNumber = new FhirString(model.Imm_ProtocolApplied.DoseNumber),
+                                SeriesDoses = new FhirString(model.Imm_ProtocolApplied.SeriesDoses)
+
+                            }
+                        };
+                        immunization.LotNumber = model.Imm_LotNumber;
+                        immunization.Occurrence = new FhirDateTime(model.Date);
+                        immunization.Performer = new List<Immunization.PerformerComponent>
+                        {
+                            new Immunization.PerformerComponent
+                            {
+                                Actor = model.Hospital
+                            },
+                            new Immunization.PerformerComponent
+                            {
+                                Actor = new ResourceReference
+                                {
+                                    Display = model.Imm_Performer_acotr_display
+                                }
+                            }
+                        };
+
+                        //新增疫苗資料
+                        immunization = client.Create<Immunization>(immunization);
+
+                        composition.Section[0].Entry.Add(new ResourceReference($"{immunization.TypeName}/{immunization.Id}"));
+                    }
+                    else
+                    {
+                        if (model.Type == "PCR")
+                        {
+                            composition.Type.Coding[0].Code = "LP6464-4";
+                            composition.Type.Coding[0].Display = "Nucleic acid amplification with probe detection";
+                        }
+                        else
+                        {
+                            composition.Type.Coding[0].Code = "LP217198-3";
+                            composition.Type.Coding[0].Display = "Rapid immunoassay";
+                        }
+                        observation.Subject = model.Patient;
+                        observation.Code = model.Obs_Coding;
+                        observation.Effective = new Period(new FhirDateTime(model.Date), new FhirDateTime(model.Date));
+                        observation.Value = new FhirBoolean(bool.Parse(model.value));
+                        observation.Performer = new List<ResourceReference> { model.Hospital };
+
+                        //新增檢驗資料
+                        observation = client.Create<Observation>(observation);
+                        composition.Section[0].Entry.Add(new ResourceReference($"{observation.TypeName}/{observation.Id}"));
+                    }
+
+                    //新增Composition資料
+                    composition = client.Create<Composition>(composition);
+                    //bundle新增
+                    bundle.Entry.Add(new Bundle.EntryComponent { FullUrl = composition.ResourceIdentity().WithoutVersion().ToString(), Resource = composition });
+                    bundle.Entry.Add(new Bundle.EntryComponent { FullUrl = organization.ResourceIdentity().WithoutVersion().ToString(), Resource = organization });
+                    bundle.Entry.Add(new Bundle.EntryComponent { FullUrl = patient.ResourceIdentity().WithoutVersion().ToString(), Resource = patient });
+                    if (model.Type == "疫苗")
+                        bundle.Entry.Add(new Bundle.EntryComponent { FullUrl = immunization.ResourceIdentity().WithoutVersion().ToString(), Resource = immunization });
+                    else
+                        bundle.Entry.Add(new Bundle.EntryComponent { FullUrl = observation.ResourceIdentity().WithoutVersion().ToString(), Resource = observation });
+
+                    bundle = client.Create<Bundle>(bundle);
                     //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
                     //var created_obser = client.Create<>();
                     //TempData["status"] = "Create succcess! Reference url:" + created_obser.Id;

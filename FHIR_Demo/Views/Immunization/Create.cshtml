@@ -32,7 +32,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Patient, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Patient.Reference, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Patient.Reference, new { htmlAttributes = new { @class = "form-control" , @Value = "Patient/1837405" } })
                 @Html.ValidationMessageFor(model => model.Patient, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -40,7 +40,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Hospital, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Hospital.Reference, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Hospital.Reference, new { htmlAttributes = new { @class = "form-control" , @Value = "Organization/1837423" } })
                 @Html.ValidationMessageFor(model => model.Hospital, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -48,7 +48,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+                @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local", @Value = "2021-10-22 10:10:10" } })
                 @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -61,11 +61,11 @@
                     <div class="col-md-10">
                         @*@Html.EditorFor(model => model.Obs_Coding.Coding[0], new { htmlAttributes = new { @class = "form-control" } })*@
                         <div class="editor-label"><label for="Obs_Coding_Coding_0__System">System</label></div>
-                        <div class="editor-field"><input class="form-control text-box single-line" id="Obs_Coding_Coding_0__System" name="Obs_Coding.Coding[0].System" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Obs_Coding.Coding[0].System" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="Obs_Coding_Coding_0__System" name="Obs_Coding.Coding[0].System" type="text" value="http://loinc.org"> <span class="field-validation-valid" data-valmsg-for="Obs_Coding.Coding[0].System" data-valmsg-replace="true"></span></div>
                         <div class="editor-label"><label for="Obs_Coding_Coding_0__Code">Code</label></div>
-                        <div class="editor-field"><input class="form-control text-box single-line" id="Obs_Coding_Coding_0__Code" name="Obs_Coding.Coding[0].Code" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Obs_Coding.Coding[0].Code" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="Obs_Coding_Coding_0__Code" name="Obs_Coding.Coding[0].Code" type="text" value="LP6464-4"> <span class="field-validation-valid" data-valmsg-for="Obs_Coding.Coding[0].Code" data-valmsg-replace="true"></span></div>
                         <div class="editor-label"><label for="Obs_Coding_Coding_0__Display">Display</label></div>
-                        <div class="editor-field"><input class="form-control text-box single-line" id="Obs_Coding_Coding_0__Display" name="Obs_Coding.Coding[0].Display" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Obs_Coding.Coding[0].Display" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="Obs_Coding_Coding_0__Display" name="Obs_Coding.Coding[0].Display" type="text" value="Nucleic acid amplification with probe detection"> <span class="field-validation-valid" data-valmsg-for="Obs_Coding.Coding[0].Display" data-valmsg-replace="true"></span></div>
                         @Html.ValidationMessageFor(model => model.Obs_Coding, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -92,11 +92,11 @@
                 <div class="col-md-10">
                     <div class="col-md-10">
                         <div class="editor-label"><label for="Imm_VaccineCode_Coding_0__System">System</label></div>
-                        <div class="editor-field"><input class="form-control text-box single-line" id="Imm_VaccineCode_Coding_0__System" name="Imm_VaccineCode.Coding[0].System" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Imm_VaccineCode.Coding[0].System" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="Imm_VaccineCode_Coding_0__System" name="Imm_VaccineCode.Coding[0].System" type="text" value="https://www.cdc.gov.tw"> <span class="field-validation-valid" data-valmsg-for="Imm_VaccineCode.Coding[0].System" data-valmsg-replace="true"></span></div>
                         <div class="editor-label"><label for="Imm_VaccineCode_Coding_0__Code">Code</label></div>
-                        <div class="editor-field"><input class="form-control text-box single-line" id="Imm_VaccineCode_Coding_0__Code" name="Imm_VaccineCode.Coding[0].Code" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Imm_VaccineCode.Coding[0].Code" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="Imm_VaccineCode_Coding_0__Code" name="Imm_VaccineCode.Coding[0].Code" type="text" value="CoV_AZ"> <span class="field-validation-valid" data-valmsg-for="Imm_VaccineCode.Coding[0].Code" data-valmsg-replace="true"></span></div>
                         <div class="editor-label"><label for="Imm_VaccineCode_Coding_0__Display">Display</label></div>
-                        <div class="editor-field"><input class="form-control text-box single-line" id="Imm_VaccineCode_Coding_0__Display" name="Imm_VaccineCode.Coding[0].Display" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Imm_VaccineCode.Coding[0].Display" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="Imm_VaccineCode_Coding_0__Display" name="Imm_VaccineCode.Coding[0].Display" type="text" value="AZD1222"> <span class="field-validation-valid" data-valmsg-for="Imm_VaccineCode.Coding[0].Display" data-valmsg-replace="true"></span></div>
                     </div>
                     @Html.ValidationMessageFor(model => model.Imm_VaccineCode, "", new { @class = "text-danger" })
                 </div>
@@ -105,7 +105,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Imm_Manufacturer, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Imm_Manufacturer.Display, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.Imm_Manufacturer.Display, new { htmlAttributes = new { @class = "form-control" ,@Value = "AstraZeneca" } })
                     @Html.ValidationMessageFor(model => model.Imm_Manufacturer, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -113,7 +113,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Imm_LotNumber, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Imm_LotNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.Imm_LotNumber, new { htmlAttributes = new { @class = "form-control" ,@Value = "CTMAV510-CDC" } })
                     @Html.ValidationMessageFor(model => model.Imm_LotNumber, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -128,16 +128,16 @@
                         <label class="control-label" for="Imm_ProtocolApplied_0__TargetDisease">疫苗可預防疾病的</label>
                         <div class="col-md-10">
                             <div class="editor-label"><label for="Imm_ProtocolApplied_0__TargetDisease_0__Coding_0__System">System</label></div>
-                            <div class="editor-field"><input class="form-control text-box single-line" id="Imm_ProtocolApplied_0__TargetDisease_0__Coding_0__System" name="Imm_ProtocolApplied[0].TargetDisease[0].Coding[0].System" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Imm_ProtocolApplied[0].TargetDisease[0].Coding[0].System" data-valmsg-replace="true"></span></div>
+                            <div class="editor-field"><input class="form-control text-box single-line" id="Imm_ProtocolApplied_0__TargetDisease_0__Coding_0__System" name="Imm_ProtocolApplied.TargetDisease[0].Coding[0].System" type="text" value="http://hl7.org/fhir/sid/icd-10"> <span class="field-validation-valid" data-valmsg-for="Imm_ProtocolApplied.TargetDisease[0].Coding[0].System" data-valmsg-replace="true"></span></div>
                             <div class="editor-label"><label for="Imm_ProtocolApplied_0__TargetDisease_0__Coding_0__Code">Code</label></div>
-                            <div class="editor-field"><input class="form-control text-box single-line" id="Imm_ProtocolApplied_0__TargetDisease_0__Coding_0__Code" name="Imm_ProtocolApplied[0].TargetDisease[0].Coding[0].Code" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Imm_ProtocolApplied[0].TargetDisease[0].Coding[0].Code" data-valmsg-replace="true"></span></div>
+                            <div class="editor-field"><input class="form-control text-box single-line" id="Imm_ProtocolApplied_0__TargetDisease_0__Coding_0__Code" name="Imm_ProtocolApplied.TargetDisease[0].Coding[0].Code" type="text" value="U07.1"> <span class="field-validation-valid" data-valmsg-for="Imm_ProtocolApplied.TargetDisease[0].Coding[0].Code" data-valmsg-replace="true"></span></div>
                             <div class="editor-label"><label for="Imm_ProtocolApplied_0__TargetDisease_0__Coding_0__Display">Display</label></div>
-                            <div class="editor-field"><input class="form-control text-box single-line" id="Imm_ProtocolApplied_0__TargetDisease_0__Coding_0__Display" name="Imm_ProtocolApplied[0].TargetDisease[0].Coding[0].Display" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Imm_ProtocolApplied[0].TargetDisease[0].Coding[0].Display" data-valmsg-replace="true"></span></div>
+                            <div class="editor-field"><input class="form-control text-box single-line" id="Imm_ProtocolApplied_0__TargetDisease_0__Coding_0__Display" name="Imm_ProtocolApplied.TargetDisease[0].Coding[0].Display" type="text" value="COVID-19, virus identified"> <span class="field-validation-valid" data-valmsg-for="Imm_ProtocolApplied.TargetDisease[0].Coding[0].Display" data-valmsg-replace="true"></span></div>
                         </div>
                         <div class="editor-label"><label for="Imm_ProtocolApplied_0__DoseNumber">劑別</label></div>
-                        <div class="editor-field"><input class="form-control text-box single-line" id="Imm_ProtocolApplied_0__DoseNumber" name="Imm_ProtocolApplied[0].DoseNumber" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Imm_ProtocolApplied[0].DoseNumber" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="Imm_ProtocolApplied_0__DoseNumber" name="Imm_ProtocolApplied.DoseNumber" type="text" value="1"> <span class="field-validation-valid" data-valmsg-for="Imm_ProtocolApplied.DoseNumber" data-valmsg-replace="true"></span></div>
                         <div class="editor-label"><label for="Imm_ProtocolApplied_0__SeriesDoses">疫苗的完整劑數</label></div>
-                        <div class="editor-field"><input class="form-control text-box single-line" id="Imm_ProtocolApplied_0__SeriesDoses" name="Imm_ProtocolApplied[0].SeriesDoses" type="text" value=""> <span class="field-validation-valid" data-valmsg-for="Imm_ProtocolApplied[0].SeriesDoses" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="Imm_ProtocolApplied_0__SeriesDoses" name="Imm_ProtocolApplied.SeriesDoses" type="text" value="2"> <span class="field-validation-valid" data-valmsg-for="Imm_ProtocolApplied.SeriesDoses" data-valmsg-replace="true"></span></div>
                     </div>
 
                     @Html.ValidationMessageFor(model => model.Imm_ProtocolApplied, "", new { @class = "text-danger" })
@@ -147,7 +147,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Imm_Performer_acotr_display, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Imm_Performer_acotr_display, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.Imm_Performer_acotr_display, new { htmlAttributes = new { @class = "form-control" , @Value = "蒙古大夫"} })
                     @Html.ValidationMessageFor(model => model.Imm_Performer_acotr_display, "", new { @class = "text-danger" })
                 </div>
             </div>
