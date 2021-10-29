@@ -34,19 +34,15 @@ namespace FHIR_Demo.Models
         public string identifier { get; set; }
 
         //以後要可以多個
-        [Required]
         [Display(Name = "連絡電話")]
         public string telecom { get; set; }
 
-        [Required]
         [Display(Name = "聯絡地址")]
         public string address { get; set; }
 
-        [Required]
         [Display(Name = "緊急聯絡人")]
         public string contact_name { get; set; }
 
-        [Required]
         [Display(Name = "關係")]
         public string contact_relationship { get; set; }
         /*
@@ -59,16 +55,13 @@ namespace FHIR_Demo.Models
          * U	Unknown 未知	
          */
 
-        [Required]
         [Display(Name = "聯絡人聯絡電話")]
         public string contact_telecom { get; set; }
 
-        [Required]
         [EmailAddress]
         [Display(Name = "電子信箱")]
         public string email { get; set; }
 
-        [Required]
         [Display(Name = "組織")]
         public string managingOrganization { get; set; }
 
@@ -182,15 +175,19 @@ namespace FHIR_Demo.Models
             {
                 if (observation.Code.Coding.Count > 0)
                 {
-                    this.Code_value.code_display = new ObservationCode().observationCode().
-                        Where(o => o.code.Contains(observation.Code.Coding[0].Code)).FirstOrDefault().chinese ?? observation.Code.Coding[0].Display ?? "";
+                    //this.Code_value.code_display = new ObservationCode().observationCode().
+                    //    Where(o => o.code.Contains(observation.Code.Coding[0].Code)).FirstOrDefault()?.chinese ?? observation.Code.Coding[0].Display ?? "";
+                    this.Code_value.code_display = observation.Code.Coding[0].Code ?? observation.Code.Coding[0].Display ?? "";
                 }
             }
             //this.Code_value.code_display = observation.Code.Coding[0].Display ?? "";
-            if (observation.Value.GetType() == typeof(Quantity))
+            if (observation.Value != null) 
             {
-                this.Code_value.value = ((Quantity)observation.Value).Value;
-                this.Code_value.unit = ((Quantity)observation.Value).Unit;
+                if (observation.Value.GetType() == typeof(Quantity))
+                {
+                    this.Code_value.value = ((Quantity)observation.Value).Value;
+                    this.Code_value.unit = ((Quantity)observation.Value).Unit;
+                }
             }
             if (observation.Component.Count > 0)
             {
@@ -198,13 +195,21 @@ namespace FHIR_Demo.Models
                 for (var i = 0; i < observation.Component.Count; i++)
                 {
                     this.component[i] = new Obser_Code_Value();
-                    if (observation.Component[i].Code.Coding.Count > 0)
-                        this.component[i].code_display = new ObservationCode().observationCode().
-                             Where(o => o.code.Contains(observation.Component[i].Code.Coding[0].Code)).FirstOrDefault().chinese ?? observation.Component[i].Code.Coding[0].Display ?? "";
-                    if (observation.Component[i].Value.GetType() == typeof(Quantity))
+                    if (observation.Component[i].Code.Coding.Count > 0) 
                     {
-                        this.component[i].value = ((Quantity)observation.Component[i].Value).Value;
-                        this.component[i].unit = ((Quantity)observation.Component[i].Value).Unit;
+                        //this.component[i].code_display = new ObservationCode().observationCode().
+                        //    Where(o => o.code.Contains(observation.Component[i].Code.Coding[0].Code)).FirstOrDefault()?.chinese ?? observation.Component[i].Code.Coding[0].Display ?? "";
+
+                        this.component[i].code_display = observation.Component[i].Code.Coding[0].Code ?? observation.Component[i].Code.Coding[0].Display ?? "";
+
+                    }
+                    if (observation.Component[i].Value != null) 
+                    {
+                        if (observation.Component[i].Value.GetType() == typeof(Quantity))
+                        {
+                            this.component[i].value = ((Quantity)observation.Component[i].Value).Value;
+                            this.component[i].unit = ((Quantity)observation.Component[i].Value).Unit;
+                        }
                     }
                 }
             }
@@ -215,7 +220,6 @@ namespace FHIR_Demo.Models
 
     public class Obser_Code_Value
     {
-        [Required]
         [Display(Name = "檢驗項目")]
         public string code_display { get; set; }
 

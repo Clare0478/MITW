@@ -184,10 +184,10 @@ namespace FHIR_Demo.Controllers
                 case "體指百分率":
                     observationCategory_Value = new ObservationCategory_Value().Percentage_of_body_fat_Measured(obser_Code_Value.value);
                     break;
-                case "握力_右手測力計":
+                case "握力":
                     observationCategory_Value = new ObservationCategory_Value().Grip_strength_Hand_right_Dynamometer(obser_Code_Value.value);
                     break;
-                case "動脈血氧飽和度":
+                case "SPO2血氧飽和濃度":
                     observationCategory_Value = new ObservationCategory_Value().Oxygen_saturation_in_Arterial_blood_by_Pulse_oximetry(obser_Code_Value.value);
                     break;
                 case "心率":
