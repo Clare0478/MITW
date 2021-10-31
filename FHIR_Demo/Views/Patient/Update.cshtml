@@ -149,8 +149,8 @@
         $("#zipcode3").twzipcode({
             @if (!(String.IsNullOrEmpty(Model.city)) && !(String.IsNullOrEmpty(Model.town)))
             {
-                @:countySel: @Model.city, // 指定城市 select name
-                @:districtSel: @Model.town, // 指定地區 select
+                @:countySel: "@Model.city", // 指定城市 select name
+                @:districtSel: "@Model.town", // 指定地區 select
             }
             zipcodeIntoDistrict: true,
             css: ["city form-control", "town form-control"],

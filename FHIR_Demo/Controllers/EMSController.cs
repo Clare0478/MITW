@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Mvc;
 
@@ -15,11 +16,16 @@ namespace FHIR_Demo.Controllers
     public class EMSController : Controller
     {
         private CookiesController cookies = new CookiesController();
+        private HttpClientEventHandler handler = new HttpClientEventHandler();
 
         // GET: EMS
         public ActionResult Index(PatientViewModel model)
         {
-            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
             ViewBag.status = TempData["status"];
             try
             {
@@ -49,7 +55,11 @@ namespace FHIR_Demo.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings);
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
             try
             {
                 var pat_A = client.Read<Patient>("Patient/" + id);
