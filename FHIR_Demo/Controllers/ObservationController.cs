@@ -28,7 +28,8 @@ namespace FHIR_Demo.Controllers
             ViewBag.status = TempData["status"];
             try
             {
-                Bundle ObservationBundle = client.Search<Observation>(null);
+                var q = new SearchParams().LimitTo(20);
+                Bundle ObservationBundle = client.Search<Observation>(q);
                 //var json = PatientSearchBundle.ToJson();
                 List<ObservationViewModel> observationViewModels = new List<ObservationViewModel>();
                 foreach (var entry in ObservationBundle.Entry)

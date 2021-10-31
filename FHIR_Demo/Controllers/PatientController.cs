@@ -154,7 +154,15 @@ namespace FHIR_Demo.Controllers
                         {
                             new Address
                             {
-                                Text = model.address
+                                Text = model.zipcode+" 臺灣省"+model.city+model.town+model.address,
+                                Country = "臺灣省",
+                                PostalCode = model.zipcode,
+                                City = model.city,
+                                District = model.town,
+                                Line = new List<string>
+                                {
+                                    model.address
+                                }
                             }
                         },
                         Contact = new List<Patient.ContactComponent>
@@ -284,7 +292,15 @@ namespace FHIR_Demo.Controllers
                     {
                         new Address
                         {
-                            Text = model.address
+                            Text = model.zipcode+" 臺灣省"+model.city+model.town+model.address,
+                            Country = "臺灣省",
+                            PostalCode = model.zipcode,
+                            City = model.city,
+                            District = model.town,
+                            Line = new List<string>
+                            {
+                                model.address
+                            }
                         }
                     };
                     pat_A.Contact = new List<Patient.ContactComponent>

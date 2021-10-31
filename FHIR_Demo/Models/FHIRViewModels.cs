@@ -39,6 +39,9 @@ namespace FHIR_Demo.Models
 
         [Display(Name = "聯絡地址")]
         public string address { get; set; }
+        public string city { get; set; }
+        public string town { get; set; }
+        public string zipcode { get; set; }
 
         [Display(Name = "緊急聯絡人")]
         public string contact_name { get; set; }
@@ -104,8 +107,16 @@ namespace FHIR_Demo.Models
                         this.email = telecom.Value;
                 }
             }
-            if (patient.Address.Count > 0)
-                this.address = patient.Address[0].Text;
+            if (patient.Address.Count > 0) 
+            {
+                if (patient.Address[0].Line.Count() > 0) 
+                    this.address = patient.Address[0].Line.First();
+                else 
+                    this.address = patient.Address[0].Text;
+                this.city = patient.Address[0].City;
+                this.town = patient.Address[0].District;
+                this.zipcode = patient.Address[0].PostalCode;
+            }
             if (patient.Contact.Count > 0)
             {
                 if (patient.Contact[0].Name != null)
