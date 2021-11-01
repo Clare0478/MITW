@@ -162,7 +162,7 @@ namespace FHIR_Demo.Controllers
             return View(model);
         }
 
-        private ObservationCategory_Value ObservationCode_Select_Switch(Obser_Code_Value obser_Code_Value, Obser_Code_Value[] obser_component)
+        public ObservationCategory_Value ObservationCode_Select_Switch(Obser_Code_Value obser_Code_Value, Obser_Code_Value[] obser_component)
         {
             ObservationCategory_Value observationCategory_Value = new ObservationCategory_Value();
             switch (obser_Code_Value.code_display)
@@ -205,6 +205,19 @@ namespace FHIR_Demo.Controllers
                     decimal? Distolic = obser_component.Where(o => o.code_display == "舒張壓").FirstOrDefault().value; //舒張壓
                     observationCategory_Value = new ObservationCategory_Value().Blood_Pressure_Panel(Systolic, Distolic);
                     break;
+                case "心率(EMS)":
+                    observationCategory_Value = new ObservationCategory_Value().Heart_Rate_EMS(obser_Code_Value.value);
+                    break;
+                case "呼吸頻率(EMS)":
+                    observationCategory_Value = new ObservationCategory_Value().Respiratory_Rate_EMS(obser_Code_Value.value);
+                    break;
+                case "微血管充填時間(EMS)":
+                    observationCategory_Value = new ObservationCategory_Value().Capillary_refill_of_Nail_bed_EMS(obser_Code_Value.value);
+                    break;
+                case "血糖(EMS)":
+                    observationCategory_Value = new ObservationCategory_Value().Glucose_in_Blood_EMS(obser_Code_Value.value);
+                    break;
+
                     //default: 保持原來資料
             }
 

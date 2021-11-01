@@ -133,11 +133,13 @@ namespace FHIR_Demo.Controllers
                                 }
                             }
                         },
+                        Active = true,
                         BirthDate = model.birthDate,
                         Gender = (AdministrativeGender)model.Gender,
                         Identifier = new List<Identifier> {
                             new Identifier
                             {
+                                System = "https://www.dicom.org.tw/cs/identityCardNumber_tw",
                                 Value = model.identifier
                             }
                         },
@@ -276,6 +278,7 @@ namespace FHIR_Demo.Controllers
                     pat_A.Identifier = new List<Identifier> {
                         new Identifier
                         {
+                            System = "https://www.dicom.org.tw/cs/identityCardNumber_tw",
                             Value = model.identifier
                         }
                     };
@@ -321,7 +324,7 @@ namespace FHIR_Demo.Controllers
                             },
                             Relationship = new List<CodeableConcept>
                             {
-                                new CodeableConcept("http://terminology.hl7.org/CodeSystem/v2-0131", "N", model.contact_relationship)
+                                new CodeableConcept("http://hl7.org/fhir/ValueSet/patient-contactrelationship", "N", model.contact_relationship)
                             },
                             Telecom = new List<ContactPoint>
                             {

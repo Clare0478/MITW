@@ -70,6 +70,10 @@ namespace FHIR_Demo.Models
                 new ObservationCode {code = "35094-2", display = "Blood Pressure Panel", chinese = "血壓"},
                 new ObservationCode {code = "8480-6", display = "Systolic Blood Pressure", chinese = "收縮壓"},
                 new ObservationCode {code = "8462-4", display = "Distolic Blood Pressure", chinese = "舒張壓"},
+                new ObservationCode {code = "8889-8", display = "Heart rate by Pulse oximeter", chinese = "心率(EMS)"},
+                new ObservationCode {code = "9279-1", display = "Respiratory Rate", chinese = "呼吸頻率(EMS)"},
+                new ObservationCode {code = "44963-7", display = "Capillary refill [Time] of Nail bed", chinese = "微血管充填時間(EMS)"},
+                new ObservationCode {code = "2339-0", display = "Glucose [Mass/volume] in Blood", chinese = "血糖(EMS)"},
             };
             return obser_code_lists;
         }

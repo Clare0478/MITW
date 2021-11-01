@@ -67,6 +67,9 @@
                     <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Patient" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
                         <a href="@Url.Action("Index", "Patient")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">Patient DashBroad</span></a>
                     </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "EMS" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                        <a href="@Url.Action("Index", "EMS")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">EMS DashBroad</span></a>
+                    </li>
                     <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Observation" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
                         <a href="@Url.Action("Index", "Observation")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-clipboard"></i></span><span class="pcoded-mtext">Observation DashBroad</span></a>
                     </li>
@@ -75,6 +78,9 @@
                     </li>
                     <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "MedicationAdministration" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
                         <a href="@Url.Action("Index", "MedicationAdministration")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">MedicationAdministration DashBroad</span></a>
+                    </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Immunization" & ViewContext.RouteData.Values["Action"].ToString() == "Create" ? "active" : "")">
+                        <a href="@Url.Action("Create", "Immunization")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Immunization DashBroad</span></a>
                     </li>
 
                 </ul>

@@ -7,6 +7,11 @@
     {
         FHIR_url = Request.Cookies["FHIR_url"].Value;
     }
+    string FHIR_Token = "";
+    if (Request.Cookies["FHIR_Token"] != null)
+    {
+        FHIR_Token = Request.Cookies["FHIR_Token"].Value;
+    }
 }
 
 <div class="row">
@@ -21,9 +26,14 @@
                             UpdateTargetId = "ajaxTargetDiv",
                         }))
                         {
-                            <label for="exampleInputEmail1">FHIR Server URL</label>
+                            <label for="exampleInputEmail1">FHIR Server URL & Token</label>
                             <div class="input-group mb-3">
                                 <input type="url" name="url" class="form-control" placeholder="http://hapi.fhir.org/baseR4" value="@FHIR_url">
+                                <input type="text" name="token" class="form-control" placeholder="token" value="@FHIR_Token">
+                            </div>
+                            <label for="exampleInputEmail1">REST搜尋</label>
+                            <div class="input-group mb-3">
+                                <input type="text" name="search" class="form-control" placeholder="search" value="">
                                 <div class="input-group-append">
                                     <button type="Submit" class="btn btn-primary">Submit</button>
                                 </div>
@@ -57,7 +67,7 @@
                                 <p>
                                     @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
                                 </p>
-                             
+
                                 <div class="table-responsive">
                                     <table class="table table-hover text-center align-middle align-content-center">
                                         <thead class="thead-dark">

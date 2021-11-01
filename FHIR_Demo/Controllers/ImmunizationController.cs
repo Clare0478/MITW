@@ -30,6 +30,8 @@ namespace FHIR_Demo.Controllers
         // GET: Immunization/Create
         public ActionResult Create()
         {
+            ViewBag.status = TempData["status"];
+            ViewBag.Error = TempData["Error"];
             return View();
         }
 
@@ -171,11 +173,12 @@ namespace FHIR_Demo.Controllers
                     bundle = client.Create<Bundle>(bundle);
                     //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
                     //var created_obser = client.Create<>();
-                    //TempData["status"] = "Create succcess! Reference url:" + created_obser.Id;
-                    return RedirectToAction("Index");
+                    TempData["status"] = "Create succcess! Reference url:" + bundle.Id;
+                    return View();
                 }
                 catch (Exception e)
                 {
+                    TempData["Error"] = e.Message;
                     return View(model);
                 }
             }

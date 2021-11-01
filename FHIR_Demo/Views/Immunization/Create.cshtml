@@ -5,6 +5,18 @@
 }
 
 <h2>Create</h2>
+@if (ViewBag.status != null)
+{
+    <div class="alert alert-success" role="alert">
+        @ViewBag.status
+    </div>
+}
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.Error
+    </div>
+}
 
 @using (Html.BeginForm())
 {
@@ -32,7 +44,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Patient, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Patient.Reference, new { htmlAttributes = new { @class = "form-control" , @Value = "Patient/1837405" } })
+                @Html.EditorFor(model => model.Patient.Reference, new { htmlAttributes = new { @class = "form-control", @Value = "Patient/1837405" } })
                 @Html.ValidationMessageFor(model => model.Patient, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -40,7 +52,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Hospital, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Hospital.Reference, new { htmlAttributes = new { @class = "form-control" , @Value = "Organization/1837423" } })
+                @Html.EditorFor(model => model.Hospital.Reference, new { htmlAttributes = new { @class = "form-control", @Value = "Organization/1837423" } })
                 @Html.ValidationMessageFor(model => model.Hospital, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -105,7 +117,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Imm_Manufacturer, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Imm_Manufacturer.Display, new { htmlAttributes = new { @class = "form-control" ,@Value = "AstraZeneca" } })
+                    @Html.EditorFor(model => model.Imm_Manufacturer.Display, new { htmlAttributes = new { @class = "form-control", @Value = "AstraZeneca" } })
                     @Html.ValidationMessageFor(model => model.Imm_Manufacturer, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -113,7 +125,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Imm_LotNumber, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Imm_LotNumber, new { htmlAttributes = new { @class = "form-control" ,@Value = "CTMAV510-CDC" } })
+                    @Html.EditorFor(model => model.Imm_LotNumber, new { htmlAttributes = new { @class = "form-control", @Value = "CTMAV510-CDC" } })
                     @Html.ValidationMessageFor(model => model.Imm_LotNumber, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -147,7 +159,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Imm_Performer_acotr_display, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Imm_Performer_acotr_display, new { htmlAttributes = new { @class = "form-control" , @Value = "蒙古大夫"} })
+                    @Html.EditorFor(model => model.Imm_Performer_acotr_display, new { htmlAttributes = new { @class = "form-control", @Value = "蒙古大夫" } })
                     @Html.ValidationMessageFor(model => model.Imm_Performer_acotr_display, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -170,13 +182,12 @@
 {
     <script type="text/javascript">
         $(".Observation, .Immunization").hide();
-        $("select[name='Type']").change(function() {
+        $("select[name='Type']").change(function () {
             if ($(this).val() == "疫苗") {
                 $(".Observation").hide();
                 $(".Immunization").show();
             }
-            else
-            {
+            else {
                 $(".Observation").show();
                 $(".Immunization").hide();
             }

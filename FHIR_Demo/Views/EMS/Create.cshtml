@@ -19,7 +19,7 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.name, new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.name, new { htmlAttributes = new { @class = "form-control"} })
+                                    @Html.EditorFor(model => model.name, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.name, "", new { @class = "text-danger" })
                                 </div>
                             </div>
@@ -27,7 +27,7 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.birthDate, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.birthDate, new { htmlAttributes = new { @class = "form-control"} })
+                                    @Html.EditorFor(model => model.birthDate, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.birthDate, "", new { @class = "text-danger" })
                                 </div>
                             </div>
@@ -44,7 +44,7 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.identifier, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.identifier, new { htmlAttributes = new { @class = "form-control"} })
+                                    @Html.EditorFor(model => model.identifier, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.identifier, "", new { @class = "text-danger" })
                                 </div>
                             </div>
@@ -52,7 +52,7 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.telecom, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.telecom, new { htmlAttributes = new { @class = "form-control"} })
+                                    @Html.EditorFor(model => model.telecom, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.telecom, "", new { @class = "text-danger" })
                                 </div>
                             </div>
@@ -60,15 +60,22 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.address, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control"} })
-                                    @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })
+                                    @*@Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control", @Value = "明德路365號" } })
+                                        @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })*@
+                                    <div id="zipcode3">
+                                        <div data-role="county">
+                                        </div>
+                                        <div data-role="district">
+                                        </div>
+                                    </div>
+                                    @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "address form-control", @Value = "明德路365號" } })
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 @Html.LabelFor(model => model.contact_name, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.contact_name, new { htmlAttributes = new { @class = "form-control"} })
+                                    @Html.EditorFor(model => model.contact_name, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.contact_name, "", new { @class = "text-danger" })
                                 </div>
                             </div>
@@ -76,7 +83,7 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.contact_relationship, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.contact_relationship, new { htmlAttributes = new { @class = "form-control"} })
+                                    @Html.EditorFor(model => model.contact_relationship, new { htmlAttributes = new { @class = "form-control", @Value = "通報人" } })
                                     @Html.ValidationMessageFor(model => model.contact_relationship, "", new { @class = "text-danger" })
                                 </div>
                             </div>
@@ -84,7 +91,7 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.contact_telecom, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.contact_telecom, new { htmlAttributes = new { @class = "form-control"} })
+                                    @Html.EditorFor(model => model.contact_telecom, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.contact_telecom, "", new { @class = "text-danger" })
                                 </div>
                             </div>
@@ -92,7 +99,7 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.email, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control"} })
+                                    @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
                                 </div>
                             </div>
@@ -103,7 +110,7 @@
                                     @Html.DropDownListFor(model => model.managingOrganization,
                                         new List<SelectListItem>
                                         {
-                                            new SelectListItem { Text = "MITW.Forldntifie", Value = "Organization/MITW.Forldntifie" },
+                                            new SelectListItem { Text = "MITW.ForIdentifier", Value = "Organization/MITW.ForIdentifier" },
                                             new SelectListItem { Text = "MITW.ForContact", Value = "Organization/MITW.ForContact" },
                                             new SelectListItem { Text = "MITW.ForPHR", Value = "Organization/MITW.ForPHR" },
                                             new SelectListItem { Text = "MITW.ForEMS", Value = "Organization/MITW.ForEMS" },
@@ -144,3 +151,16 @@
         @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-info" })
     </div>
 </div>
+
+@section scripts
+{
+    <script src="~/Scripts/jquery.twzipcode.min.js"></script>
+    <script>
+        $("#zipcode3").twzipcode({
+            "zipcodeIntoDistrict": true,
+            "css": ["city form-control", "town form-control"],
+            "countyName": "city", // 指定城市 select name
+            "districtName": "town" // 指定地區 select name
+        });
+    </script>
+}

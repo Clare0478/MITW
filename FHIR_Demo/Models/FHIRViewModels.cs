@@ -123,7 +123,8 @@ namespace FHIR_Demo.Models
                     this.contact_name = patient.Contact[0].Name.ToString();
                 if (patient.Contact[0].Relationship.Count > 0)
                     if (patient.Contact[0].Relationship[0].Coding.Count > 0)
-                        this.contact_relationship = patient.Contact[0].Relationship[0].Coding[0].Code ?? "";
+                        //this.contact_relationship = patient.Contact[0].Relationship[0].Coding[0].Code ?? "";
+                        this.contact_relationship = patient.Contact[0].Relationship[0].Text ?? "";
                 if (patient.Contact[0].Telecom.Count > 0)
                     this.contact_telecom = patient.Contact[0].Telecom[0].Value;
             }
@@ -384,6 +385,12 @@ namespace FHIR_Demo.Models
         public ObservationCategory_Value Blood_Pressure_Panel(decimal? value_Systolic, decimal? value_Distolic) { return ObservationCategory_Data("vital-signs", "Vital Signs", "35094-2", "Blood Pressure Panel", "mmHg", "8480-6", "Systolic Blood Pressure", value_Systolic, "8462-4", "Distolic Blood Pressure", value_Distolic); }
         public ObservationCategory_Value Systolic_Blood_Pressure(decimal? value_Systolic) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8480-6", "Systolic Blood Pressure", "mmHg", value_Systolic); }
         public ObservationCategory_Value Distolic_Blood_Pressure(decimal? value_Distolic) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8462-4", "Distolic Blood Pressure", "mmHg", value_Distolic); }
+
+        public ObservationCategory_Value Heart_Rate_EMS(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8889-8", "Heart rate by Pulse oximeter", "{beats}/min", value); }
+        public ObservationCategory_Value Respiratory_Rate_EMS(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "9279-1", "Respiratory Rate", "{breaths}/min;{counts/min}", value); }
+        public ObservationCategory_Value Capillary_refill_of_Nail_bed_EMS(decimal? value) { return ObservationCategory_Data("exam", "Exam", "44963-7", "Capillary refill [Time] of Nail bed", "s", value); }
+        public ObservationCategory_Value Glucose_in_Blood_EMS(decimal? value) { return ObservationCategory_Data("laboratory", "Laboratory", "2339-0", "Glucose [Mass/volume] in Blood", "mg/dL", value); }
+
 
     }
 
