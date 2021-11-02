@@ -4,6 +4,7 @@ using Hl7.Fhir.Rest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Mvc;
@@ -113,7 +114,7 @@ namespace FHIR_Demo.Controllers
                     medicationAdministration.Dosage = model.dosage;
 
                     var created_MedAdmin = client.Create<MedicationAdministration>(medicationAdministration);
-                    TempData["status"] = "Create succcess! Reference url:"+ created_MedAdmin.Id;
+                    TempData["status"] = "Create succcess! Reference url:" + created_MedAdmin.Id;
                     return RedirectToAction("Index");
                 }
                 catch
@@ -124,26 +125,66 @@ namespace FHIR_Demo.Controllers
             return View(model);
         }
 
-        // GET: MedicationAdministration/Edit/5
-        public ActionResult Edit(string id)
+        // GET: MedicationAdministration/Update/5
+        public ActionResult Update(string id)
         {
-            return View();
-        }
-
-        // POST: MedicationAdministration/Edit/5
-        [HttpPost]
-        public ActionResult Edit(string id, MedicationAdministrationViewModel model)
-        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
             try
             {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
+                var med = client.Read<MedicationAdministration>("MedicationAdministration/" + id);
+                var med_view = new MedicationAdministrationViewModel().MedicationAdministrationViewModelMapping(med);
+                return View(med_view);
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+        }
+
+        // POST: MedicationAdministration/Update/5
+        [HttpPost]
+        public ActionResult Update(string id, MedicationAdministrationViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
+
+                try
+                {
+                    var medicationAdministration = client.Read<MedicationAdministration>("MedicationAdministration/" + id);
+                    medicationAdministration.Status = (MedicationAdministrationStatusCodes)model.status;
+                    if (model.medicationReference != null)
+                        medicationAdministration.Medication = new ResourceReference(model.medicationReference);
+                    if (model.medicationCodeableConcept != null)
+                        medicationAdministration.Medication = new CodeableConcept(model.medicationCodeableConcept.System, model.medicationCodeableConcept.Code, model.medicationCodeableConcept.Display);
+                    medicationAdministration.Subject = new ResourceReference(model.subject);
+                    medicationAdministration.Effective = model.effectivePeriod;
+                    medicationAdministration.Request = new ResourceReference(model.request);
+                    medicationAdministration.Dosage = model.dosage;
+
+                    var created_MedAdmin = client.Create<MedicationAdministration>(medicationAdministration);
+                    TempData["status"] = "Create Update! Reference url:" + created_MedAdmin.Id;
+
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return View(model);
+                }
+            }
+            return View(model);
         }
 
         //// GET: MedicationAdministration/Delete/5

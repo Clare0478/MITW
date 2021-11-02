@@ -204,6 +204,8 @@ namespace FHIR_Demo.Controllers
                         }
                     };
 
+                    patient.Meta.Profile = new List<string> { model.meta }; 
+
                     var conditions = new SearchParams();
                     conditions.Add("identifier", model.identifier);
 

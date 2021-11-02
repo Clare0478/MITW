@@ -112,16 +112,16 @@ else
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="text-center align-middle">@item.dispenseRequest.validityPeriod_start</td>
-                                        <td class="text-center align-middle">@item.dispenseRequest.validityPeriod_end</td>
-                                        <td class="text-center align-middle">@item.dispenseRequest.quantity.Value @item.dispenseRequest.quantity.Unit</td>
-                                        <td class="text-center align-middle">@item.dispenseRequest.expectedSupplyDuration.Value @item.dispenseRequest.expectedSupplyDuration.Unit</td>
+                                        <td class="text-center align-middle">@if(item.dispenseRequest.validityPeriod_start!=null) { @item.dispenseRequest.validityPeriod_start }</td>
+                                        <td class="text-center align-middle">@if (item.dispenseRequest.validityPeriod_end != null) { @item.dispenseRequest.validityPeriod_end }</td>
+                                        <td class="text-center align-middle">@if (item.dispenseRequest.quantity != null) { @item.dispenseRequest.quantity.Value @item.dispenseRequest.quantity.Unit }</td>
+                                        <td class="text-center align-middle">@if (item.dispenseRequest.expectedSupplyDuration != null) { @item.dispenseRequest.expectedSupplyDuration.Value @item.dispenseRequest.expectedSupplyDuration.Unit }</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </td>
                         <td class="text-center align-middle">
-                            @*@Html.ActionLink("Update", "Update", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })*@
+                            @Html.ActionLink("Update", "Update", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })
                             @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-secondary btn-sm" })
                             @*@Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })*@
                         </td>

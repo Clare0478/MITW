@@ -313,6 +313,10 @@
     <Content Include="Views\MedicationRequest\_GetRecord.cshtml" />
     <Content Include="Views\MedicationAdministration\_GetRecord.cshtml" />
     <Content Include="Views\MedicationAdministration\Create.cshtml" />
+    <Content Include="Views\MedicationRequest\Update.cshtml" />
+    <Content Include="Views\MedicationAdministration\Update.cshtml" />
+    <Content Include="Views\Immunization\Index.cshtml" />
+    <Content Include="Views\Immunization\_GetRecord.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

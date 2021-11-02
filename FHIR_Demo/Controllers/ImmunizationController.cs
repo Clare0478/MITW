@@ -18,7 +18,60 @@ namespace FHIR_Demo.Controllers
         // GET: Immunization
         public ActionResult Index()
         {
-            return View();
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
+            ViewBag.status = TempData["status"];
+            ViewBag.Error = TempData["Error"];
+            try
+            {
+                Bundle ImmunizationSearchBundle = client.Search<Immunization>(null);
+                //var json = PatientSearchBundle.ToJson();
+                List<ImmunizationViewModel> immunizationViews = new List<ImmunizationViewModel>();
+                foreach (var entry in ImmunizationSearchBundle.Entry)
+                {
+                    immunizationViews.Add(new ImmunizationViewModel().ImmunizationViewModelMapping((Immunization)entry.Resource));
+                }
+
+                return View(immunizationViews);
+            }
+            catch (Exception e)
+            {
+                ViewBag.Error = e.ToString();
+                return View();
+            }
+
+        }
+
+        [HttpPost]
+        public ActionResult GetRecord(string url, string token, string search)
+        {
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, token));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings, handler);
+            try
+            {
+                var q = SearchParams.FromUriParamList(UriParamList.FromQueryString(search)).LimitTo(20);
+
+                Bundle ImmunizationSearchBundle = client.Search<Immunization>(null);
+                //var json = PatientSearchBundle.ToJson();
+                List<ImmunizationViewModel> immunizationViews = new List<ImmunizationViewModel>();
+                foreach (var entry in ImmunizationSearchBundle.Entry)
+                {
+                    immunizationViews.Add(new ImmunizationViewModel().ImmunizationViewModelMapping((Immunization)entry.Resource));
+                }
+
+                return PartialView("_GetRecord", immunizationViews);
+            }
+            catch (Exception e)
+            {
+                ViewBag.Error = e.ToString();
+                return PartialView("_GetRecord");
+            }
         }
 
         // GET: Immunization/Details/5
@@ -111,7 +164,6 @@ namespace FHIR_Demo.Controllers
                                 TargetDisease = model.Imm_ProtocolApplied.TargetDisease,
                                 DoseNumber = new FhirString(model.Imm_ProtocolApplied.DoseNumber),
                                 SeriesDoses = new FhirString(model.Imm_ProtocolApplied.SeriesDoses)
-
                             }
                         };
                         immunization.LotNumber = model.Imm_LotNumber;
@@ -148,6 +200,7 @@ namespace FHIR_Demo.Controllers
                             composition.Type.Coding[0].Code = "LP217198-3";
                             composition.Type.Coding[0].Display = "Rapid immunoassay";
                         }
+                        observation.Status = ObservationStatus.Final;
                         observation.Subject = model.Patient;
                         observation.Code = model.Obs_Coding;
                         observation.Effective = new Period(new FhirDateTime(model.Date), new FhirDateTime(model.Date));
@@ -174,11 +227,13 @@ namespace FHIR_Demo.Controllers
                     //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
                     //var created_obser = client.Create<>();
                     TempData["status"] = "Create succcess! Reference url:" + bundle.Id;
-                    return View();
+                    ViewBag.status = TempData["status"];
+                    return RedirectToAction("Index");
                 }
                 catch (Exception e)
                 {
                     TempData["Error"] = e.Message;
+                    ViewBag.Error = TempData["Error"];
                     return View(model);
                 }
             }
@@ -186,14 +241,14 @@ namespace FHIR_Demo.Controllers
         }
 
         // GET: Immunization/Edit/5
-        public ActionResult Edit(string id)
+        public ActionResult Update(string id)
         {
             return View();
         }
 
         // POST: Immunization/Edit/5
         [HttpPost]
-        public ActionResult Edit(string id, FormCollection collection)
+        public ActionResult Update(string id, FormCollection collection)
         {
             try
             {

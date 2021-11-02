@@ -14,6 +14,8 @@ namespace FHIR_Demo.Models
     {
         public string Id { get; set; }
 
+        public string meta { get; set; }
+
         [Required]
         [Display(Name = "姓名")]
         public string name { get; set; }
@@ -145,6 +147,8 @@ namespace FHIR_Demo.Models
     {
         public string Id { get; set; }
 
+        public string meta { get; set; }
+
         [Required]
         [Display(Name = "狀態")]
         public Obser_Status status { get; set; }
@@ -180,8 +184,10 @@ namespace FHIR_Demo.Models
                 if (observation.Category[0].Coding.Count > 0)
                     this.catogory = observation.Category[0].Coding[0].Display;
             this.subject = observation.Subject.Reference ?? "";
-            if (observation.Effective != null)
+            if (observation.Effective.TypeName != "Period")
                 this.effectiveDateTime = DateTime.Parse(observation.Effective.ToString());
+            else
+                this.effectiveDateTime = DateTime.Parse(((Period)observation.Effective).Start);
             this.Code_value = new Obser_Code_Value();
             if (observation.Code != null)
             {
@@ -620,6 +626,7 @@ namespace FHIR_Demo.Models
     public class ImmunizationViewModel
     {
         //public string Com_Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         [Display(Name = "類別")]
@@ -681,6 +688,32 @@ namespace FHIR_Demo.Models
 
         [Display(Name = "醫事人員姓名")]
         public string Imm_Performer_acotr_display { get; set; }
+
+        public ImmunizationViewModel ImmunizationViewModelMapping(Immunization immunization) 
+        {
+            this.Patient = immunization.Patient;
+            this.Imm_VaccineCode = immunization.VaccineCode;
+            this.Imm_Manufacturer = immunization.Manufacturer;
+            if (immunization.ProtocolApplied.Count > 0) 
+            {
+                this.Imm_ProtocolApplied.TargetDisease = immunization.ProtocolApplied[0].TargetDisease;
+                this.Imm_ProtocolApplied.DoseNumber = immunization.ProtocolApplied[0].DoseNumber.ToString();
+                this.Imm_ProtocolApplied.SeriesDoses = immunization.ProtocolApplied[0].SeriesDoses.ToString();
+            }
+            this.Imm_LotNumber = immunization.LotNumber;
+            this.Date = DateTime.Parse(immunization.Occurrence.ToString());
+            if (immunization.Performer.Count > 0) 
+            {
+                foreach(var performer in immunization.Performer) 
+                {
+                    if (performer.Actor.Display == null)
+                        this.Hospital = performer.Actor;
+                    else
+                        this.Imm_Performer_acotr_display = performer.Actor.Display;
+                }
+            }
+            return this;
+        }
 
     }
 

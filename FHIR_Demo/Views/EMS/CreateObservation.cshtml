@@ -18,6 +18,13 @@
                             @Html.AntiForgeryToken()
 
                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.meta, new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.meta, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.meta, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
 
                             <div class="form-group">
                                 @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -39,15 +46,15 @@
                             @*<div class="form-group">
                                 @Html.LabelFor(model => model.subject, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">*@
-                                    @Html.Hidden("subject", "Patient/"+Subject_ID)
-                                    @*@Html.ValidationMessageFor(model => model.subject, "", new { @class = "text-danger" })
-                                </div>
-                            </div>*@
+                            @Html.Hidden("subject", "Patient/" + Subject_ID)
+                            @*@Html.ValidationMessageFor(model => model.subject, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>*@
 
                             <div class="form-group">
                                 @Html.LabelFor(model => model.effectiveDateTime, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.effectiveDateTime, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local"} })
+                                    @Html.EditorFor(model => model.effectiveDateTime, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
                                     @Html.ValidationMessageFor(model => model.effectiveDateTime, "", new { @class = "text-danger" })
                                 </div>
                             </div>
@@ -102,21 +109,21 @@
                             @*<div class="compoment"></div>*@
 
                             @*<div class="com_demo" disabled hidden>
-                                <div class="form-group component_item">
-                                    @Html.LabelFor(model => model.component[0].code_display, htmlAttributes: new { @class = "control-label col-md-2" })
-                                    <div class="col-md-10">
-                                        @Html.DropDownList("component[].code_display", (SelectList)ViewBag.ObserCode_Select, "請選擇", new { @class = "form-control" })
-                                        @Html.ValidationMessage("component[].code_display", "", new { @class = "text-danger" })
+                                    <div class="form-group component_item">
+                                        @Html.LabelFor(model => model.component[0].code_display, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.DropDownList("component[].code_display", (SelectList)ViewBag.ObserCode_Select, "請選擇", new { @class = "form-control" })
+                                            @Html.ValidationMessage("component[].code_display", "", new { @class = "text-danger" })
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group component_item">
-                                    @Html.LabelFor(model => model.Code_value.value, htmlAttributes: new { @class = "control-label col-md-2" })
-                                    <div class="col-md-10">
-                                        @Html.EditorFor(model => model.Code_value.value, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Code_value.code_display, "", new { @class = "text-danger" })
+                                    <div class="form-group component_item">
+                                        @Html.LabelFor(model => model.Code_value.value, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.EditorFor(model => model.Code_value.value, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Code_value.code_display, "", new { @class = "text-danger" })
+                                        </div>
                                     </div>
-                                </div>
-                            </div>*@
+                                </div>*@
 
                             <div class="form-group">
                                 <div class="col-md-offset-2 col-md-10">
@@ -142,9 +149,8 @@
         $(function () {
             select_option();
         });
-        
-        function select_option()
-        {
+
+        function select_option() {
             //console.log($("select[name = 'Code_value.code_display']").val());
             if ($("select[name = 'Code_value.code_display']").val() == "") {
                 $(".form-horizontal").find(".code_value, .component_item").hide();
@@ -157,8 +163,7 @@
                 $(".form-horizontal").find(".component_item").hide();
                 $(".form-horizontal").find(".component_item *").prop("disabled", true);
             }
-            else
-            {
+            else {
                 $(".form-horizontal").find(".code_value *").prop("disabled", true);
                 $(".form-horizontal").find(".code_value").hide();
 
@@ -171,7 +176,7 @@
             select_option();
         });
 
-        //$(".form-horizontal").find(".com_demo").children().clone().appendTo(".compoment");
-        //$(".form-horizontal").find(".component_item").show();
+            //$(".form-horizontal").find(".com_demo").children().clone().appendTo(".compoment");
+            //$(".form-horizontal").find(".component_item").show();
     </script>
 }

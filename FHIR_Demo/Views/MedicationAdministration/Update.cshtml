@@ -2,10 +2,10 @@
 @using FHIR_Demo.Models;
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Update";
 }
 
-<h2>Create</h2>
+<h2>Update</h2>
 
 @using (Html.BeginForm())
 {
@@ -15,6 +15,8 @@
         <h4>MedicationAdministrationViewModel</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
         <div class="form-group">
             @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label" })
             <div class="col-md-10">
@@ -27,7 +29,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.medicationReference, htmlAttributes: new { @class = "control-label" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.medicationReference, new { htmlAttributes = new { @class = "form-control" , @Value = "Medication/8736" } })
+                @Html.EditorFor(model => model.medicationReference, new { htmlAttributes = new { @class = "form-control", @Value = "Medication/8736" } })
                 @Html.ValidationMessageFor(model => model.medicationReference, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -43,7 +45,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.effectivePeriod_start, htmlAttributes: new { @class = "control-label" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.effectivePeriod_start, new { htmlAttributes = new { @class = "form-control", @Value ="2021-09-14"} })
+                @Html.EditorFor(model => model.effectivePeriod_start, new { htmlAttributes = new { @class = "form-control", @Value = "2021-09-14" } })
                 @Html.ValidationMessageFor(model => model.effectivePeriod_start, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -78,13 +80,13 @@
                     <div class="form-group">
                         <label class="control-label" for="dosage_Dose">Dose</label>
                         <div class="editor-label"><label for="dosage_Dose_Value">Value</label></div>
-                        <div class="editor-field"><input value="1" class="form-control text-box single-line" data-val="true" data-val-number="欄位 Value 必須是數字。" id="dosage_Dose_Value" name="dosage.Dose.Value" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.Value" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input value="@Model.dosage.Dose.Value" class="form-control text-box single-line" data-val="true" data-val-number="欄位 Value 必須是數字。" id="dosage_Dose_Value" name="dosage.Dose.Value" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.Value" data-valmsg-replace="true"></span></div>
                         <div class="editor-label"><label for="dosage_Dose_Unit">Unit</label></div>
-                        <div class="editor-field"><input value="TAB" class="form-control text-box single-line" id="dosage_Dose_Unit" name="dosage.Dose.Unit" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.Unit" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input value="@Model.dosage.Dose.Unit" class="form-control text-box single-line" id="dosage_Dose_Unit" name="dosage.Dose.Unit" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.Unit" data-valmsg-replace="true"></span></div>
                         <div class="editor-label"><label for="dosage_Dose_System">System</label></div>
-                        <div class="editor-field"><input value="http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm" class="form-control text-box single-line" id="dosage_Dose_System" name="dosage.Dose.System" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.System" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input value="@Model.dosage.Dose.System" class="form-control text-box single-line" id="dosage_Dose_System" name="dosage.Dose.System" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.System" data-valmsg-replace="true"></span></div>
                         <div class="editor-label"><label for="dosage_Dose_Code">Code</label></div>
-                        <div class="editor-field"><input value="TAB" class="form-control text-box single-line" id="dosage_Dose_Code" name="dosage.Dose.Code" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.Code" data-valmsg-replace="true"></span></div>
+                        <div class="editor-field"><input value="@Model.dosage.Dose.Code" class="form-control text-box single-line" id="dosage_Dose_Code" name="dosage.Dose.Code" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.Code" data-valmsg-replace="true"></span></div>
                         <span class="field-validation-valid text-danger" data-valmsg-for="dosage.Dose" data-valmsg-replace="true"></span>
                     </div>
                 </div>
@@ -93,7 +95,7 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Update" class="btn btn-default" />
             </div>
         </div>
     </div>

@@ -79,8 +79,8 @@
                     <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "MedicationAdministration" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
                         <a href="@Url.Action("Index", "MedicationAdministration")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">MedicationAdministration DashBroad</span></a>
                     </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Immunization" & ViewContext.RouteData.Values["Action"].ToString() == "Create" ? "active" : "")">
-                        <a href="@Url.Action("Create", "Immunization")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Immunization DashBroad</span></a>
+                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Immunization" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Immunization")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Immunization DashBroad</span></a>
                     </li>
 
                 </ul>

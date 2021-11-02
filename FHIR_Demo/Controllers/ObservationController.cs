@@ -147,6 +147,7 @@ namespace FHIR_Demo.Controllers
                     observation.Code = observationCategory_Value.Code;
                     observation.Value = observationCategory_Value.Value;
                     observation.Component = observationCategory_Value.Component;
+                    observation.Meta.Profile = new List<string> { model.meta };
 
                     var observation_ToJson = observation.ToJson();
                     //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
