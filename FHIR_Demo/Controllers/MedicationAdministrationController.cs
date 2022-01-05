@@ -174,8 +174,8 @@ namespace FHIR_Demo.Controllers
                     medicationAdministration.Request = new ResourceReference(model.request);
                     medicationAdministration.Dosage = model.dosage;
 
-                    var created_MedAdmin = client.Create<MedicationAdministration>(medicationAdministration);
-                    TempData["status"] = "Create Update! Reference url:" + created_MedAdmin.Id;
+                    var Update_MedAdmin = client.Update<MedicationAdministration>(medicationAdministration);
+                    TempData["status"] = "Create Update! Reference url:" + Update_MedAdmin.Id;
 
                     return RedirectToAction("Index");
                 }

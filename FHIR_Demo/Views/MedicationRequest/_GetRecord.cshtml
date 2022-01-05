@@ -11,6 +11,9 @@ else
     <p>
         @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
     </p>
+    <p>
+        總比數：@Model.Count() 筆
+    </p>
     <div class="table-responsive">
         <table class="table table-hover text-center align-middle align-content-center">
             <thead class="thead-dark">
@@ -112,10 +115,14 @@ else
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="text-center align-middle">@if(item.dispenseRequest.validityPeriod_start!=null) { @item.dispenseRequest.validityPeriod_start }</td>
-                                        <td class="text-center align-middle">@if (item.dispenseRequest.validityPeriod_end != null) { @item.dispenseRequest.validityPeriod_end }</td>
-                                        <td class="text-center align-middle">@if (item.dispenseRequest.quantity != null) { @item.dispenseRequest.quantity.Value @item.dispenseRequest.quantity.Unit }</td>
-                                        <td class="text-center align-middle">@if (item.dispenseRequest.expectedSupplyDuration != null) { @item.dispenseRequest.expectedSupplyDuration.Value @item.dispenseRequest.expectedSupplyDuration.Unit }</td>
+                                        <td class="text-center align-middle">@if (item.dispenseRequest.validityPeriod_start != null)
+                                        {@item.dispenseRequest.validityPeriod_start}</td>
+                                        <td class="text-center align-middle">@if (item.dispenseRequest.validityPeriod_end != null)
+                                        {@item.dispenseRequest.validityPeriod_end}</td>
+                                        <td class="text-center align-middle">@if (item.dispenseRequest.quantity != null)
+                                        {@item.dispenseRequest.quantity.Value @item.dispenseRequest.quantity.Unit}</td>
+                                        <td class="text-center align-middle">@if (item.dispenseRequest.expectedSupplyDuration != null)
+                                        {@item.dispenseRequest.expectedSupplyDuration.Value @item.dispenseRequest.expectedSupplyDuration.Unit}</td>
                                     </tr>
                                 </tbody>
                             </table>

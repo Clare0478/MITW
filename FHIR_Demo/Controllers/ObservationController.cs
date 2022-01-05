@@ -30,6 +30,7 @@ namespace FHIR_Demo.Controllers
             {
                 var q = new SearchParams().LimitTo(20);
                 Bundle ObservationBundle = client.Search<Observation>(q);
+
                 //var json = PatientSearchBundle.ToJson();
                 List<ObservationViewModel> observationViewModels = new List<ObservationViewModel>();
                 foreach (var entry in ObservationBundle.Entry)
@@ -141,13 +142,17 @@ namespace FHIR_Demo.Controllers
                         Effective = new FhirDateTime(model.effectiveDateTime)
                     };
 
+                    observation.Meta = new Meta
+                     {
+                         Profile = new List<string> { model.meta }
+                     };
+
                     var observationCategory_Value = ObservationCode_Select_Switch(model.Code_value, model.component);
 
                     observation.Category = observationCategory_Value.Category;
                     observation.Code = observationCategory_Value.Code;
                     observation.Value = observationCategory_Value.Value;
                     observation.Component = observationCategory_Value.Component;
-                    observation.Meta.Profile = new List<string> { model.meta };
 
                     var observation_ToJson = observation.ToJson();
                     //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
@@ -225,32 +230,63 @@ namespace FHIR_Demo.Controllers
             return observationCategory_Value;
         }
 
-        //// GET: Observation/Update/5
-        //public ActionResult Update(string id)
-        //{
-        //    return View();
-        //}
+        // GET: Observation/Update/5
+        public ActionResult Update(string id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
+            try
+            {
+                var Obser = client.Read<Observation>("Observation/" + id);
+                var Obser_view = new ObservationViewModel().ObservationViewModelMapping(Obser);
 
-        //// POST: Observation/Update/5
-        //[HttpPost]
-        //public ActionResult Update(string id, FormCollection collection)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
-        //    try
-        //    {
-        //        var Obser = client.Read<Observation>("Observation/" + id);
-        //        var Obser_view = new ObservationViewModel().ObservationViewModelMapping(Obser);
-        //        return View(Obser_view);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //}
+                return View(Obser_view);
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
+
+        // POST: Observation/Update/5
+        [HttpPost]
+        public ActionResult Update(string id, ObservationViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
+
+                try
+                {
+                    var observation = client.Read<Observation>("Observation/" + id);
+
+                    observation.Status = ObservationStatus.Final;
+                    observation.Subject = new ResourceReference(model.subject);
+                    observation.Effective = new Period(new FhirDateTime(model.effectiveDateTime), new FhirDateTime(model.effectiveDateTime));
+
+                    var Update_Obser = client.Update<Observation>(observation);
+                    TempData["status"] = "Create Update! Reference url:" + Update_Obser.Id;
+
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return View(model);
+                }
+            }
+            return View(model);
+        }
 
         //// GET: Observation/Delete/5
         //public ActionResult Delete(string id)

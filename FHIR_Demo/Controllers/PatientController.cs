@@ -204,11 +204,14 @@ namespace FHIR_Demo.Controllers
                         }
                     };
 
-                    patient.Meta.Profile = new List<string> { model.meta }; 
+                    patient.Meta = new Meta
+                    {
+                        Profile = new List<string> { model.meta }
+                    };
 
                     var conditions = new SearchParams();
                     conditions.Add("identifier", model.identifier);
-
+                    var b = patient.Identifier;
                     var patient_ToJson = patient.ToJson();
                     //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
                     var created_pat_A = client.Create<Patient>(patient, conditions);

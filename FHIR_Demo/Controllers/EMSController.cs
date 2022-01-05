@@ -221,7 +221,10 @@ namespace FHIR_Demo.Controllers
                             Value = Convert.ToBoolean(model.deceased)
                         }
                     };
-                    patient.Meta.Profile = new List<string> { model.meta };
+                    patient.Meta = new Meta
+                    {
+                        Profile = new List<string> { model.meta }
+                    };
 
                     var conditions = new SearchParams();
                     conditions.Add("identifier", model.identifier);
@@ -450,8 +453,12 @@ namespace FHIR_Demo.Controllers
                     observation.Code = observationCategory_Value.Code;
                     observation.Value = observationCategory_Value.Value;
                     observation.Component = observationCategory_Value.Component;
+                    observation.Performer = new List<ResourceReference> { new ResourceReference("Organization/MITW.ForEMS") };
 
-                    observation.Meta.Profile = new List<string> { model.meta };
+                    observation.Meta = new Meta
+                    {
+                        Profile = new List<string> { model.meta }
+                    };
 
 
                     var observation_ToJson = observation.ToJson();

@@ -4,6 +4,7 @@ using Hl7.Fhir.Rest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Mvc;
@@ -57,7 +58,7 @@ namespace FHIR_Demo.Controllers
             {
                 var q = SearchParams.FromUriParamList(UriParamList.FromQueryString(search)).LimitTo(20);
 
-                Bundle ImmunizationSearchBundle = client.Search<Immunization>(null);
+                Bundle ImmunizationSearchBundle = client.Search<Immunization>(q);
                 //var json = PatientSearchBundle.ToJson();
                 List<ImmunizationViewModel> immunizationViews = new List<ImmunizationViewModel>();
                 foreach (var entry in ImmunizationSearchBundle.Entry)
@@ -151,6 +152,7 @@ namespace FHIR_Demo.Controllers
 
                     if (model.Type == "疫苗")
                     {
+                        composition.Title = "COVID-19 Vaccine";
                         composition.Type.Coding[0].Code = "82593-5";
                         composition.Type.Coding[0].Display = "Immunization summary report";
 
@@ -192,11 +194,13 @@ namespace FHIR_Demo.Controllers
                     {
                         if (model.Type == "PCR")
                         {
+                            composition.Title = "COVID-19 PCR";
                             composition.Type.Coding[0].Code = "LP6464-4";
                             composition.Type.Coding[0].Display = "Nucleic acid amplification with probe detection";
                         }
                         else
                         {
+                            composition.Title = "COVID-19 Test Certificate";
                             composition.Type.Coding[0].Code = "LP217198-3";
                             composition.Type.Coding[0].Display = "Rapid immunoassay";
                         }
@@ -243,23 +247,84 @@ namespace FHIR_Demo.Controllers
         // GET: Immunization/Edit/5
         public ActionResult Update(string id)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
+            try
+            {
+                var immunization = client.Read<Immunization>("Immunization/" + id);
+                var immunization_view = new ImmunizationViewModel().ImmunizationViewModelMapping(immunization);
+                return View(immunization_view);
+            }
+            catch (Exception e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }
 
         // POST: Immunization/Edit/5
         [HttpPost]
-        public ActionResult Update(string id, FormCollection collection)
+        public ActionResult Update(string id, ImmunizationViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add update logic here
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+                FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
 
-                return RedirectToAction("Index");
+                try
+                {
+                    var immunization = client.Read<Immunization>("Immunization/" + id);
+                    immunization.Patient = model.Patient;
+                    immunization.VaccineCode = model.Imm_VaccineCode;
+                    immunization.Manufacturer = model.Imm_Manufacturer;
+                    immunization.ProtocolApplied = new List<Immunization.ProtocolAppliedComponent>
+                        {
+                            new Immunization.ProtocolAppliedComponent
+                            {
+                                TargetDisease = model.Imm_ProtocolApplied.TargetDisease,
+                                DoseNumber = new FhirString(model.Imm_ProtocolApplied.DoseNumber),
+                                SeriesDoses = new FhirString(model.Imm_ProtocolApplied.SeriesDoses)
+                            }
+                        };
+                    immunization.LotNumber = model.Imm_LotNumber;
+                    immunization.Occurrence = new FhirDateTime(model.Date);
+                    immunization.Performer = new List<Immunization.PerformerComponent>
+                        {
+                            new Immunization.PerformerComponent
+                            {
+                                Actor = model.Hospital
+                            },
+                            new Immunization.PerformerComponent
+                            {
+                                Actor = new ResourceReference
+                                {
+                                    Display = model.Imm_Performer_acotr_display
+                                }
+                            }
+                        };
+
+                    var Updateed_MedAdmin = client.Update<Immunization>(immunization);
+                    TempData["status"] = "Create Update! Reference url:" + Updateed_MedAdmin.Id;
+
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    TempData["Error"] = e.Message;
+                    ViewBag.Error = TempData["Error"];
+                    return View(model);
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View(model);
         }
 
         // GET: Immunization/Delete/5

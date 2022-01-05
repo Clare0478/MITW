@@ -317,6 +317,7 @@
     <Content Include="Views\MedicationAdministration\Update.cshtml" />
     <Content Include="Views\Immunization\Index.cshtml" />
     <Content Include="Views\Immunization\_GetRecord.cshtml" />
+    <Content Include="Views\Immunization\Update.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

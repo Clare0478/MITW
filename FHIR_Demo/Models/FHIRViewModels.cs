@@ -393,7 +393,7 @@ namespace FHIR_Demo.Models
         public ObservationCategory_Value Distolic_Blood_Pressure(decimal? value_Distolic) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8462-4", "Distolic Blood Pressure", "mmHg", value_Distolic); }
 
         public ObservationCategory_Value Heart_Rate_EMS(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8889-8", "Heart rate by Pulse oximeter", "{beats}/min", value); }
-        public ObservationCategory_Value Respiratory_Rate_EMS(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "9279-1", "Respiratory Rate", "{breaths}/min;{counts/min}", value); }
+        public ObservationCategory_Value Respiratory_Rate_EMS(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "9279-1", "Respiratory Rate", "{breaths}/min", value); }
         public ObservationCategory_Value Capillary_refill_of_Nail_bed_EMS(decimal? value) { return ObservationCategory_Data("exam", "Exam", "44963-7", "Capillary refill [Time] of Nail bed", "s", value); }
         public ObservationCategory_Value Glucose_in_Blood_EMS(decimal? value) { return ObservationCategory_Data("laboratory", "Laboratory", "2339-0", "Glucose [Mass/volume] in Blood", "mg/dL", value); }
 
@@ -691,6 +691,7 @@ namespace FHIR_Demo.Models
 
         public ImmunizationViewModel ImmunizationViewModelMapping(Immunization immunization) 
         {
+            this.Id = immunization.Id;
             this.Patient = immunization.Patient;
             this.Imm_VaccineCode = immunization.VaccineCode;
             this.Imm_Manufacturer = immunization.Manufacturer;
@@ -698,7 +699,8 @@ namespace FHIR_Demo.Models
             {
                 this.Imm_ProtocolApplied.TargetDisease = immunization.ProtocolApplied[0].TargetDisease;
                 this.Imm_ProtocolApplied.DoseNumber = immunization.ProtocolApplied[0].DoseNumber.ToString();
-                this.Imm_ProtocolApplied.SeriesDoses = immunization.ProtocolApplied[0].SeriesDoses.ToString();
+                if (immunization.ProtocolApplied[0].SeriesDoses != null)
+                    this.Imm_ProtocolApplied.SeriesDoses = immunization.ProtocolApplied[0].SeriesDoses.ToString();
             }
             this.Imm_LotNumber = immunization.LotNumber;
             this.Date = DateTime.Parse(immunization.Occurrence.ToString());

@@ -41,12 +41,12 @@
                         <hr>
                         <div class="table-border-style" id="ajaxTargetDiv">
                             @*@if (!string.IsNullOrEmpty(ViewBag.AlertMessage))
-            {
-                <script type="text/javascript">
-                   alert("@ViewBag.AlertMessage");
-                   ViewBag.AlertMessage = "";
-                </script>
-            }*@
+        {
+            <script type="text/javascript">
+               alert("@ViewBag.AlertMessage");
+               ViewBag.AlertMessage = "";
+            </script>
+        }*@
                             @if (ViewBag.status != null)
                             {
                                 <div class="alert alert-success" role="alert">
@@ -64,6 +64,9 @@
                                 @*<pre class="json-card"></pre>*@
                                 <p>
                                     @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
+                                </p>
+                                <p>
+                                    總比數：@Model.Count() 筆
                                 </p>
                                 <div class="table-responsive">
                                     <table class="table table-hover text-center align-middle align-content-center">
