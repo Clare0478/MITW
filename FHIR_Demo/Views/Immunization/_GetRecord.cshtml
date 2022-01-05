@@ -1,0 +1,92 @@
+﻿@model IEnumerable<FHIR_Demo.Models.ImmunizationViewModel>
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.Error
+    </div>
+}
+else
+{
+    @*<pre class="json-card"></pre>*@
+    <p>
+        @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
+    </p>
+    <div class="table-responsive">
+        <table class="table table-hover text-center align-middle align-content-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th class="text-center align-middle" style="width:5%">
+                        @Html.DisplayNameFor(model => model.Patient)
+                    </th>
+                    <th class="text-center align-middle" style="width:5%">
+                        @Html.DisplayNameFor(model => model.Imm_VaccineCode)
+                    </th>
+                    <th class="text-center align-middle" style="width:5%">
+                        @Html.DisplayNameFor(model => model.Imm_Manufacturer)
+                    </th>
+                    <th class="text-center align-middle" style="width:5%">
+                        @Html.DisplayNameFor(model => model.Imm_LotNumber)
+                    </th>
+                    <th class="text-center align-middle" style="width:10%">
+                        @Html.DisplayNameFor(model => model.Imm_ProtocolApplied)
+                    </th>
+                    <th class="text-center align-middle" style="width:15%">
+                        @Html.DisplayNameFor(model => model.Hospital)
+                    </th>
+                    <th class="text-center align-middle" style="width:10%">
+                        @Html.DisplayNameFor(model => model.Imm_Performer_acotr_display)
+                    </th>
+                    <th class="text-center align-middle" style="width:5%">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-center align-middle">
+                            @item.Patient.Url
+                        </td>
+                        <td class="text-center align-middle">
+                            @item.Imm_VaccineCode.Coding[0].Display (@item.Imm_VaccineCode.Coding[0].Code)
+                        </td>
+                        <td class="text-center align-middle">
+                            @Html.DisplayFor(modelItem => item.Imm_Manufacturer)
+                        </td>
+                        <td class="text-center align-middle">
+                            @Html.DisplayFor(modelItem => item.Imm_LotNumber)
+                        </td>
+                        <td class="text-center align-middle">
+                            <table class="table table-hover text-center align-middle align-content-center">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="text-center align-middle">@Html.DisplayNameFor(model => model.Imm_ProtocolApplied.TargetDisease)</th>
+                                        <th class="text-center align-middle">@Html.DisplayNameFor(model => model.Imm_ProtocolApplied.DoseNumber)</th>
+                                        <th class="text-center align-middle">@Html.DisplayNameFor(model => model.Imm_ProtocolApplied.SeriesDoses)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center align-middle">@item.Imm_ProtocolApplied.TargetDisease[0].Coding[0].Display (@item.Imm_ProtocolApplied.TargetDisease[0].Coding[0].Code)</td>
+                                        <td class="text-center align-middle">@item.Imm_ProtocolApplied.DoseNumber</td>
+                                        <td class="text-center align-middle">@item.Imm_ProtocolApplied.SeriesDoses</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td class="text-center align-middle">
+                            @item.Hospital.Url
+                        </td>
+                        <td class="text-center align-middle">
+                            @Html.DisplayFor(modelItem => item.Imm_Performer_acotr_display)
+                        </td>
+                        <td class="text-center align-middle">
+                            @Html.ActionLink("Update", "Update", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })
+                            @*@Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-secondary btn-sm" })*@
+                            @*@Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

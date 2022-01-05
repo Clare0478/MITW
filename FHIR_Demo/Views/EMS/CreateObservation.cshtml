@@ -1,0 +1,182 @@
+﻿@model FHIR_Demo.Models.ObservationViewModel
+@using FHIR_Demo.Models;
+@{
+    ViewBag.Title = "Create - Observation";
+    string Subject_ID = ViewBag.Subject_ID;
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <h5>Create EMS Observation</h5>
+                <hr>
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("CreateObservation", "EMS", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.meta, new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.meta, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.meta, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.status, new SelectList(Enum.GetValues(typeof(Obser_Status))),
+                                                                        "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.basedOn, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.basedOn, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.basedOn, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            @*<div class="form-group">
+                                @Html.LabelFor(model => model.subject, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">*@
+                            @Html.Hidden("subject", "Patient/" + Subject_ID)
+                            @*@Html.ValidationMessageFor(model => model.subject, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>*@
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.effectiveDateTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.effectiveDateTime, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+                                    @Html.ValidationMessageFor(model => model.effectiveDateTime, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Code_value.code_display, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.Code_value.code_display, (SelectList)ViewBag.ObserCode_Select, "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Code_value.code_display, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group code_value">
+                                @Html.LabelFor(model => model.Code_value.value, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.Code_value.value, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Code_value.code_display, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group component_item">
+                                @Html.LabelFor(model => model.component[0].code_display, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.component[0].code_display, (SelectList)ViewBag.ObserCode_Select, "收縮壓", new { @class = "form-control", @disabled = "disabled" })
+                                    @Html.Hidden("component[0].code_display", "收縮壓")
+                                    @Html.ValidationMessageFor(model => model.component[0].code_display, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group component_item">
+                                @Html.LabelFor(model => model.component[0].value, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.component[0].value, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.component[0].value, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group component_item">
+                                @Html.LabelFor(model => model.component[1].code_display, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.component[1].code_display, (SelectList)ViewBag.ObserCode_Select, "舒張壓", new { @class = "form-control", @disabled = "disabled" })
+                                    @Html.Hidden("component[1].code_display", "舒張壓")
+                                    @Html.ValidationMessageFor(model => model.component[1].code_display, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group component_item">
+                                @Html.LabelFor(model => model.component[1].value, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.component[1].value, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.component[1].value, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            @*<div class="compoment"></div>*@
+
+                            @*<div class="com_demo" disabled hidden>
+                                    <div class="form-group component_item">
+                                        @Html.LabelFor(model => model.component[0].code_display, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.DropDownList("component[].code_display", (SelectList)ViewBag.ObserCode_Select, "請選擇", new { @class = "form-control" })
+                                            @Html.ValidationMessage("component[].code_display", "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group component_item">
+                                        @Html.LabelFor(model => model.Code_value.value, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.EditorFor(model => model.Code_value.value, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Code_value.code_display, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>*@
+
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="submit" value="Create" class="btn btn-default" />
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-info" })
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            select_option();
+        });
+
+        function select_option() {
+            //console.log($("select[name = 'Code_value.code_display']").val());
+            if ($("select[name = 'Code_value.code_display']").val() == "") {
+                $(".form-horizontal").find(".code_value, .component_item").hide();
+                $(".form-horizontal").find(".code_value *, .component_item *").prop("disabled", true);
+            }
+            else if ($("select[name = 'Code_value.code_display']").val() != "血壓") {
+                $(".form-horizontal").find(".code_value *").prop("disabled", false);
+                $(".form-horizontal").find(".code_value").show();
+
+                $(".form-horizontal").find(".component_item").hide();
+                $(".form-horizontal").find(".component_item *").prop("disabled", true);
+            }
+            else {
+                $(".form-horizontal").find(".code_value *").prop("disabled", true);
+                $(".form-horizontal").find(".code_value").hide();
+
+                $(".form-horizontal").find(".component_item").show();
+                $(".form-horizontal").find(".component_item input").prop("disabled", false);
+            }
+        }
+
+        $(".form-horizontal").on("change", "select[name='Code_value.code_display']", function () {
+            select_option();
+        });
+
+            //$(".form-horizontal").find(".com_demo").children().clone().appendTo(".compoment");
+            //$(".form-horizontal").find(".component_item").show();
+    </script>
+}

@@ -1,0 +1,70 @@
+﻿@model FHIR_Demo.Models.ObservationViewModel
+
+@{
+    ViewBag.Title = "Details";   
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>ObservationViewModel</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.catogory)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.catogory)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.basedOn)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.basedOn)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.subject)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.subject)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.effectiveDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.effectiveDateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayFor(model => model.Code_value.code_display)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Code_value.value)
+            @Html.DisplayFor(model => model.Code_value.unit)
+        </dd>
+        @if (Model.component != null)
+        {
+            foreach (var com in Model.component)
+            {
+                <dt>
+                    @com.code_display
+                </dt>
+                <dd>
+                    @com.value @com.unit
+                </dd>
+            }
+        }
+
+    </dl>
+</div>
+<p>
+    @*@Html.ActionLink("Update", "Update", new { id = Model.Id }) |*@
+    @Html.ActionLink("Back to List", "Index")
+</p>
