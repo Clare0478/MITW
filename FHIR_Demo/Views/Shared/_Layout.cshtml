@@ -14,14 +14,6 @@
     @* 平台的ICON圖片 *@
     <link rel="SHORTCUT ICON" href="@Url.Content("~/favicon.ico")" type="image/x-icon " />
 
-    @*  這種呼叫方式是需要在"App_Start/BundleConfig.cs"宣告
-        但這種方式再套別人模板時，會造成路徑問題
-        所以後來就沒有再使用了
-        @Styles.Render("~/Content/assets/icon")
-        @Styles.Render("~/Content/assets/fontawesome")
-        @Styles.Render("~/Content/assets/animation")
-        @Styles.Render("~/Content/assets/css")*@
-
     @* HTML模板套件 *@
     <!-- fontawesome icon -->
     <link rel="stylesheet" href="@Url.Content("~/Content/assets/fonts/fontawesome/css/fontawesome-all.min.css")">
@@ -30,8 +22,6 @@
     <!-- vendor css -->
     <link rel="stylesheet" href="@Url.Content("~/Content/assets/css/style.css")">
 
-    @* 空汙地圖使用的圖資套件 *@
-    <!-- Leafret -->
     @RenderSection("Styles", required: false)
 
 </head>
@@ -44,7 +34,6 @@
     </div>
     <!-- [ Pre-loader ] End -->
     <!-- [ navigation menu ] start -->
-    @* 畫面左側功能清單 *@
     <nav class="pcoded-navbar">
         <div class="navbar-wrapper">
             <div class="navbar-brand header-logo">
@@ -87,6 +76,21 @@
             </div>
         </div>
     </nav>
+    <header class="navbar pcoded-header navbar-expand-lg navbar-light">
+        <div class="m-header">
+            <a class="mobile-menu" id="mobile-collapse1" href="javascript:"><span></span></a>
+            <a href="index.html" class="b-brand">
+                <div class="b-bg">
+                    <i class="feather icon-trending-up"></i>
+                </div>
+                <span class="b-title">MI - FHIR</span>
+            </a>
+        </div>
+        <a class="mobile-menu" id="mobile-header" href="#!">
+            <i class="feather icon-more-horizontal"></i>
+        </a>
+    </header>
+    @* 畫面左側功能清單 *@
     <!-- [ navigation menu ] end -->
     @* View的內容 *@
     <div class="pcoded-main-container">
@@ -120,6 +124,7 @@
     <script src="~/Content/assets/js/vendor-all.min.js"></script>
     <script src="~/Content/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="~/Content/assets/js/pcoded.min.js"></script>
+    @*https://codedthemes.com/demos/admin-templates/datta-able/bootstrap/default/tbl_datatable.html*@
     @RenderSection("scripts", required: false)
 
 </body>

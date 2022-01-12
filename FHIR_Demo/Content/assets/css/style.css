@@ -58,7 +58,7 @@ File: style.css
       Custom css start
 ==========================  **/
 body {
-  font-family: "微軟正黑體", "Open Sans", sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 14px;
   color: #888;
   font-weight: 400;
@@ -7277,7 +7277,7 @@ select.form-control-lg:not([size]):not([multiple]) {
 .table td,
 .table th {
   border-top: 1px solid #eaeaea;
-  /*white-space: nowrap;*/
+  white-space: nowrap;
   padding: 1.05rem 0.75rem;
 }
 .table thead th {
@@ -8601,8 +8601,8 @@ a.btn-theme.active {
 /* Tabbable tabs */
 /* Hide tabbable panes to start, show them when `.active` */
 .tab-content {
-  /*padding: 35px 30px;
-  background: #fff;*/
+  padding: 35px 30px;
+  background: #fff;
   -webkit-box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.05);
           box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.05);
 }

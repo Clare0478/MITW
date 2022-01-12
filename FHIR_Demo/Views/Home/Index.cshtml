@@ -1,67 +1,699 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model IEnumerable<FHIR_Demo.Models.PatientViewModel>
+@{
+    ViewBag.Title = "Index";
+    string FHIR_url = "";
+    if (Request.Cookies["FHIR_url"] != null)
+    {
+        FHIR_url = Request.Cookies["FHIR_url"].Value;
+    }
+    string FHIR_Token = "";
+    if (Request.Cookies["FHIR_Token"] != null)
+    {
+        FHIR_Token = Request.Cookies["FHIR_Token"].Value;
+    }
 }
-
+@section Styles{
+    @*<link href="~/Content/datatables.min.css" rel="stylesheet" />*@
+    <link href="~/Content/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/Content/FixedHeader/css/fixedHeader.bootstrap4.css" rel="stylesheet" />
+}
 <div class="row">
     <div class="col-sm-12">
         <div class="card">
-            <div class="card-body">
-                <h5>Form controls</h5>
-                <hr>
+            <div class="card-block">
                 <div class="row">
                     <div class="col-md-12">
-                        <form id="fhir_form">
-                            <label for="exampleInputEmail1">FHIR Server URL</label>
-                            <div class="input-group mb-3">
-                                <input type="url" name="url" class="form-control" placeholder="http://hapi.fhir.org/baseR4" value="https://hapi.fhir.tw/fhir">
-                                <input type="text" name="search" class="form-control" placeholder="" value="">
-                                <div class="input-group-append">
-                                    <button type="Submit" class="btn btn-primary">Submit</button>
-                                </div>
+                        @*@using (Ajax.BeginForm("GetRecord", new AjaxOptions
+                            {
+                                HttpMethod = "POST",
+                                UpdateTargetId = "ajaxTargetDiv",
+                            }))
+                            {*@
+                        <label for="exampleInputEmail1">FHIR Server URL & Token</label>
+                        <div class="input-group mb-3">
+                            <input type="url" id="FHIR_url" name="url" class="form-control" placeholder="http://hapi.fhir.org/baseR4" value="@FHIR_url">
+                            <input type="text" id="FHIR_Token" name="token" class="form-control" placeholder="token" value="@FHIR_Token">
+                        </div>
+                        <label for="exampleInputEmail1">REST搜尋</label>
+                        <div class="input-group mb-3">
+                            <input type="text" name="search" class="form-control" placeholder="search" value="">
+                            <div class="input-group-append">
+                                <button type="Submit" class="btn btn-primary">Submit</button>
                             </div>
-                        </form>
+                        </div>
+                        <div class="form-group">
+                            <label for="ResourceSelect">Resource</label>
+                            <select class="form-control" id="ResourceSelect" name="resource">
+                                <option>Patient</option>
+                                <option>Practitioner</option>
+                                <option>Encounter</option>
+                                <option>Observation</option>
+                                <option>Condition</option>
+                                <option>MedicationRequest</option>
+                                <option>DiagnosticReport</option>
+                                <option>ServiceRequest</option>
+                            </select>
+                        </div>
+                        @*}*@
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-12">
-        <div class="card bg-light">
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
             <div class="card-header">
-                <h5>Json</h5>
+                <h5><b>篩選條件</b></h5>
             </div>
-            @*<div class="card-block table-border-style">
-                    <div class="table-responsive">
+            <div class="card-block">
+                <div class="col-sm-4">
+                    <div class="card text-white bg-secondary ">
+                        <div class="card-header"><h5 class="text-white">篩選條件</h5></div>
+                        <div class="card-body">
+                            <h5 class="card-title text-white">Secondary card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        </div>
                     </div>
-                </div>*@
-            <div class="card-body">
-                <pre class="json-card"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><b>搜尋結果</b></h5>
+            </div>
+            <div class="card-block">
+                <div class="table-responsive">
+                    @* 文字不換行 *@
+                    @*<table id="cutomerTable" class="display table nowrap table-striped table-hover dataTable text-center" style="width: 100%;" role="grid">*@
+                    <table id="cutomerTable" class="display table table-striped table-hover dataTable text-break" style="width: 100%;" role="grid">
+                    </table>
+                    <!--<table id="cutomerTable" class="table text-center table-bordered table-striped nowrap">-->
+                    @*<thead class="thead-dark">
+                        </thead>
+                        <tbody>
+                        </tbody>*@
+
+                    <!--</table>-->
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-@section scripts
-{
+@section scripts {
+    @*<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>*@
+    <script src="~/Scripts/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Scripts/FixedHeader/js/dataTables.fixedHeader.min.js"></script>
     <script type="text/javascript">
-        $("#fhir_form").submit(function (e) {
+        $('#cutomerTable').tooltip({
+            selector: '.cr_tooltips',
+            html: true
+        });
 
-            e.preventDefault(); // avoid to execute the actual submit of the form.
-            var form = $(this);
-            $.ajax({
-                type: "POST",
-                url: "@Url.Action("Index", "Home")",
-                data: form.serialize(), // serializes the form's elements.
-                dataType: "json", //response的資料格式
-                success: function (data) {
-                    console.log(data);
-                    var str = JSON.stringify(data, null, 2)
-                    $(".json-card").text(str);
-                }
-            });
+        Patient();
+        $("#ResourceSelect").on("change", function () {
+            switch ($(this).val())
+            {
+                case "Patient": Patient(); break;
+                case "Practitioner": Practitioner(); break;
+                case "Encounter": Encounter(); break;
+                case "Observation": Observation(); break;
+                case "Condition": Condition(); break;
+                case "MedicationRequest": MedicationRequest(); break;
+                case "DiagnosticReport": DiagnosticReport(); break;
+                case "ServiceRequest": ServiceRequest(); break;
 
+            }
 
         });
 
+        function ReBuilddatatable()
+        {
+            if ($.fn.dataTable.isDataTable('#cutomerTable')) {
+                $("#cutomerTable").DataTable().clear().destroy();
+                $("#cutomerTable").empty();
+            }
+        }
+
+        function Patient()
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+
+            var table = $("#cutomerTable").DataTable({
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id"},
+                    { "data": "identifier[, ].value", "name": "identifier", "title": "身分證/病歷號"},
+                    { "data": "name[, ].text", "name": "name", "title": "姓名"},
+                    { "data": "gender", "name": "gender", "title": "性別"},
+                    { "data": "birthDate", "name": "birthdate", "title": "生日"},
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function Practitioner()
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+
+            var table = $("#cutomerTable").DataTable({
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id"},
+                    { "data": "identifier[, ].value", "name": "identifier", "title": "醫師卡號"},
+                    { "data": "name[, ].text", "name": "name", "title": "姓名"},
+                    { "data": "gender", "name": "gender", "title": "性別"},
+                    { "data": "birthDate", "name": "birthdate", "title": "生日"},
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function Encounter()
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+
+            var table = $("#cutomerTable").DataTable({
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    { "data": "identifier[, ].value", "name": "identifier", "title": "就醫序號" },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "participant[, ].individual.reference",
+                        "name": "participant",
+                        "title": "醫師ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "class.code",
+                        "name": "class",
+                        "title": "就醫類別"
+                    },
+                    {
+                        "data": "period.start",
+                        "name": "date",
+                        "title": "就醫/入院日期時間"
+                    },
+                    {
+                        "data": "period.end",
+                        "name": "date",
+                        "title": "離院/出院日期時間"
+                    },
+
+                ]
+            });
+        }
+
+        function Observation()
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+
+            var table = $("#cutomerTable").DataTable({
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "effectiveDateTime",
+                        "name": "date",
+                        "title": "發報告日期"
+                    },
+                    {
+                        "data": "effectiveDateTime",
+                        "name": "date",
+                        "title": "發報告日期"
+                    },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "code",
+                        "name": "code",
+                        "title": "檢驗檢查項目",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            if (sData.coding != null)
+                                $(nTd).html(
+                                    '<button type="button" class="btn btn-outline-secondary cr_tooltips disabled" data-toggle="tooltip" data-placement="right" \
+                                    title="<b>system: </b>' + sData.coding[0].system + '<br><b>code: </b>' + sData.coding[0].code + '<br><b>code: </b>' + sData.coding[0].display +'<br>" >\
+                                    ' + sData.coding[0].display ?? sData.coding[0].code  +'</button>'
+                                );
+                            else
+                                $(nTd).html(
+                                    '<button type="button" class="btn btn-outline-secondary disabled" data-placement="right" >\
+                                    ' + sData.text + '</button>'
+                                );
+                        }
+                    },
+                    {
+                        "data": "bodySite.coding[0].code",
+                        "orderable": false,
+                        "title": "檢驗部位",
+                    },
+                    {
+                        "data": "valueQuantity.value",
+                        "name": "value-quantity",
+                        "title": "檢驗值",
+                    },
+                    {
+                        "data": "valueQuantity.unit",
+                        "orderable": false,
+                        "title": "檢驗單位",
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function Condition()
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+
+            var table = $("#cutomerTable").DataTable({
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    {
+                        "data": "encounter.reference",
+                        "name": "encounter",
+                        "title": "就醫ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "recorder.reference",
+                        "name": "recorder",
+                        "title": "醫師ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "code.coding.0.display",
+                        "name": "code",
+                        "title": "疾病名稱"
+                    },
+                    {
+                        "data": "clinicalStatus.coding.0.code",
+                        "name": "clinical-status",
+                        "title": "疾病狀態"
+                    },
+                    {
+                        "data": "onsetDateTime",
+                        "name": "onset-date",
+                        "title": "發生日期時間"
+                    },
+                    {
+                        "data": "recordedDate",
+                        "name": "recorded-date",
+                        "title": "紀錄日期時間"
+                    },
+
+                ]
+            });
+        }
+
+        function MedicationRequest()
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+
+            var table = $("#cutomerTable").DataTable({
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    {
+                        "data": "status",
+                        "name": "status",
+                        "title": "藥囑狀態"
+                    },
+                    {
+                        "data": "intent",
+                        "name": "intent",
+                        "title": "藥囑種類"
+                    },
+                    {
+                        "data": "medicationReference.reference",
+                        "name": "medication",
+                        "title": "藥物代碼",
+                        "render": function (data, type, row, meta) {
+                            //console.log(data);
+                            if (data != null)
+                                return data != null ? data.split('/')[1] : data;
+                            else
+                                return row.medicationCodeableConcept.coding[0].display;
+                        }
+                    },
+                    {
+                        "data": "encounter.reference",
+                        "name": "encounter",
+                        "title": "就醫ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "category.0.coding.0.code",
+                        "name": "category",
+                        "title": "就醫類別",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "requester.reference",
+                        "name": "requester",
+                        "title": "開藥醫師ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "authoredOn",
+                        "name": "date",
+                        "title": "處方日期時間"
+                    },
+
+                ]
+            });
+        }
+
+        function DiagnosticReport()
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+
+            var table = $("#cutomerTable").DataTable({
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    { "data": "identifier[, ].value", "name": "identifier", "title": "申請序號" },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "encounter.reference",
+                        "name": "encounter",
+                        "title": "就醫ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "result.reference",
+                        "orderable": false,
+                        "title": "報告結果ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "effectiveDateTime",
+                        "name": "date",
+                        "title": "報告日期"
+                    },
+                    {
+                        "data": "code.coding.0.display",
+                        "name": "code",
+                        "title": "檢驗項目"
+                    },
+                    {
+                        "data": "code.coding.0.code",
+                        "name": "code",
+                        "title": "檢驗項目(Loinc)"
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function ServiceRequest()
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+
+            var table = $("#cutomerTable").DataTable({
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    { "data": "identifier[, ].value", "name": "identifier", "title": "申請序號" },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "requester.reference",
+                        "name": "requester",
+                        "title": "醫師ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "encounter.reference",
+                        "name": "encounter",
+                        "title": "就醫ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "code.coding[0].code",
+                        "name": "code",
+                        "title": "檢驗項目",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "authoredOn",
+                        "name": "date",
+                        "title": "開立日期時間"
+                    },
+                    {
+                        "data": "occurrenceDateTime",
+                        "name": "date",
+                        "title": "檢驗日期時間"
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+
+
+        //取得目前url和token
+        function GetUrlToken()
+        {
+            var data = {};
+            data.url = $("#FHIR_url").val();
+            data.token = $("#FHIR_Token").val();
+            data.resource = $("#ResourceSelect").val();
+            return data;
+        }
     </script>
 }

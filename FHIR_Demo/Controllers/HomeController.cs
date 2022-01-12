@@ -2,13 +2,17 @@
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
+using LinqKit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 
@@ -16,145 +20,183 @@ namespace FHIR_Demo.Controllers
 {
     public class HomeController : Controller
     {
+        private CookiesController cookies = new CookiesController();
+        private HttpClientEventHandler handler = new HttpClientEventHandler();
 
         public ActionResult Index()
         {
+
             return View();
         }
 
+        private string FHIR_url;
+        private string FHIR_token;
+        private string FHIR_Resource;
 
-        [HttpPost]
-        public ActionResult Index(string url, string search)
+        public dynamic GetResource(DataTableAjaxPostModel model, string url, string token, string resource)
         {
-            var settings = new FhirClientSettings
+            FHIR_url = url;
+            FHIR_token = token;
+            FHIR_Resource = resource;
+
+            // action inside a standard controller
+            int filteredResultsCount;
+            int totalResultsCount;
+            var res = YourCustomSearchFunc(model, out filteredResultsCount, out totalResultsCount);
+
+            var result = new List<dynamic>(res.Count);
+            foreach (var s in res)
             {
-                Timeout = 120,
-                PreferredFormat = ResourceFormat.Json,
-                VerifyFhirVersion = true,
+                // simple remapping adding extra info to found dataset
+                result.Add(s);
             };
 
-            var client = new FhirClient(url, settings);
-            var q = SearchParams.FromUriParamList(UriParamList.FromQueryString(search)).LimitTo(20);
-            //q = 
-            Bundle results = client.Search<Observation>(q);
-            return Content(results.ToJson());
+            return JsonConvert.SerializeObject(Json(new
+            {
+                // this is what datatables wants sending back
+                draw = model.draw,
+                recordsTotal = totalResultsCount,
+                recordsFiltered = filteredResultsCount,
+                data = result
+            }).Data);
+            
         }
 
-
-        public ActionResult New_Patient()
+        public IList<dynamic> YourCustomSearchFunc(DataTableAjaxPostModel model, out int filteredResultsCount, out int totalResultsCount)
         {
-            var settings = new FhirClientSettings
-            {
-                Timeout = 120,
-                PreferredFormat = ResourceFormat.Json,
-                VerifyFhirVersion = true,
-            };
+            var searchBy = (model.search != null) ? model.search.value : null;
+            var take = model.length;
+            var skip = model.start;
 
-            var client = new FhirClient("https://hapi.fhir.tw/fhir", settings);
-            var bundle = client.Search<Patient>(null);
-            List<Patient> Patients = new List<Patient>();
-            foreach (var entry in bundle.Entry)
+            string sortBy = "";
+            bool sortDir = true;
+
+            if (model.order != null)
             {
-                Patients.Add((Patient)entry.Resource);
+                // in this example we just default sort on the 1st column
+                sortBy = model.columns[model.order[0].column].name;
+                sortDir = model.order[0].dir.ToLower() == "asc";
             }
-            return View(Patients);
+
+            // search the dbase taking into consideration table sorting and paging
+            var result = GetDataFromDbase(searchBy, take, skip, sortBy, sortDir, out filteredResultsCount, out totalResultsCount);
+            if (result == null)
+            {
+                // empty collection...
+                return new List<dynamic>();
+            }
+            return result;
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult New_Patient(PatientViewModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var settings = new FhirClientSettings
-        //        {
-        //            Timeout = 12000,
-        //            PreferredFormat = ResourceFormat.Json,
-        //            VerifyFhirVersion = true,
-        //        };
+        public List<dynamic> GetDataFromDbase(string searchBy, int take, int skip, string sortBy, bool sortDir, out int filteredResultsCount, out int totalResultsCount)
+        {
+            // the example datatable used is not supporting multi column ordering
+            // so we only need get the column order from the first column passed to us.        
+            //var whereClause = BuildDynamicWhereClause(Db, searchBy);
 
-        //        var client = new FhirClient(URL, settings);
+            sortBy = FHIRSearchParameters_Chagne(DatatablesObjectDisplay_Change(sortBy));
+            var q = new SearchParams()
+                .Where("_total=accurate") //顯示總比數
+                .LimitTo(take) //抓取幾筆資料
+                .Where("_getpagesoffset="+ skip); //略過幾筆資料
 
-        //        Patient patient = new Patient()
-        //        {
-        //            Name = new List<HumanName>()
-        //            {
-        //                new HumanName()
-        //                {
-        //                    Text = model.name,
-        //                    Given = new List<string>
-        //                    {
-        //                        model.name,
-        //                    }
-        //                }
-        //            },
-        //            BirthDate = model.birthDate,
-        //            Gender = (AdministrativeGender)model.Gender,
-        //            Identifier = new List<Identifier> {
-        //                new Identifier
-        //                {
-        //                    Value = model.identifier
-        //                }
-        //            },
-        //            Telecom = new List<ContactPoint>
-        //            {
-        //                new ContactPoint
-        //                {
-        //                    System = ContactPoint.ContactPointSystem.Phone,
-        //                    Value = model.telecom
-        //                },
-        //                new ContactPoint
-        //                {
-        //                    System = ContactPoint.ContactPointSystem.Email,
-        //                    Value = model.email
-        //                },
-        //            },
-        //            Address = new List<Address>
-        //            {
-        //                new Address
-        //                {
-        //                    Text = model.address
-        //                }
-        //            },
-        //            Contact = new List<Patient.ContactComponent>
-        //            {
-        //                new Patient.ContactComponent
-        //                {
-        //                    Name = new HumanName()
-        //                    {
-        //                        Text = model.contact_name,
-        //                        Given = new List<string>
-        //                        {
-        //                            model.contact_name,
-        //                        }
-        //                    },
-        //                    Relationship = new List<CodeableConcept>
-        //                    {
-        //                        new CodeableConcept("http://terminology.hl7.org/CodeSystem/v2-0131", "N", model.contact_relationship)
-        //                    },
-        //                    Telecom = new List<ContactPoint>
-        //                    {
-        //                        new ContactPoint
-        //                        {
-        //                            System = ContactPoint.ContactPointSystem.Phone,
-        //                            Value = model.contact_telecom
-        //                        },
-        //                    }
+            if (String.IsNullOrEmpty(searchBy))
+            {
+                if (String.IsNullOrEmpty(sortBy)) 
+                {
+                    // if we have an empty search then just order the results by Id ascending
+                    sortBy = "_id";
+                    sortDir = true;
+                }
+            }
+            else
+                q.Where("_content=" + searchBy ?? "");
 
-        //                },
-        //            }
-
-        //        };
-
-        //        var conditions = new SearchParams();
-        //        conditions.Add("identifier", model.identifier);
-
-        //        var patient_ToJson = patient.ToJson();
-        //        var created_pat_A = client.Create<Patient>(patient, conditions);
-        //    }
-        //    return View(model);
-        //}
+            q.OrderBy(sortBy, (sortDir == true) ? SortOrder.Ascending : SortOrder.Descending);
 
 
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, FHIR_token));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, FHIR_url), cookies.settings, handler);
+
+            
+
+            var a = q.ToParameters();
+
+            Bundle PatientSearchBundle = client.Search(q, FHIR_Resource);
+
+            Bundle PatientBundle_total = client.Search(new SearchParams().Where("_total=accurate"), FHIR_Resource);
+
+            //var json = PatientSearchBundle.ToJson();
+            //List<PatientViewModel> patientViewModels = new List<PatientViewModel>();
+            List<dynamic> Patients = new List<dynamic>();
+
+            foreach (var entry in PatientSearchBundle.Entry)
+            {
+                //patientViewModels.Add(new PatientViewModel().PatientViewModelMapping((Patient)entry.Resource));
+
+                Patients.Add((entry.Resource).ToJObject());
+            }
+
+            // now just get the count of items (without the skip and take) - eg how many could be returned with filtering
+            //filteredResultsCount = Db.DatabaseTableEntity.AsExpandable().Where(whereClause).Count();
+            filteredResultsCount = PatientSearchBundle.Total ?? 0;
+
+            totalResultsCount = PatientBundle_total.Total ?? 0;
+
+            return Patients;
+        }
+
+        //更改Search搜尋字串
+        public string FHIRSearchParameters_Chagne(string parameter) 
+        {
+            parameter = parameter.ToLower();
+            switch (parameter) 
+            {
+                case "id":
+                    parameter = "_id";
+                    break;
+                case "lastupdated":
+                    parameter = "_lastUpdated";
+                    break;
+                case "tag":
+                    parameter = "_tag";
+                    break;
+                case "profile":
+                    parameter = "_profile";
+                    break;
+                case "security":
+                    parameter = "_security";
+                    break;
+                case "text":
+                    parameter = "_text";
+                    break;
+                case "content":
+                    parameter = "_content";
+                    break;
+                case "list":
+                    parameter = "_list";
+                    break;
+                case "has":
+                    parameter = "_has";
+                    break;
+                case "type":
+                    parameter = "_type";
+                    break;
+                case "query":
+                    parameter = "_query";
+                    break;
+            }
+            return parameter;
+        }
+
+        public string DatatablesObjectDisplay_Change (string orderName) 
+        {
+            string Pattern = @"\[, ].+";
+            Regex regex = new Regex(Pattern);
+            return regex.Replace(orderName, "")??"";
+        }
     }
 }
