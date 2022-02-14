@@ -1,0 +1,1494 @@
+﻿@using Newtonsoft.Json;
+@using System.ComponentModel;
+@{
+    ViewBag.Title = "Resource";
+    var Res_Search = ViewBag.Res_Search;
+    var Resources = ViewBag.Resources;
+    var Resource_detail = ViewBag.Resource_detail;
+    DateTime now = DateTime.Today;
+    List<dynamic> chart_data = new List<dynamic>();
+}
+@section Styles{
+    <link href="~/Content/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/Content/FixedHeader/css/fixedHeader.bootstrap4.css" rel="stylesheet" />
+    <style>
+        .main-container {
+            height: 90vh;
+        }
+
+        body {
+            margin-top: 20px;
+            background: #eee;
+        }
+
+        .timeline-centered {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+            .timeline-centered.timeline-sm .timeline-entry {
+                margin-bottom: 20px !important;
+            }
+
+                .timeline-centered.timeline-sm .timeline-entry .timeline-entry-inner .timeline-label {
+                    padding: 1em;
+                }
+
+            .timeline-centered:before,
+            .timeline-centered:after {
+                content: " ";
+                display: table;
+            }
+
+            .timeline-centered:after {
+                clear: both;
+            }
+
+            .timeline-centered:before {
+                content: '';
+                position: absolute;
+                display: block;
+                width: 7px;
+                background: #ffffff;
+                left: 50%;
+                top: 20px;
+                bottom: 20px;
+                margin-left: -4px;
+            }
+
+            .timeline-centered .timeline-entry {
+                position: relative;
+                width: 50%;
+                float: right;
+                margin-bottom: 70px;
+                clear: both;
+            }
+
+                .timeline-centered .timeline-entry:before,
+                .timeline-centered .timeline-entry:after {
+                    content: " ";
+                    display: table;
+                }
+
+                .timeline-centered .timeline-entry:after {
+                    clear: both;
+                }
+
+                .timeline-centered .timeline-entry.begin {
+                    margin-bottom: 0;
+                }
+
+                .timeline-centered .timeline-entry.left-aligned {
+                    float: left;
+                }
+
+                    .timeline-centered .timeline-entry.left-aligned .timeline-entry-inner {
+                        margin-left: 0;
+                        margin-right: -28px;
+                    }
+
+                        .timeline-centered .timeline-entry.left-aligned .timeline-entry-inner .timeline-time {
+                            left: auto;
+                            right: -115px;
+                            text-align: left;
+                        }
+
+                        .timeline-centered .timeline-entry.left-aligned .timeline-entry-inner .timeline-icon {
+                            float: right;
+                        }
+
+                        .timeline-centered .timeline-entry.left-aligned .timeline-entry-inner .timeline-label {
+                            margin-left: 0;
+                            margin-right: 85px;
+                        }
+
+                            .timeline-centered .timeline-entry.left-aligned .timeline-entry-inner .timeline-label:after {
+                                left: auto;
+                                right: 0;
+                                margin-left: 0;
+                                margin-right: -9px;
+                                -moz-transform: rotate(180deg);
+                                -o-transform: rotate(180deg);
+                                -webkit-transform: rotate(180deg);
+                                -ms-transform: rotate(180deg);
+                                transform: rotate(180deg);
+                            }
+
+                .timeline-centered .timeline-entry .timeline-entry-inner {
+                    position: relative;
+                    margin-left: -31px;
+                }
+
+                    .timeline-centered .timeline-entry .timeline-entry-inner:before,
+                    .timeline-centered .timeline-entry .timeline-entry-inner:after {
+                        content: " ";
+                        display: table;
+                    }
+
+                    .timeline-centered .timeline-entry .timeline-entry-inner:after {
+                        clear: both;
+                    }
+
+                    .timeline-centered .timeline-entry .timeline-entry-inner .timeline-time {
+                        position: absolute;
+                        left: -115px;
+                        text-align: right;
+                        padding: 10px;
+                        -webkit-box-sizing: border-box;
+                        -moz-box-sizing: border-box;
+                        box-sizing: border-box;
+                    }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-time > span {
+                            display: block;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-time > span:first-child {
+                                font-size: 18px;
+                                font-weight: bold;
+                            }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-time > span:last-child {
+                                font-size: 14px;
+                                font-weight: bold;
+                            }
+
+                    .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon {
+                        background: #fff;
+                        color: #999999;
+                        display: block;
+                        width: 60px;
+                        height: 60px;
+                        -webkit-background-clip: padding-box;
+                        -moz-background-clip: padding-box;
+                        background-clip: padding-box;
+                        border-radius: 50%;
+                        text-align: center;
+                        border: 7px solid #ffffff;
+                        line-height: 45px;
+                        font-size: 15px;
+                        float: left;
+                    }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-primary {
+                            background-color: #007bff;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-success {
+                            background-color: #28a745;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-info {
+                            background-color: #17a2b8;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-warning {
+                            background-color: #ffc107;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-danger {
+                            background-color: #dc3545;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-red {
+                            background-color: #dc3545;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-green {
+                            background-color: #28a745;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-blue {
+                            background-color: #007bff;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-yellow {
+                            background-color: #ffc107;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-orange {
+                            background-color: #fd7e14;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-pink {
+                            background-color: #e83e8c;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-violet {
+                            background-color: #9351ad;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-grey {
+                            background-color: #6c757d;
+                            color: #fff;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-icon.bg-dark {
+                            background-color: #343a40;
+                            color: #fff;
+                        }
+
+                    .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label {
+                        position: relative;
+                        background: #ffffff;
+                        padding: 1.7em;
+                        margin-left: 85px;
+                        -webkit-background-clip: padding-box;
+                        -moz-background-clip: padding;
+                        background-clip: padding-box;
+                        -webkit-border-radius: 3px;
+                        -moz-border-radius: 3px;
+                        border-radius: 3px;
+                    }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-red {
+                            background: #dc3545;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-red:after {
+                                border-color: transparent #dc3545 transparent transparent;
+                            }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-red .timeline-title,
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-red p {
+                                color: #ffffff;
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-green {
+                            background: #28a745;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-green:after {
+                                border-color: transparent #28a745 transparent transparent;
+                            }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-green .timeline-title,
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-green p {
+                                color: #ffffff;
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-orange {
+                            background: #fd7e14;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-orange:after {
+                                border-color: transparent #fd7e14 transparent transparent;
+                            }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-orange .timeline-title,
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-orange p {
+                                color: #ffffff;
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-yellow {
+                            background: #ffc107;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-yellow:after {
+                                border-color: transparent #ffc107 transparent transparent;
+                            }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-yellow .timeline-title,
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-yellow p {
+                                color: #ffffff;
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-blue {
+                            background: #007bff;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-blue:after {
+                                border-color: transparent #007bff transparent transparent;
+                            }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-blue .timeline-title,
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-blue p {
+                                color: #ffffff;
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-pink {
+                            background: #e83e8c;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-pink:after {
+                                border-color: transparent #e83e8c transparent transparent;
+                            }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-pink .timeline-title,
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-pink p {
+                                color: #ffffff;
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-violet {
+                            background: #9351ad;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-violet:after {
+                                border-color: transparent #9351ad transparent transparent;
+                            }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-violet .timeline-title,
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-violet p {
+                                color: #ffffff;
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-grey {
+                            background: #6c757d;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-grey:after {
+                                border-color: transparent #6c757d transparent transparent;
+                            }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-grey .timeline-title,
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-grey p {
+                                color: #ffffff;
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-dark {
+                            background: #343a40;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-dark:after {
+                                border-color: transparent #343a40 transparent transparent;
+                            }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-dark .timeline-title,
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label.bg-dark p {
+                                color: #ffffff;
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label:after {
+                            content: '';
+                            display: block;
+                            position: absolute;
+                            width: 0;
+                            height: 0;
+                            border-style: solid;
+                            border-width: 9px 9px 9px 0;
+                            border-color: transparent #ffffff transparent transparent;
+                            left: 0;
+                            top: 20px;
+                            margin-left: -9px;
+                        }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label .timeline-title,
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label p {
+                            color: #999999;
+                            margin: 0;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label p + p {
+                                margin-top: 15px;
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label .timeline-title {
+                            margin-bottom: 10px;
+                            font-family: 'Oswald';
+                            font-weight: bold;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label .timeline-title span {
+                                -webkit-opacity: .6;
+                                -moz-opacity: .6;
+                                opacity: .6;
+                                -ms-filter: alpha(opacity=60);
+                                filter: alpha(opacity=60);
+                            }
+
+                        .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label p .timeline-img {
+                            margin: 5px 10px 0 0;
+                        }
+
+                            .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label p .timeline-img.pull-right {
+                                margin: 5px 0 0 10px;
+                            }
+
+        /*        a.active > div.timeline-label {
+            background-color: #f44236;
+            border-color: #f44236;
+        }*/
+        #chartdiv {
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+}
+@functions
+{
+    public int Age(DateTime birthday)
+    {
+        DateTime now = DateTime.Today;
+
+        int age = now.Year - birthday.Year;
+        if (birthday > now.AddYears(-age)) age--;
+        return age;
+    }
+}
+@*<pre>@JsonConvert.SerializeObject(Res_Search)</pre>*@
+<div class="row main-container">
+
+    <div id="time_line" class="col-md-6 overflow-auto mh-100">
+        <div class="container bootstrap snippets bootdeys">
+            <div class="col-md-12">
+                <div class="timeline-centered timeline-sm">
+                    @if (Resources.Count == 0)
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <div class="font-weight-bold text-center" style="font-size:18px">找不到任何相關資料</div>
+                        </div>
+                    }
+                    @foreach (var res in Resources)
+                    {
+                        if (res.resourceType == "Patient")
+                        {
+                            <article class="timeline-entry">
+                                <div class="timeline-entry-inner">
+                                    @*<time datetime="2014-01-10T03:45" class="timeline-time"><span>12:45 AM</span><span>Today</span></time>*@
+                                    <div class="timeline-icon bg-violet"><i class="fa fa-exclamation"></i></div>
+                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                        <div class="timeline-label">
+                                            <h4 class="timeline-title">病歷號： @(res.identifier[0].value ?? "null")</h4>
+                                            @{
+                                                DateTime birthday;
+                                                int age = -1;
+                                                if (res.birthDate != null)
+                                                {
+                                                    birthday = DateTime.Parse(Convert.ToString(res.birthDate));
+                                                    age = now.Year - birthday.Year;
+                                                    if (now < birthday.AddYears(age)) { age--; }
+                                                }
+                                            }
+                                            <p>
+                                                FHIR ID:@(res.id) <br>
+                                                年齡:@(age != -1 ? age.ToString() : "未知") <br>
+                                            </p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </article>
+                        }
+                        else if (res.resourceType == "Encounter")
+                        {
+                            DateTime period_start = DateTime.Parse(Convert.ToString(res.period.start));
+                            <article class="timeline-entry left-aligned">
+                                <div class="timeline-entry-inner">
+                                    <time datetime="@res.effectiveDateTime" class="timeline-time">
+                                        @if (period_start.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            <span>@period_start.ToString("tt hh:mm")</span>
+                                        }
+                                        <span>@period_start.ToString("yyyy年MM月dd日")</span>
+                                    </time>
+                                    <div class="timeline-icon bg-grey"><i class="fa fa-group"></i></div>
+                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                        <div class="timeline-label bg-grey">
+                                            <h4 class="timeline-title">@res.id @(res.@class.code)</h4>
+                                            @if (res.type != null)
+                                            {
+                                                <p>
+                                                    參照連結：@(res.type[0].coding[0].system) <br>
+                                                    檢驗項目代碼：@(res.type[0].coding[0].code) <br>
+                                                    檢驗項目名稱：@(res.type[0].coding[0].display) <br>
+                                                    說明：@(res.type[0].text)
+                                                </p>
+                                            }
+                                        </div>
+                                    </a>
+                                </div>
+                            </article>
+                        }
+                        else if (res.resourceType == "Observation")
+                        {
+                            DateTime effectiveDateTime = DateTime.Parse(Convert.ToString(res.effectiveDateTime ?? res.meta.lastUpdated));
+                            <article class="timeline-entry left-aligned">
+                                <div class="timeline-entry-inner">
+                                    <time datetime="@res.effectiveDateTime" class="timeline-time">
+                                        @if (effectiveDateTime.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            <span>@effectiveDateTime.ToString("tt hh:mm")</span>
+                                        }
+                                        <span>@effectiveDateTime.ToString("yyyy年MM月dd日")</span>
+                                    </time>
+                                    <div class="timeline-icon bg-blue"><i class="fa fa-group"></i></div>
+                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                        <div class="timeline-label bg-blue">
+                                            <h4 class="timeline-title">檢驗檢查/觀察值</h4>
+                                            @if (res.code != null)
+                                            {
+                                                <p>
+                                                    @if (res.code.coding != null)
+                                                    {
+                                                        @:參照連結：@(res.code.coding[0].system)<br>
+                                                        @:檢驗項目代碼：@(res.code.coding[0].code) <br>
+                                                        @:檢驗項目名稱：@(res.code.coding[0].display) <br>
+                                                    }
+                                                    說明：@(res.code.text)
+                                                </p>
+                                            }
+                                        </div>
+                                    </a>
+                                </div>
+                            </article>
+                        }
+                        else if (res.resourceType == "MedicationRequest")
+                        {
+                            DateTime authoredOn = DateTime.Parse(Convert.ToString(res.authoredOn ?? res.meta.lastUpdated));
+                            <article class="timeline-entry">
+                                <div class="timeline-entry-inner">
+                                    <time datetime="@res.authoredOn" class="timeline-time">
+                                        @if (authoredOn.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            <span>@authoredOn.ToString("tt hh:mm")</span>
+                                        }
+                                        <span>@authoredOn.ToString("yyyy年MM月dd日")</span>
+                                    </time>
+                                    <div class="timeline-icon bg-red"><i class="fa fa-group"></i></div>
+                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                        <div class="timeline-label bg-red">
+                                            <h4 class="timeline-title">藥物</h4>
+                                            @if (res.medicationCodeableConcept != null)
+                                            {
+                                                <p>
+                                                    參照連結：@(res.medicationCodeableConcept.coding[0].system) <br>
+                                                    藥物代碼：@(res.medicationCodeableConcept.coding[0].code) <br>
+                                                    藥物名稱：@(res.medicationCodeableConcept.coding[0].display) <br>
+                                                    說明：@(res.medicationCodeableConcept.text)
+                                                </p>
+                                            }
+                                            else
+                                            {
+                                                <p>
+                                                    藥物連結：@(res.medicationReference.reference)
+                                                </p>
+                                            }
+                                        </div>
+                                    </a>
+                                </div>
+                            </article>
+                        }
+                        else if (res.resourceType == "Procedure")
+                        {
+                            DateTime performedPeriod_start = DateTime.Parse(Convert.ToString(res.performedPeriod != null ? res.performedPeriod.start : res.meta.lastUpdated));
+                            DateTime performedPeriod_end = DateTime.Parse(Convert.ToString(res.performedPeriod != null ? res.performedPeriod.end : res.meta.lastUpdated));
+                            <article class="timeline-entry">
+                                <div class="timeline-entry-inner">
+                                    <time datetime="@res.authoredOn" class="timeline-time">
+                                        @if (performedPeriod_start.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            <span>@performedPeriod_start.ToString("tt hh:mm")</span>
+                                        }
+                                        <span>@performedPeriod_start.ToString("yyyy年MM月dd日")</span>
+                                        @if (performedPeriod_end.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            <span>@performedPeriod_end.ToString("tt hh:mm")</span>
+                                        }
+                                        <span>@performedPeriod_end.ToString("yyyy年MM月dd日")</span>
+                                    </time>
+                                    <div class="timeline-icon bg-pink"><i class="fa fa-group"></i></div>
+                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                        <div class="timeline-label bg-pink">
+                                            <h4 class="timeline-title">處置</h4>
+                                            @if (res.code != null)
+                                            {
+                                                <p>
+                                                    參照連結：@(res.code.coding[0].system ?? null) <br>
+                                                    處置項目代碼：@(res.code.coding[0].code) <br>
+                                                    處置項目名稱：@(res.code.coding[0].display) <br>
+                                                    說明：@(res.code.text)
+                                                </p>
+                                            }
+                                        </div>
+                                    </a>
+                                </div>
+                            </article>
+                        }
+                        else if (res.resourceType == "Condition")
+                        {
+                            DateTime onsetDateTime = DateTime.Parse(Convert.ToString(res.onsetDateTime ?? res.meta.lastUpdated));
+                            <article class="timeline-entry left-aligned">
+                                <div class="timeline-entry-inner">
+                                    <time datetime="@res.onsetDateTime" class="timeline-time">
+                                        @if (onsetDateTime.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            <span>@onsetDateTime.ToString("tt hh:mm")</span>
+                                        }
+                                        <span>@onsetDateTime.ToString("yyyy年MM月dd日")</span>
+                                    </time>
+                                    <div class="timeline-icon bg-orange"><i class="fa fa-group"></i></div>
+                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                        <div class="timeline-label bg-orange">
+                                            <h4 class="timeline-title">診斷結果</h4>
+                                            @if (res.code != null)
+                                            {
+                                                <p>
+
+                                                    參照連結：@(res.code.coding[0].system) <br>
+                                                    診斷代碼：@(res.code.coding[0].code) <br>
+                                                    診斷名稱：@(res.code.coding[0].display) <br>
+                                                    說明：@(res.code.text)
+                                                </p>
+                                            }
+                                        </div>
+                                    </a>
+                                </div>
+                            </article>
+                        }
+                        else if (res.resourceType == "DiagnosticReport")
+                        {
+                            DateTime effectiveDateTime = DateTime.Parse(Convert.ToString(res.effectiveDateTime ?? res.effectivePeriod != null ? res.effectivePeriod.start : res.meta.lastUpdated));
+                            <article class="timeline-entry left-aligned">
+                                <div class="timeline-entry-inner">
+                                    <time datetime="@res.effectiveDateTime" class="timeline-time">
+                                        @if (effectiveDateTime.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            <span>@effectiveDateTime.ToString("tt hh:mm")</span>
+                                        }
+                                        <span>@effectiveDateTime.ToString("yyyy年MM月dd日")</span>
+                                    </time>
+                                    <div class="timeline-icon bg-dark"><i class="fa fa-group"></i></div>
+                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                        <div class="timeline-label bg-dark">
+                                            <h4 class="timeline-title">檢驗報告</h4>
+                                            @if (res.code != null)
+                                            {
+                                                <p>
+
+                                                    參照連結：@(res.code.coding[0].system) <br>
+                                                    診斷代碼：@(res.code.coding[0].code) <br>
+                                                    診斷名稱：@(res.code.coding[0].display) <br>
+                                                    說明：@(res.code.text)
+                                                </p>
+                                            }
+                                        </div>
+                                    </a>
+                                </div>
+                            </article>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 card mb-0" style="background-color: #fff;">
+        @if (Res_Search.Count > 0)
+        {
+            Res_Search = Res_Search[0];
+            <div class="card-header">
+                <h5>@(Res_Search.resourceType) (ID:@(Res_Search.id))</h5>
+                @*<div class="card-header-right">
+                        <div class="btn-group card-option">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="feather icon-more-horizontal"></i>
+                            </button>
+                            <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
+                                <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
+                                <li class="dropdown-item reload-card"><a href="#!"><i class="feather icon-refresh-cw"></i> reload</a></li>
+                                <li class="dropdown-item close-card"><a href="#!"><i class="feather icon-trash"></i> remove</a></li>
+                            </ul>
+                        </div>
+                    </div>*@
+            </div>
+            <div class="card-block border-bottom table-border-style">
+                @*@foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(Res_Search))
+                    {
+                        //if (descriptor.GetValue(Res_Search).GetType() == "") Newtonsoft.Json.Linq.JValue/Newtonsoft.Json.Linq.JObject/Newtonsoft.Json.Linq.JArray
+                        @descriptor.Name @:- @descriptor.GetValue(Res_Search) [@descriptor.GetValue(Res_Search).GetType()]<br>
+                    }*@
+                @if (Res_Search.resourceType == "Patient")
+                {
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col" colspan="3">基本資料</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">身分證/病歷號</th>
+                                    <td>
+                                        @if (Res_Search.identifier.Count > 0)
+                                        {
+                                            @Res_Search.identifier[0].value
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">姓名</th>
+                                    <td>
+                                        @if (Res_Search.name != null)
+                                        {
+                                            @(Res_Search.name[0].text != null ? Res_Search.name[0].text : (Res_Search.name[0].given[0].ToString() + " " + Res_Search.name[0].family.ToString()) ?? "無")
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">生日</th>
+                                    <td>
+                                        @if (Res_Search.birthDate != null)
+                                        {
+                                            DateTime birthDate = DateTime.Parse(Convert.ToString(Res_Search.birthDate));
+                                            @: @birthDate.ToString("yyyy年MM月dd日") (年齡：@Age(birthDate))
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">性別</th>
+                                    <td>
+                                        @if (Res_Search.gender != null)
+                                        {
+                                            switch (Res_Search.gender.ToString())
+                                            {
+                                                case "male":
+                                                    @:男
+                                                    break;
+                                                case "female":
+                                                    @:女
+                                                    break;
+                                                case "other":
+                                                    @:其他
+                                                    break;
+                                                case "unknown":
+                                                    @:不知道
+                                                    break;
+                                            }
+
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+                else if (Res_Search.resourceType == "Encounter")
+                {
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col" colspan="3">基本資料</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">就醫序號</th>
+                                    <td>
+                                        @if (Res_Search.identifier.Count > 0)
+                                        {
+                                            @Res_Search.identifier[0].value
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">就醫科別代號</th>
+                                    <td>
+                                        @if (Res_Search.identifier.Count > 0)
+                                        {
+                                            @Res_Search.identifier[0].value
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">就醫類別</th>
+                                    <td>
+                                        @(Res_Search.@class.code)
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">就診日期</th>
+                                    <td>
+                                        @(Res_Search.period.start)
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">主治醫師</th>
+                                    <td>
+                                        @if (Res_Search.participant != null)
+                                        {
+                                            @Res_Search.participant[0].individual.display
+                                            @:(Practitioner ID: @(Res_Search.participant[0].individual.reference.ToString().Split('/')[1]))
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+                else if (Res_Search.resourceType == "Observation")
+                {
+                    DateTime? effectiveDateTime = null;
+                    if (Res_Search.effectiveDateTime != null)
+                    {
+                        effectiveDateTime = DateTime.Parse(Convert.ToString(Res_Search.effectiveDateTime));
+                    }
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col" colspan="3">基本資料</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">檢驗項目名稱</th>
+                                    <td>
+                                        @if (Res_Search.code.coding.Count > 0)
+                                        {
+                                            @Res_Search.code.coding[0].display<br>
+                                            @:Text:@Res_Search.code.text
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">檢驗部位</th>
+                                    <td>
+                                        @if (Res_Search.bodySite != null)
+                                        {
+                                            @Res_Search.bodySite.coding[0].display
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">檢驗值</th>
+                                    <td>
+                                        @if (Res_Search.valueQuantity != null)
+                                        {
+                                            @Res_Search.valueQuantity.value @Res_Search.valueQuantity.unit
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">發報告日期</th>
+                                    <td>
+                                        @if (effectiveDateTime != null)
+                                        {
+                                            effectiveDateTime.Value.ToString("yyyy年MM月dd日");
+                                            if (effectiveDateTime.Value.TimeOfDay.TotalSeconds != 0)
+                                            {
+                                                @effectiveDateTime.Value.ToString("tt hh:mm")
+                                            }
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <div class="table-responsive dataTables_scroll">
+                        <table id="cutomerTable" class="display table nowrap table-striped table-hover" style="width:100%" role="grid">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">id</th>
+                                    <th scope="col">值</th>
+                                    <th scope="col">單位</th>
+                                    <th scope="col">紀錄時間</th>
+                                    <th scope="col">查看</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var res_detail in Resource_detail)
+                                {
+                                    <tr>
+                                        <td>@res_detail.id</td>
+                                        <td>@(res_detail.valueQuantity != null ? res_detail.valueQuantity.value : "")</td>
+                                        <td>@(res_detail.valueQuantity != null ? res_detail.valueQuantity.unit : "")</td>
+                                        <td>@(res_detail.effectiveDateTime)</td>
+                                        <td></td>
+                                    </tr>
+                                    //目前只有針對第一層數值呈現圖表
+                                    if (res_detail.valueQuantity != null)
+                                    {
+                                        chart_data.Add(new { date = DateTime.Parse(Convert.ToString(res_detail.effectiveDateTime)).ToString("yyyy-MM-dd"), value = Convert.ToSingle(res_detail.valueQuantity.value) });
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                }
+                else if (Res_Search.resourceType == "Procedure")
+                {
+                    DateTime? performedDateTime = null;
+                    if (Res_Search.performedDateTime != null || Res_Search.performedPeriod != null)
+                    {
+                        performedDateTime = DateTime.Parse(Convert.ToString(Res_Search.performedDateTime ?? Res_Search.performedPeriod.start));
+                    }
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col" colspan="3">基本資料</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">處置/手術名稱</th>
+                                    <td>
+                                        @if (Res_Search.code.coding.Count > 0)
+                                        {
+                                            @Res_Search.code.coding[0].display<br>
+                                            @:說明:@Res_Search.code.text
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">處置/手術部位</th>
+                                    <td>
+                                        @if (Res_Search.bodySite != null)
+                                        {
+                                            @Res_Search.bodySite.coding[0].display
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">處置/手術醫師</th>
+                                    <td>
+                                        @if (Res_Search.performer != null)
+                                        {
+                                            @Res_Search.performer[0].actor.display
+                                            @:(Practitioner ID: @(Res_Search.performer[0].actor.reference.ToString().Split('/')[1]))
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">處置/手術日期</th>
+                                    <td>
+                                        @if (performedDateTime != null)
+                                        {
+                                            performedDateTime.Value.ToString("yyyy年MM月dd日");
+                                            if (performedDateTime.Value.TimeOfDay.TotalSeconds != 0)
+                                            {
+                                                @performedDateTime.Value.ToString("tt hh:mm")
+                                            }
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+                else if (Res_Search.resourceType == "Condition")
+                {
+                    DateTime onsetDateTime = DateTime.Parse(Convert.ToString(Res_Search.onsetDateTime));
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col" colspan="3">基本資料</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">疾病診斷名稱</th>
+                                    <td>
+                                        @if (Res_Search.code.coding.Count > 0)
+                                        {
+                                            @Res_Search.code.coding[0].display<br>
+                                            @:說明:@Res_Search.code.text
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">處置/手術日期</th>
+                                    <td>
+                                        @onsetDateTime.ToString("yyyy年MM月dd日")
+                                        @if (onsetDateTime.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            @onsetDateTime.ToString("tt hh:mm")
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+                else if (Res_Search.resourceType == "MedicationRequest")
+                {
+                    DateTime authoredOn = DateTime.Parse(Convert.ToString(Res_Search.authoredOn));
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col" colspan="3">基本資料</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">處方類型</th>
+                                    <td>
+
+                                        @Res_Search.intent<br>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">藥物名稱</th>
+                                    <td>
+                                        @if (Res_Search.medicationCodeableConcept != null)
+                                        {
+                                            @Res_Search.medicationCodeableConcept.coding[0].display<br>
+                                            @:說明:@Res_Search.medicationCodeableConcept.text
+                                        }
+                                        else
+                                        {
+                                            @Res_Search.medicationReference.reference<br>
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">處方日期</th>
+                                    <td>
+                                        @authoredOn.ToString("yyyy年MM月dd日")
+                                        @if (authoredOn.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            @authoredOn.ToString("tt hh:mm")
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">處方服用說明</th>
+                                    <td colspan="2">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>頻率</th>
+                                                    <th>服用路徑</th>
+                                                    <th>服用方式</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var dose_ins in Res_Search.dosageInstruction)
+                                                {
+                                                    <tr>
+                                                        <td>@dose_ins.sequence</td>
+                                                        <td>@(dose_ins.timing != null ? (dose_ins.timing.code != null ?dose_ins.timing.code.coding[0].display:"") : "")</td>
+                                                        <td>@(dose_ins.route != null ? dose_ins.route.coding[0].display : "")</td>
+                                                        <td>@(dose_ins.method != null ? dose_ins.method.coding[0].display : "")</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                @if (Res_Search.dispenseRequest != null)
+                                {
+                                    if (Res_Search.dispenseRequest.validityPeriod != null)
+                                    {
+                                        <tr>
+                                            @{
+                                                DateTime validityPeriod_start = DateTime.Parse(Convert.ToString(Res_Search.dispenseRequest.validityPeriod.start));
+                                                DateTime validityPeriod_end = DateTime.Parse(Convert.ToString(Res_Search.dispenseRequest.validityPeriod.end));
+                                                <th scope="row">處方服用時間</th>
+                                                <td>
+                                                    @validityPeriod_start.ToString("yyyy年MM月dd日")
+                                                    @if (validityPeriod_start.TimeOfDay.TotalSeconds != 0)
+                                                    {
+                                                        @validityPeriod_start.ToString("tt hh:mm")
+                                                    }
+                                                    ~
+                                                    @validityPeriod_end.ToString("yyyy年MM月dd日")
+                                                    @if (validityPeriod_end.TimeOfDay.TotalSeconds != 0)
+                                                    {
+                                                        @validityPeriod_end.ToString("tt hh:mm")
+                                                    }
+                                                </td>
+                                                <td></td>
+                                            }
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <th scope="row">每次劑量</th>
+                                        <td>
+                                            @Res_Search.dispenseRequest.quantity.value @Res_Search.dispenseRequest.quantity.unit
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">服用天數</th>
+                                        <td>
+                                            @Res_Search.dispenseRequest.expectedSupplyDuration.value @Res_Search.dispenseRequest.expectedSupplyDuration.unit
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+                else if (Res_Search.resourceType == "DiagnosticReport")
+                {
+                    DateTime effectiveDateTime = DateTime.Parse(Convert.ToString(Res_Search.effectiveDateTime));
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col" colspan="3">基本資料</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">診斷</th>
+                                    <td>
+                                        @if (Res_Search.code.coding.Count > 0)
+                                        {
+                                            @Res_Search.code.coding[0].display<br>
+                                            @:說明:@Res_Search.code.text
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">日期</th>
+                                    <td>
+                                        @effectiveDateTime.ToString("yyyy年MM月dd日")
+                                        @if (effectiveDateTime.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            @effectiveDateTime.ToString("tt hh:mm")
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">報告書產出者</th>
+                                    <td>
+                                        @if (Res_Search.performer != null)
+                                        {
+                                            @Res_Search.performer[0].display
+                                            @:(@Res_Search.performer[0].reference.ToString().Split('/')[0] ID: @(Res_Search.performer[0].reference.ToString().Split('/')[1]))
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">結果</th>
+                                    <td>
+                                        @if (Res_Search.result != null)
+                                        {
+                                            foreach (var result in Res_Search.result)
+                                            {
+                                                @result.display
+                                                @:(檢查紀錄 ID: @(result.reference.ToString().Split('/')[1]))<br>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+                else if (Res_Search.resourceType == "ServiceRequest")
+                {
+                    DateTime occurrenceDateTime = DateTime.Parse(Convert.ToString(Res_Search.occurrenceDateTime));
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col" colspan="3">基本資料</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">服務請求代碼</th>
+                                    <td>
+                                        @if (Res_Search.code.coding.Count > 0)
+                                        {
+                                            @Res_Search.code.coding[0].display<br>
+                                            @:說明:@Res_Search.code.text
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">日期</th>
+                                    <td>
+                                        @occurrenceDateTime.ToString("yyyy年MM月dd日")
+                                        @if (occurrenceDateTime.TimeOfDay.TotalSeconds != 0)
+                                        {
+                                            @occurrenceDateTime.ToString("tt hh:mm")
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">就醫序號</th>
+                                    <td>
+                                        @if (Res_Search.encounter != null)
+                                        {
+                                            @Res_Search.encounter[0].display
+                                            @:(@Res_Search.encounter[0].reference.ToString().Split('/')[0] ID: @(Res_Search.encounter[0].reference.ToString().Split('/')[1]))
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">患者</th>
+                                    <td>
+                                        @Res_Search.subject.display
+                                        (@Res_Search.subject.reference.ToString().Split('/')[0] ID: @(Res_Search.subject.reference.ToString().Split('/')[1]))
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">申請者</th>
+                                    <td>
+                                        @if (Res_Search.performer != null)
+                                        {
+                                            @Res_Search.performer[0].display
+                                            @:(@Res_Search.performer[0].reference.ToString().Split('/')[0] ID: @(Res_Search.performer[0].reference.ToString().Split('/')[1]))
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+            </div>
+            <div class="card-block">
+                <div id="chartdiv"></div>
+            </div>
+        }
+
+
+    </div>
+</div>
+
+
+@section scripts {
+    <script src="~/Scripts/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Scripts/FixedHeader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Content/assets/plugins/amchart/js/index.js"></script>
+    <script src="~/Content/assets/plugins/amchart/js/xy.js"></script>
+    <script src="~/Content/assets/plugins/amchart/js/themes/Animated.js"></script>
+
+    <script type="text/javascript">
+        var a_element = $("a[href='" + $(location).attr("pathname") + "']").offset();
+        a_element.top -= 200;
+        $('#time_line').animate({
+            scrollTop: a_element.top
+        });
+
+        $(".footer").remove();
+
+        $("#cutomerTable").DataTable({
+            "scrollY": "200px",
+            "scrollCollapse": true,
+            "searching": false, //搜尋功能, 預設是開啟
+            "paging": false, //分頁功能, 預設是開啟
+            "ordering": true //排序功能, 預設是開啟
+        });
+        // Define data
+        var data = @Html.Raw(JsonConvert.SerializeObject(chart_data));
+        $("#chartdiv").css({ "height": "0px" });
+        //console.log(data.length);
+        if (data.length > 0) {
+            $("#chartdiv").css({ "height": "300px" });
+            // Create root and chart
+            var root = am5.Root.new("chartdiv");
+
+            root.setThemes([
+                am5themes_Animated.new(root)
+            ]);
+
+            var chart = root.container.children.push(
+                am5xy.XYChart.new(root, {
+                    panY: false,
+                    wheelY: "zoomX",
+                    layout: root.verticalLayout,
+                    maxTooltipDistance: 0
+                })
+            );
+
+            // Create Y-axis
+            var yAxis = chart.yAxes.push(
+                am5xy.ValueAxis.new(root, {
+                    extraTooltipPrecision: 1,
+                    renderer: am5xy.AxisRendererY.new(root, {})
+                })
+            );
+
+            // Create X-Axis
+            let xAxis = chart.xAxes.push(
+                am5xy.DateAxis.new(root,
+                    {
+                        baseInterval: {
+                            timeUnit: "day",
+                            count: 1
+                        },
+                        extraMax: 0.05,
+                        extraMin: 0.05,
+                        renderer: am5xy.AxisRendererX.new(root, {})
+                    })
+            );
+
+            xAxis.get("dateFormats")["day"] = "yyyy-MM-dd";
+            xAxis.get("periodChangeDateFormats")["day"] = "MMMM";
+
+            // Create series
+            function createSeries(name, field) {
+                var series = chart.series.push(
+                    am5xy.LineSeries.new(root, {
+                        name: name,
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: field,
+                        valueXField: "date",
+                        tooltip: am5.Tooltip.new(root, {})
+                    })
+                );
+
+                series.bullets.push(function () {
+                    return am5.Bullet.new(root, {
+                        sprite: am5.Circle.new(root, {
+                            radius: 5,
+                            fill: series.get("fill"),
+                            stroke: root.interfaceColors.get("background"),
+                            strokeWidth: 2,
+                            tooltipText: "[bold]{valueX.formatDate()}[/]\n[bold]Value:[/] {valueY}",
+                            showTooltipOn: "always",
+                        })
+                    });
+                });
+
+                series.strokes.template.set("strokeWidth", 2);
+
+                series.data.processor = am5.DataProcessor.new(root, {
+                    dateFormat: "yyyy-MM-dd",
+                    dateFields: ["date"]
+                });
+
+                series.data.setAll(data);
+            }
+
+            createSeries("Series", "value");
+
+            // Add cursor
+            chart.set("cursor", am5xy.XYCursor.new(root, {
+                behavior: "zoomXY",
+                xAxis: xAxis
+            }));
+
+            xAxis.set("tooltip", am5.Tooltip.new(root, {
+                themeTags: ["axis"]
+            }));
+
+            yAxis.set("tooltip", am5.Tooltip.new(root, {
+                themeTags: ["axis"]
+            }));
+
+        }
+    </script>
+}
+

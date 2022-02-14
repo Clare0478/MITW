@@ -9,14 +9,23 @@ namespace FHIR_Demo.Controllers
 {
     public class CookiesController
     {
-        public string FHIR_url = "https://hapi.fhir.tw/fhir";
-        public string FHIR_Token = "3d821661-6dc0-40b1-a8d5-2e91389255bb";
+        //public string FHIR_url = "https://oauth.dicom.org.tw/fhir";
+        //public string FHIR_Token = "3d821661-6dc0-40b1-a8d5-2e91389255bb";
+        public string FHIR_url = "https://vtb02p.vghks.gov.tw/fhir-server/api/v4";
+        public string FHIR_Token = "fhiruser:change-password";
 
         public FhirClientSettings settings = new FhirClientSettings
         {
             Timeout = 120000,
             PreferredFormat = ResourceFormat.Json,
         };
+
+        //預設Cookie
+        public void Init_Cookie(HttpContextBase httpContext) 
+        {
+            FHIR_URL_Cookie(httpContext);
+            FHIR_Token_Cookie(httpContext);
+        }
 
         public string FHIR_URL_Cookie(HttpContextBase httpContext)
         {
