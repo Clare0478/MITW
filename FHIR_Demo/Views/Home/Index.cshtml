@@ -134,6 +134,8 @@
     <script src="~/Scripts/datatables/dataTables.bootstrap4.min.js"></script>
     <script src="~/Scripts/FixedHeader/js/dataTables.fixedHeader.min.js"></script>
     <script type="text/javascript">
+        var baseSiteURL = '@Url.Content("~/")';
+
         @*取得SearchParameter 的json檔案 *@
         $(document).on('keypress', 'input[type="text"]',
             function (e) {
@@ -403,7 +405,7 @@
                 data["search"] = search;
                 //console.log(data);
             }
-            
+
             var table = $("#cutomerTable").DataTable({
                 "fixedHeader": true,
                 "proccessing": true,
@@ -429,7 +431,7 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="/Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -472,7 +474,7 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="/Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -544,7 +546,7 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="/Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -643,7 +645,7 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="/Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -758,7 +760,7 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="/Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -842,7 +844,7 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="/Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -941,7 +943,7 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="/Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -1021,7 +1023,7 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="/Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -1104,7 +1106,7 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="/Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]

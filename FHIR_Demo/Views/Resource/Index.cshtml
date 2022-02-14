@@ -460,7 +460,13 @@
                                     <div class="timeline-icon bg-violet"><i class="fa fa-exclamation"></i></div>
                                     <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
                                         <div class="timeline-label">
-                                            <h4 class="timeline-title">病歷號： @(res.identifier[0].value ?? "null")</h4>
+                                            <h4 class="timeline-title">
+                                                病歷號：
+                                                @if (res.identifier != null)
+                                                {
+                                                    @res.identifier[0].value
+                                                }
+                                            </h4>
                                             @{
                                                 DateTime birthday;
                                                 int age = -1;
