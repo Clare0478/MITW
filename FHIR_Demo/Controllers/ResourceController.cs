@@ -24,11 +24,24 @@ namespace FHIR_Demo.Controllers
                 try
                 {
                     //連結FHIR Server
-                    handler.OnBeforeRequest += (sender, e) =>
+                    //讓系統通過對於不安全的https連線
+                    handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
+                    if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
                     {
-                        e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
-                        //e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
-                    };
+                        //使用Basic 登入
+                        handler.OnBeforeRequest += (sender, e) =>
+                        {
+                            e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
+                        };
+                    }
+                    else
+                    {
+                        //使用Bearer 登入
+                        handler.OnBeforeRequest += (sender, e) =>
+                        {
+                            e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                        };
+                    }
                     FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
 
                     string patient_id = "";

@@ -25,19 +25,33 @@ namespace FHIR_Demo.Controllers
 
         public ActionResult Index()
         {
+            //預設Cookie值
             cookies.Init_Cookie(HttpContext);
+
+            //設定Server選單
+            var Server_selectList = new List<SelectListItem>()
+            {
+                new SelectListItem {Text="IBM", Value="IBM" },
+                new SelectListItem {Text="HAPi", Value="HAPi" },
+            };
+            //預設選擇哪一筆
+            Server_selectList.Where(q => q.Value == cookies.FHIR_Server_Cookie(HttpContext)).First().Selected = true;
+            ViewBag.Server_selectList = Server_selectList;
+
             return View();
         }
 
         #region Datatable 表單功能
         private string FHIR_url;
+        private string FHIR_Server;
         private string FHIR_token;
         private string FHIR_Resource;
         private string SearchParameter_query;
 
-        public dynamic GetResource(DataTableAjaxPostModel model, string url, string token, string resource , string search = null)
+        public dynamic GetResource(DataTableAjaxPostModel model, string server, string url, string token, string resource , string search = null)
         {
             FHIR_url = url;
+            FHIR_Server = server;
             FHIR_token = token;
             FHIR_Resource = resource;
             SearchParameter_query = search;
@@ -68,9 +82,12 @@ namespace FHIR_Demo.Controllers
         public IList<dynamic> YourCustomSearchFunc(DataTableAjaxPostModel model, out int filteredResultsCount, out int totalResultsCount)
         {
             var searchBy = (model.search != null) ? model.search.value : null;
+            //取得幾筆資料
             var take = model.length;
+            //第幾筆開始
             var skip = model.start;
-
+            //第幾頁
+            var page = model.start / model.length + 1;
             string sortBy = "";
             bool sortDir = true;
 
@@ -82,7 +99,7 @@ namespace FHIR_Demo.Controllers
             }
 
             // search the dbase taking into consideration table sorting and paging
-            var result = GetDataFromDbase(searchBy, take, skip, model.draw, sortBy, sortDir, out filteredResultsCount, out totalResultsCount);
+            var result = GetDataFromDbase(searchBy, take, skip, page, sortBy, sortDir, out filteredResultsCount, out totalResultsCount);
             if (result == null)
             {
                 // empty collection...
@@ -93,19 +110,13 @@ namespace FHIR_Demo.Controllers
 
         public List<dynamic> GetDataFromDbase(string searchBy, int take, int skip, int page, string sortBy, bool sortDir, out int filteredResultsCount, out int totalResultsCount)
         {
-            // the example datatable used is not supporting multi column ordering
-            // so we only need get the column order from the first column passed to us.        
-            //var whereClause = BuildDynamicWhereClause(Db, searchBy);
-
             //修改searchparameter
             sortBy = FHIRSearchParameters_Chagne(DatatablesObjectDisplay_Change(sortBy));
             var q = new SearchParams();
             if (SearchParameter_query != null)
                 q = SearchParams.FromUriParamList(UriParamList.FromQueryString(SearchParameter_query));
             q.Where("_total=accurate") //顯示總比數
-                .LimitTo(take) //抓取幾筆資料
-                //.Where("_getpagesoffset="+ skip); //略過幾筆資料 IBM不能使用
-                .Where("_page=" + page);
+                .LimitTo(take); //抓取幾筆資料
 
             if (String.IsNullOrEmpty(searchBy))
             {
@@ -121,35 +132,47 @@ namespace FHIR_Demo.Controllers
 
             q.OrderBy(sortBy, (sortDir == true) ? SortOrder.Ascending : SortOrder.Descending);
 
-            
-
-            handler.OnBeforeRequest += (sender, e) =>
+            //讓系統通過對於不安全的https連線
+            handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
+            if (cookies.FHIR_Server_Cookie(HttpContext, FHIR_Server) == "IBM")
             {
-                //e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, FHIR_token));
-                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext, FHIR_token))));
-            };
+                //換頁
+                q.Where("_page=" + page);
+
+                //使用Basic 登入
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext, FHIR_token))));
+                };
+            }
+            else 
+            {
+                //換頁
+                q.Where("_getpagesoffset=" + skip);
+
+                //使用Bearer 登入
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, FHIR_token));
+                };
+            }
+
             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, FHIR_url), cookies.settings, handler);
 
-            ////查看數值使用變數
+            //查看數值使用變數
             var a = q.ToParameters();
 
             Bundle PatientSearchBundle = client.Search(q, FHIR_Resource);
 
             Bundle PatientBundle_total = client.Search(new SearchParams().Where("_total=accurate"), FHIR_Resource);
 
-            //var json = PatientSearchBundle.ToJson();
-            //List<PatientViewModel> patientViewModels = new List<PatientViewModel>();
             List<dynamic> Patients = new List<dynamic>();
 
             foreach (var entry in PatientSearchBundle.Entry)
             {
-                //patientViewModels.Add(new PatientViewModel().PatientViewModelMapping((Patient)entry.Resource));
-
                 Patients.Add((entry.Resource).ToJObject());
             }
 
-            // now just get the count of items (without the skip and take) - eg how many could be returned with filtering
-            //filteredResultsCount = Db.DatabaseTableEntity.AsExpandable().Where(whereClause).Count();
             filteredResultsCount = PatientSearchBundle.Total ?? 0;
 
             totalResultsCount = PatientBundle_total.Total ?? 0;

@@ -654,7 +654,7 @@
                         }
                         else if (res.resourceType == "DiagnosticReport")
                         {
-                            DateTime effectiveDateTime = DateTime.Parse(Convert.ToString(res.effectiveDateTime ?? res.effectivePeriod != null ? res.effectivePeriod.start : res.meta.lastUpdated));
+                            DateTime effectiveDateTime = DateTime.Parse(Convert.ToString(res.effectiveDateTime ?? (res.effectivePeriod != null ? res.effectivePeriod.start : res.meta.lastUpdated)));
                             <article class="timeline-entry left-aligned">
                                 <div class="timeline-entry-inner">
                                     <time datetime="@res.effectiveDateTime" class="timeline-time">
@@ -690,7 +690,7 @@
     </div>
 
     <div class="col-md-6 card mb-0" style="background-color: #fff;">
-        @if (Res_Search.Count > 0)
+        @if (Res_Search != null)
         {
             Res_Search = Res_Search[0];
             <div class="card-header">
@@ -728,7 +728,7 @@
                                 <tr>
                                     <th scope="row">身分證/病歷號</th>
                                     <td>
-                                        @if (Res_Search.identifier.Count > 0)
+                                        @if (Res_Search.identifier != null)
                                         {
                                             @Res_Search.identifier[0].value
                                         }
@@ -807,7 +807,7 @@
                                 <tr>
                                     <th scope="row">就醫序號</th>
                                     <td>
-                                        @if (Res_Search.identifier.Count > 0)
+                                        @if (Res_Search.identifier != null)
                                         {
                                             @Res_Search.identifier[0].value
                                         }
@@ -821,7 +821,7 @@
                                 <tr>
                                     <th scope="row">就醫科別代號</th>
                                     <td>
-                                        @if (Res_Search.identifier.Count > 0)
+                                        @if (Res_Search.identifier != null)
                                         {
                                             @Res_Search.identifier[0].value
                                         }
@@ -842,7 +842,10 @@
                                 <tr>
                                     <th scope="row">就診日期</th>
                                     <td>
-                                        @(Res_Search.period.start)
+                                        @if (Res_Search.period != null)
+                                        {
+                                            @Res_Search.period.start
+                                        }
                                     </td>
                                     <td></td>
                                 </tr>
@@ -884,7 +887,7 @@
                                 <tr>
                                     <th scope="row">檢驗項目名稱</th>
                                     <td>
-                                        @if (Res_Search.code.coding.Count > 0)
+                                        @if (Res_Search.code.coding != null)
                                         {
                                             @Res_Search.code.coding[0].display<br>
                                             @:Text:@Res_Search.code.text
@@ -963,7 +966,10 @@
                                     //目前只有針對第一層數值呈現圖表
                                     if (res_detail.valueQuantity != null)
                                     {
-                                        chart_data.Add(new { date = DateTime.Parse(Convert.ToString(res_detail.effectiveDateTime)).ToString("yyyy-MM-dd"), value = Convert.ToSingle(res_detail.valueQuantity.value) });
+                                        if (res_detail.effectiveDateTime != null)
+                                        {
+                                            chart_data.Add(new { date = DateTime.Parse(Convert.ToString(res_detail.effectiveDateTime)).ToString("yyyy-MM-dd"), value = Convert.ToSingle(res_detail.valueQuantity.value) });
+                                        }
                                     }
                                 }
                             </tbody>
@@ -989,7 +995,7 @@
                                 <tr>
                                     <th scope="row">處置/手術名稱</th>
                                     <td>
-                                        @if (Res_Search.code.coding.Count > 0)
+                                        @if (Res_Search.code.coding != null)
                                         {
                                             @Res_Search.code.coding[0].display<br>
                                             @:說明:@Res_Search.code.text
@@ -1047,7 +1053,11 @@
                 }
                 else if (Res_Search.resourceType == "Condition")
                 {
-                    DateTime onsetDateTime = DateTime.Parse(Convert.ToString(Res_Search.onsetDateTime));
+                    DateTime? onsetDateTime = null;
+                    if (Res_Search.onsetDateTime != null)
+                    {
+                        DateTime.Parse(Convert.ToString(Res_Search.onsetDateTime));
+                    }
                     <div class="table-responsive">
                         <table class="table">
                             <thead class="thead-dark">
@@ -1059,7 +1069,7 @@
                                 <tr>
                                     <th scope="row">疾病診斷名稱</th>
                                     <td>
-                                        @if (Res_Search.code.coding.Count > 0)
+                                        @if (Res_Search.code.coding != null)
                                         {
                                             @Res_Search.code.coding[0].display<br>
                                             @:說明:@Res_Search.code.text
@@ -1074,10 +1084,13 @@
                                 <tr>
                                     <th scope="row">處置/手術日期</th>
                                     <td>
-                                        @onsetDateTime.ToString("yyyy年MM月dd日")
-                                        @if (onsetDateTime.TimeOfDay.TotalSeconds != 0)
+                                        @if (onsetDateTime != null)
                                         {
-                                            @onsetDateTime.ToString("tt hh:mm")
+                                            onsetDateTime.Value.ToString("yyyy年MM月dd日");
+                                            if (onsetDateTime.Value.TimeOfDay.TotalSeconds != 0)
+                                            {
+                                                @onsetDateTime.Value.ToString("tt hh:mm")
+                                            }
                                         }
                                     </td>
                                     <td></td>
@@ -1089,7 +1102,11 @@
                 }
                 else if (Res_Search.resourceType == "MedicationRequest")
                 {
-                    DateTime authoredOn = DateTime.Parse(Convert.ToString(Res_Search.authoredOn));
+                    DateTime? authoredOn = null;
+                    if (Res_Search.authoredOn != null)
+                    {
+                        DateTime.Parse(Convert.ToString(Res_Search.authoredOn));
+                    }
                     <div class="table-responsive">
                         <table class="table">
                             <thead class="thead-dark">
@@ -1101,7 +1118,6 @@
                                 <tr>
                                     <th scope="row">處方類型</th>
                                     <td>
-
                                         @Res_Search.intent<br>
                                     </td>
                                     <td></td>
@@ -1124,10 +1140,13 @@
                                 <tr>
                                     <th scope="row">處方日期</th>
                                     <td>
-                                        @authoredOn.ToString("yyyy年MM月dd日")
-                                        @if (authoredOn.TimeOfDay.TotalSeconds != 0)
+                                        @if (authoredOn != null)
                                         {
-                                            @authoredOn.ToString("tt hh:mm")
+                                            authoredOn.Value.ToString("yyyy年MM月dd日");
+                                            if (authoredOn.Value.TimeOfDay.TotalSeconds != 0)
+                                            {
+                                                @authoredOn.Value.ToString("tt hh:mm")
+                                            }
                                         }
                                     </td>
                                     <td></td>
@@ -1219,7 +1238,7 @@
                                 <tr>
                                     <th scope="row">診斷</th>
                                     <td>
-                                        @if (Res_Search.code.coding.Count > 0)
+                                        @if (Res_Search.code.coding != null)
                                         {
                                             @Res_Search.code.coding[0].display<br>
                                             @:說明:@Res_Search.code.text
@@ -1282,7 +1301,11 @@
                 }
                 else if (Res_Search.resourceType == "ServiceRequest")
                 {
-                    DateTime occurrenceDateTime = DateTime.Parse(Convert.ToString(Res_Search.occurrenceDateTime));
+                    DateTime? occurrenceDateTime = null;
+                    if (Res_Search.occurrenceDateTime != null)
+                    {
+                        DateTime.Parse(Convert.ToString(Res_Search.occurrenceDateTime));
+                    }
                     <div class="table-responsive">
                         <table class="table">
                             <thead class="thead-dark">
@@ -1294,7 +1317,7 @@
                                 <tr>
                                     <th scope="row">服務請求代碼</th>
                                     <td>
-                                        @if (Res_Search.code.coding.Count > 0)
+                                        @if (Res_Search.code.coding != null)
                                         {
                                             @Res_Search.code.coding[0].display<br>
                                             @:說明:@Res_Search.code.text
@@ -1309,10 +1332,10 @@
                                 <tr>
                                     <th scope="row">日期</th>
                                     <td>
-                                        @occurrenceDateTime.ToString("yyyy年MM月dd日")
-                                        @if (occurrenceDateTime.TimeOfDay.TotalSeconds != 0)
+                                        @occurrenceDateTime.Value.ToString("yyyy年MM月dd日")
+                                        @if (occurrenceDateTime.Value.TimeOfDay.TotalSeconds != 0)
                                         {
-                                            @occurrenceDateTime.ToString("tt hh:mm")
+                                            @occurrenceDateTime.Value.ToString("tt hh:mm")
                                         }
                                     </td>
                                     <td></td>
@@ -1322,7 +1345,10 @@
                                     <td>
                                         @if (Res_Search.encounter != null)
                                         {
-                                            @Res_Search.encounter[0].display
+                                            if (Res_Search.encounter[0].display != null)
+                                            {
+                                                @Res_Search.encounter[0].display
+                                            }
                                             @:(@Res_Search.encounter[0].reference.ToString().Split('/')[0] ID: @(Res_Search.encounter[0].reference.ToString().Split('/')[1]))
                                         }
                                         else
@@ -1335,8 +1361,14 @@
                                 <tr>
                                     <th scope="row">患者</th>
                                     <td>
-                                        @Res_Search.subject.display
-                                        (@Res_Search.subject.reference.ToString().Split('/')[0] ID: @(Res_Search.subject.reference.ToString().Split('/')[1]))
+                                        @if (Res_Search.subject != null)
+                                        {
+                                            if (Res_Search.subject.display != null)
+                                            {
+                                                @Res_Search.subject.display
+                                            }
+                                            @:(@Res_Search.subject.reference.ToString().Split('/')[0] ID: @(Res_Search.subject.reference.ToString().Split('/')[1]))
+                                        }
                                     </td>
                                     <td></td>
                                 </tr>

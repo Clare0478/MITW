@@ -317,8 +317,8 @@
     "resource": "Encounter",
     "searchParameters": [
       {
-        "ch_Name": "帳戶FHIR ID",
-        "parameter_name": "account",
+        "ch_Name": "identifier",
+        "parameter_name": "identifier",
         "selected": false,
         "input_content": {
           "type": "text",
@@ -327,8 +327,8 @@
         "switched": true
       },
       {
-        "ch_Name": "預約FHIR ID",
-        "parameter_name": "appointment",
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
         "selected": false,
         "input_content": {
           "type": "text",
@@ -337,18 +337,28 @@
         "switched": true
       },
       {
-        "ch_Name": "基於ServiceRequest的FHIR ID",
-        "parameter_name": "based-on",
+        "ch_Name": "患者性別",
+        "parameter_name": "patient.gender",
         "selected": false,
         "input_content": {
-          "type": "text",
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "男生",
+              "value": "male"
+            },
+            {
+              "key": "女生",
+              "value": "female"
+            }
+          ],
           "value": ""
         },
         "switched": true
       },
       {
-        "ch_Name": "基於ServiceRequest的FHIR ID",
-        "parameter_name": "class",
+        "ch_Name": "參與者identifier",
+        "parameter_name": "practitioner.identifier",
         "selected": false,
         "input_content": {
           "type": "text",
@@ -491,6 +501,47 @@
         },
         "switched": true
       },
+
+      {
+        "ch_Name": "帳戶FHIR ID",
+        "parameter_name": "account",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "預約FHIR ID",
+        "parameter_name": "appointment",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "基於ServiceRequest的FHIR ID",
+        "parameter_name": "based-on",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "基於ServiceRequest的FHIR ID",
+        "parameter_name": "class",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
       {
         "ch_Name": "診斷/處置FHIR ID",
         "parameter_name": "diagnosis",
@@ -504,16 +555,6 @@
       {
         "ch_Name": "照護紀錄FHIR ID",
         "parameter_name": "episode-of-care",
-        "selected": false,
-        "input_content": {
-          "type": "text",
-          "value": ""
-        },
-        "switched": true
-      },
-      {
-        "ch_Name": "identifier",
-        "parameter_name": "identifier",
         "selected": false,
         "input_content": {
           "type": "text",
@@ -811,26 +852,6 @@
           "value": ""
         },
         "switched": true
-      },
-      {
-        "ch_Name": "患者性別",
-        "parameter_name": "patient.gender",
-        "selected": false,
-        "input_content": {
-          "type": "radio",
-          "value_list": [
-            {
-              "key": "男生",
-              "value": "male"
-            },
-            {
-              "key": "女生",
-              "value": "female"
-            }
-          ],
-          "value": ""
-        },
-        "switched": true
       }
     ]
   },
@@ -863,8 +884,38 @@
         "switched": true
       },
       {
-        "ch_Name": "就診FHIR ID",
-        "parameter_name": "encounter",
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者性別",
+        "parameter_name": "patient.gender",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "男生",
+              "value": "male"
+            },
+            {
+              "key": "女生",
+              "value": "female"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "醫師identifier",
+        "parameter_name": "results-interpreter:Practitioner.identifier",
         "selected": false,
         "input_content": {
           "type": "text",
@@ -883,38 +934,8 @@
         "switched": true
       },
       {
-        "ch_Name": "患者FHIR ID",
-        "parameter_name": "patient",
-        "selected": false,
-        "input_content": {
-          "type": "text",
-          "value": ""
-        },
-        "switched": true
-      },
-      {
-        "ch_Name": "患者identifier",
-        "parameter_name": "patient.identifier",
-        "selected": false,
-        "input_content": {
-          "type": "text",
-          "value": ""
-        },
-        "switched": true
-      },
-      {
-        "ch_Name": "參與者FHIR ID",
-        "parameter_name": "results-interpreter",
-        "selected": false,
-        "input_content": {
-          "type": "text",
-          "value": ""
-        },
-        "switched": true
-      },
-      {
-        "ch_Name": "醫師identifier",
-        "parameter_name": "results-interpreter:Practitioner.identifier",
+        "ch_Name": "檢驗項目",
+        "parameter_name": "code:text",
         "selected": false,
         "input_content": {
           "type": "text",
@@ -1080,51 +1101,7 @@
         },
         "switched": true
       },
-      {
-        "ch_Name": "患者性別",
-        "parameter_name": "patient.gender",
-        "selected": false,
-        "input_content": {
-          "type": "radio",
-          "value_list": [
-            {
-              "key": "男生",
-              "value": "male"
-            },
-            {
-              "key": "女生",
-              "value": "female"
-            }
-          ],
-          "value": ""
-        },
-        "switched": true
-      }
-    ]
-  },
-  {
-    "resource": "DiagnosticReport",
-    "searchParameters": [
-      {
-        "ch_Name": "identifier",
-        "parameter_name": "identifier",
-        "selected": false,
-        "input_content": {
-          "type": "text",
-          "value": ""
-        },
-        "switched": true
-      },
-      {
-        "ch_Name": "基於ServiceRequest的identifier",
-        "parameter_name": "based-on:ServiceRequest.identifier",
-        "selected": false,
-        "input_content": {
-          "type": "text",
-          "value": ""
-        },
-        "switched": true
-      },
+
       {
         "ch_Name": "就診FHIR ID",
         "parameter_name": "encounter",
@@ -1147,7 +1124,102 @@
       },
       {
         "ch_Name": "參與者FHIR ID",
-        "parameter_name": "practitioner",
+        "parameter_name": "results-interpreter",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+    ]
+  },
+  {
+    "resource": "DiagnosticReport",
+    "searchParameters": [
+      {
+        "ch_Name": "identifier",
+        "parameter_name": "identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者性別",
+        "parameter_name": "patient.gender",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "男生",
+              "value": "male"
+            },
+            {
+              "key": "女生",
+              "value": "female"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "基於ServiceRequest的identifier",
+        "parameter_name": "based-on:ServiceRequest.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就診identifier",
+        "parameter_name": "encounter.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就診identifier",
+        "parameter_name": "encounter.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "參與者identifier",
+        "parameter_name": "results-interpreter:Practitioner.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "檢驗結果FHIR ID",
+        "parameter_name": "result",
         "selected": false,
         "input_content": {
           "type": "text",
@@ -1234,9 +1306,35 @@
         },
         "switched": true
       },
+
       {
-        "ch_Name": "檢驗項目",
-        "parameter_name": "code",
+        "ch_Name": "就診FHIR ID",
+        "parameter_name": "encounter",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者FHIR ID",
+        "parameter_name": "patient",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+    ]
+  },
+  {
+    "resource": "Observation",
+    "searchParameters": [
+      {
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
         "selected": false,
         "input_content": {
           "type": "text",
@@ -1263,15 +1361,10 @@
           "value": ""
         },
         "switched": true
-      }
-    ]
-  },
-  {
-    "resource": "Observation",
-    "searchParameters": [
+      },
       {
-        "ch_Name": "identifier",
-        "parameter_name": "identifier",
+        "ch_Name": "就診identifier",
+        "parameter_name": "encounter.identifier",
         "selected": false,
         "input_content": {
           "type": "text",
@@ -1282,26 +1375,6 @@
       {
         "ch_Name": "基於ServiceRequest的identifier",
         "parameter_name": "based-on:ServiceRequest.identifier",
-        "selected": false,
-        "input_content": {
-          "type": "text",
-          "value": ""
-        },
-        "switched": true
-      },
-      {
-        "ch_Name": "就診FHIR ID",
-        "parameter_name": "encounter",
-        "selected": false,
-        "input_content": {
-          "type": "text",
-          "value": ""
-        },
-        "switched": true
-      },
-      {
-        "ch_Name": "患者FHIR ID",
-        "parameter_name": "patient",
         "selected": false,
         "input_content": {
           "type": "text",
@@ -1389,16 +1462,6 @@
         "switched": true
       },
       {
-        "ch_Name": "檢驗項目",
-        "parameter_name": "code",
-        "selected": false,
-        "input_content": {
-          "type": "text",
-          "value": ""
-        },
-        "switched": true
-      },
-      {
         "ch_Name": "檢驗項目名稱(text)",
         "parameter_name": "code:text",
         "selected": false,
@@ -1409,21 +1472,31 @@
         "switched": true
       },
       {
-        "ch_Name": "患者性別",
-        "parameter_name": "patient.gender",
+        "ch_Name": "就診FHIR ID",
+        "parameter_name": "encounter",
         "selected": false,
         "input_content": {
-          "type": "radio",
-          "value_list": [
-            {
-              "key": "男生",
-              "value": "male"
-            },
-            {
-              "key": "女生",
-              "value": "female"
-            }
-          ],
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者FHIR ID",
+        "parameter_name": "patient",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "檢驗項目",
+        "parameter_name": "code",
+        "selected": false,
+        "input_content": {
+          "type": "text",
           "value": ""
         },
         "switched": true

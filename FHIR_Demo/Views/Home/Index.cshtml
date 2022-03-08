@@ -23,6 +23,7 @@
             content: '✓';
             font-weight: 600;
         }
+
         .dropdown-menu {
             max-height: 280px;
             overflow-y: auto;
@@ -38,24 +39,26 @@
             <div class="card-block">
                 <div class="row">
                     <div class="col-md-12">
-                        @*@using (Ajax.BeginForm("GetRecord", new AjaxOptions
-                            {
-                                HttpMethod = "POST",
-                                UpdateTargetId = "ajaxTargetDiv",
-                            }))
-                            {*@
-                        <label for="exampleInputEmail1">FHIR Server URL & Token</label>
-                        <div class="input-group mb-3">
-                            <input type="url" id="FHIR_url" name="url" class="form-control" placeholder="http://hapi.fhir.org/baseR4" value="@FHIR_url">
-                            <input type="text" id="FHIR_Token" name="token" class="form-control" placeholder="token" value="@FHIR_Token">
-                        </div>
-                        @*<label for="exampleInputEmail1">REST搜尋</label>
-                            <div class="input-group mb-3">
-                                <input type="text" name="search" class="form-control" placeholder="search" value="">
-                                <div class="input-group-append">
-                                    <button type="Submit" class="btn btn-primary">Submit</button>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="inputEmail4">Server 類型</label>
+                                @Html.DropDownList("FHIR_Server", (IEnumerable<SelectListItem>)ViewBag.Server_selectList, new { @class = "form-control", @id = "FHIR_Server" })
+                            </div>
+                            <div class="form-group col">
+                                <label>FHIR Server</label>
+                                <input type="url" id="FHIR_url" name="url" class="form-control" placeholder="http://hapi.fhir.org/baseR4" value="@FHIR_url">
+                            </div>
+                            <div class="col">
+                                <label for="inputPassword4">Token / IBM (Account:Password)</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" id="FHIR_Token" name="token" class="form-control" placeholder="token" value="@FHIR_Token">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" id="Connect_btn" type="button">連線</button>
+                                    </div>
                                 </div>
-                            </div>*@
+                            </div>
+
+                        </div>
                         <div class="form-group">
                             <label for="ResourceSelect">Resource</label>
                             <select class="form-control" id="ResourceSelect" name="resource">
@@ -65,9 +68,9 @@
                                 <option>Observation</option>
                                 <option>Procedure</option>
                                 <option>Condition</option>
-                                @*<option>Medication</option>*@
+                                <option>Medication</option>
                                 <option>MedicationRequest</option>
-                                @*<option>MedicationAdministration</option>*@
+                                <option>MedicationAdministration</option>
                                 <option>DiagnosticReport</option>
                                 <option>ServiceRequest</option>
                             </select>
@@ -96,8 +99,7 @@
                 <form id="search_form">
                     <div class="row" id="Parameter">
                     </div>
-
-                    <button type="submit" id="Parameter_btn" class="btn btn-glow-dark btn-dark col-12">送出</button>
+                    <button type="button" class="btn btn-glow-dark btn-dark col-12">送出</button>
                 </form>
             </div>
         </div>
@@ -146,26 +148,30 @@
                     //    $('#' + tag_id).tagsinput('add', this.value);
                 }
             });
+
+        //篩選條件JSON
         var parameter_json = {};
+
+        //取得篩選條件的JSON
         $.getJSON("@Url.Content("~/Scripts/FhirSearchParameter.json")", function (json) {
             parameter_json = json;
-        })
-            .done(async function () {
-                SearchParameter(await GetUrlToken().resource, null)
-            });
+        }).done(async function () {
+            //取得篩選條件的JSON
+            SearchParameter(await GetUrlToken().resource, null)
+        });
 
         //搜尋條件清單
         $("#dropdown_item").on("click", ".dropdown-item", function () {
             SearchParameter(GetUrlToken().resource, $(this));
         });
 
+        //產生篩選條件的條件區塊
         function SearchParameter(resource, element)
         {
-            //console.log(parameter_json);
-            //console.log(resource);
-            //remove dropdown item
+            //清空 "篩選條件"的清單
             $("#dropdown_item").empty();
 
+            //根據JSON呈現各篩選條件清單
             $.each(parameter_json, function (i, item) {
                 //console.log(item);
                 if (item.resource == resource)
@@ -173,6 +179,8 @@
                     //console.log(resource);
                     $.each(item.searchParameters, function (i, parameter) {
                         //console.log(parameter);
+
+                        //判斷篩選條件，在Json結構中的狀態，是否是被勾選狀態
                         if (element != null) {
                             //console.log(element);
                             if (element.text() == parameter.ch_Name) {
@@ -182,9 +190,10 @@
                                     parameter.selected = true;
                             }
                         }
+                        //建立篩選條件區塊
                         ParameterCreate(parameter);
-                        //console.log(parameter);
-                        //add dropdown-item
+
+                        //新增 篩選條件清單中的 項目
                         $("#dropdown_item").append(
                             $("<a/>", { "class": "dropdown-item" + (parameter.selected == true ? " dropdown-item-checked":""), "href": "#!", "text": parameter.ch_Name})
                         );
@@ -278,20 +287,29 @@
             }
         }
 
-        ////送出
-        //$("#Parameter_btn").on("click", function () {
-        //    $("#Parameter").find("[parameter-name]").each(function () {
+        //連線按鈕
+        $("#Connect_btn").on("click", function () {
+            switch ($("#ResourceSelect").val()) {
+                case "Patient": Patient(); break;
+                case "Practitioner": Practitioner(); break;
+                case "Encounter": Encounter(); break;
+                case "Observation": Observation(); break;
+                case "Procedure": Procedure(); break;
+                case "Condition": Condition(); break;
+                //case "Medication": Medication(); break;  //還沒建置
+                case "MedicationRequest": MedicationRequest(); break;
+                //case "MedicationAdministration": MedicationAdministration(); break; //還沒建置
+                case "DiagnosticReport": DiagnosticReport(); break;
+                case "ServiceRequest": ServiceRequest(); break;
+            }
+        });
 
-        //        //取得switch id
-        //        var parameter_name = $(this).attr("parameter-name");
-
-        //        console.log($(this).serialize());
-        //    });
-        //});
+        //篩選條件送出按鈕
         $("#search_form").submit(function () {
             //console.log($(this).find("div.card-body:not([type=date])").find("input, select").serialize());
             var search_query = $(this).find("div.card-body:not([type=date],[disabled=disabled])").find("input, select").serialize();
             //console.log(search_query);
+            //送出有被勾選的資料
             $(this).find("div.card-body[type=date]:not([disabled=disabled])").find(".form-row").each(function (i) {
                 if ($(this).find("input[type=checkbox]").is(":checked"))
                 {
@@ -311,17 +329,17 @@
                 case "Observation": Observation(search_query); break;
                 case "Procedure": Procedure(search_query); break;
                 case "Condition": Condition(search_query); break;
-                //case "Medication": Medication(); break;
+                //case "Medication": Medication(); break; //還沒建置
                 case "MedicationRequest": MedicationRequest(search_query); break;
-                //case "MedicationAdministration": MedicationAdministration(); break;
+                //case "MedicationAdministration": MedicationAdministration(); break; //還沒建置
                 case "DiagnosticReport": DiagnosticReport(search_query); break;
                 case "ServiceRequest": ServiceRequest(search_query); break;
 
             }
-            return false;
+            //return false;
         });
 
-        //Date功能
+        //篩選功能日期的功能
         $("#Parameter").on("change", "input[type='checkbox']", function ()
         {
             if ($(this).is(':checked')) {
@@ -333,7 +351,7 @@
             }
         });
 
-        //SWITCH功能 更新JSON
+        //SWITCH功能-同時更新JSON
         $("#Parameter").on("change", "input[type='checkbox'][switch]", function () {
             var radio = $(this);
             var parameter_name = $(this).attr('id').split('_')[0];
@@ -367,7 +385,10 @@
             html: true
         });
 
+        //預設先執行Patient表單
         Patient();
+
+        //Resource下拉表單更動
         $("#ResourceSelect").on("change", function () {
             $("#Parameter").empty();
             SearchParameter(GetUrlToken().resource, null)
@@ -379,14 +400,15 @@
                 case "Observation": Observation(); break;
                 case "Procedure": Procedure(); break;
                 case "Condition": Condition(); break;
-                //case "Medication": Medication(); break;
+                //case "Medication": Medication(); break;  //還沒建置
                 case "MedicationRequest": MedicationRequest(); break;
-                //case "MedicationAdministration": MedicationAdministration(); break;
+                //case "MedicationAdministration": MedicationAdministration(); break; //還沒建置
                 case "DiagnosticReport": DiagnosticReport(); break;
                 case "ServiceRequest": ServiceRequest(); break;
             }
         });
 
+        //重建表單
         function ReBuilddatatable()
         {
             if ($.fn.dataTable.isDataTable('#cutomerTable')) {
@@ -414,7 +436,7 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
                 },
                 "columnDefs": [{
                     "targets": '_all',
@@ -1118,6 +1140,7 @@
         {
             var data = {};
             data.url = $("#FHIR_url").val();
+            data.server = $("#FHIR_Server").val();
             data.token = $("#FHIR_Token").val();
             data.resource = $("#ResourceSelect").val();
             return data;
