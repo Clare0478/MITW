@@ -181,7 +181,11 @@ namespace FHIR_Demo.Controllers
         }
         #endregion Datatable 表單功能
 
-        //更改Search搜尋字串
+        /// <summary>
+        /// 更改Search搜尋字串關鍵字
+        /// </summary>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
         public string FHIRSearchParameters_Chagne(string parameter) 
         {
             parameter = parameter.ToLower();
