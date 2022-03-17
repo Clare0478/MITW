@@ -18,7 +18,7 @@ namespace FHIR_Demo
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
         /// <summary>
-        /// 上一頁部儲存cache
+        /// 上一頁 不儲存cache
         /// </summary>
         protected void Application_BeginRequest()
         {
