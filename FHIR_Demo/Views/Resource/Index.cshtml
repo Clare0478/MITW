@@ -588,8 +588,8 @@
                         }
                         else if (res.resourceType == "Procedure")
                         {
-                            DateTime performedPeriod_start = DateTime.Parse(Convert.ToString(res.performedPeriod != null ? res.performedPeriod.start : res.meta.lastUpdated));
-                            DateTime performedPeriod_end = DateTime.Parse(Convert.ToString(res.performedPeriod != null ? res.performedPeriod.end : res.meta.lastUpdated));
+                            DateTime performedPeriod_start = DateTime.Parse(Convert.ToString(res.performedPeriod != null ? (res.performedPeriod.start != null ? res.performedPeriod.start : res.meta.lastUpdated) : res.meta.lastUpdated));
+                            DateTime performedPeriod_end = DateTime.Parse(Convert.ToString(res.performedPeriod != null ? (res.performedPeriod.end != null ? res.performedPeriod.end : res.meta.lastUpdated) : res.meta.lastUpdated));
                             <article class="timeline-entry">
                                 <div class="timeline-entry-inner">
                                     <time datetime="@res.authoredOn" class="timeline-time">
@@ -611,9 +611,9 @@
                                             @if (res.code != null)
                                             {
                                                 <p>
-                                                    參照連結：@(res.code.coding[0].system ?? null) <br>
-                                                    處置項目代碼：@(res.code.coding[0].code) <br>
-                                                    處置項目名稱：@(res.code.coding[0].display) <br>
+                                                    參照連結：@(res.code.coding != null ? (res.code.coding[0].system ?? null ): "") <br>
+                                                    處置項目代碼：@(res.code.coding != null ? (res.code.coding[0].code ?? null ): "") <br>
+                                                    處置項目名稱：@(res.code.coding != null ? (res.code.coding[0].display ?? null ): "")<br>
                                                     說明：@(res.code.text)
                                                 </p>
                                             }
@@ -641,10 +641,9 @@
                                             @if (res.code != null)
                                             {
                                                 <p>
-
-                                                    參照連結：@(res.code.coding[0].system) <br>
-                                                    診斷代碼：@(res.code.coding[0].code) <br>
-                                                    診斷名稱：@(res.code.coding[0].display) <br>
+                                                    參照連結：@(res.code.coding != null ? (res.code.coding[0].system ?? null ): "")<br>
+                                                    診斷代碼：@(res.code.coding != null ? (res.code.coding[0].code ?? null ): "") <br>
+                                                    診斷名稱：@(res.code.coding != null ? (res.code.coding[0].display ?? null ): "")<br>
                                                     說明：@(res.code.text)
                                                 </p>
                                             }
