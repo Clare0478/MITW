@@ -2,9 +2,9 @@
 @using System.ComponentModel;
 @{
     ViewBag.Title = "Resource";
-    var Res_Search = ViewBag.Res_Search;
-    var Resources = ViewBag.Resources;
-    var Resource_detail = ViewBag.Resource_detail;
+    var Res_Search = ViewBag.Res_Search; //右邊細項
+    var Resources = ViewBag.Resources; //左圖
+    var Resource_detail = ViewBag.Resource_detail; //只有obser有用到
     DateTime now = DateTime.Today;
     List<dynamic> chart_data = new List<dynamic>();
 }
@@ -782,6 +782,7 @@
                         //if (descriptor.GetValue(Res_Search).GetType() == "") Newtonsoft.Json.Linq.JValue/Newtonsoft.Json.Linq.JObject/Newtonsoft.Json.Linq.JArray
                         @descriptor.Name @:- @descriptor.GetValue(Res_Search) [@descriptor.GetValue(Res_Search).GetType()]<br>
                     }*@
+                @*這邊都是右邊細項*@
                 @if (Res_Search.resourceType == "Patient")
                 {
                     <div class="table-responsive">
@@ -1024,6 +1025,7 @@
                                 @foreach (var res_detail in Resource_detail)
                                 {
                                     <tr>
+                                        @*<td>哈囉哈囉哈囉</td>*@
                                         <td>@res_detail.id</td>
                                         <td>@(res_detail.valueQuantity != null ? res_detail.valueQuantity.value : "")</td>
                                         <td>@(res_detail.valueQuantity != null ? res_detail.valueQuantity.unit : "")</td>
