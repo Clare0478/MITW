@@ -1,0 +1,1506 @@
+[
+  {
+    "resource": "Patient",
+    "searchParameters": [
+      {
+        "ch_Name": "identifier",
+        "parameter_name": "identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "資料是否使用",
+        "parameter_name": "active",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "是",
+              "value": "true"
+            },
+            {
+              "key": "否",
+              "value": "false"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "地址",
+        "parameter_name": "address",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "地址-城市",
+        "parameter_name": "address-city",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "地址-國家",
+        "parameter_name": "address-country",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "地址-郵遞區號",
+        "parameter_name": "address-postalcode",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "地址-州/省",
+        "parameter_name": "address-postalcode",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "地址-是否使用",
+        "parameter_name": "address-use",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "是",
+              "value": "true"
+            },
+            {
+              "key": "否",
+              "value": "false"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "生日",
+        "parameter_name": "birthdate",
+        "selected": false,
+        "input_content": {
+          "type": "date",
+          "key": [
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": true
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": false
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": false
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": true
+                  }
+                ],
+                "value": ""
+              }
+            }
+          ]
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "是否死亡",
+        "parameter_name": "deceased",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "是",
+              "value": "true"
+            },
+            {
+              "key": "否",
+              "value": "false"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "Email信箱",
+        "parameter_name": "email",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "姓名-姓氏",
+        "parameter_name": "family",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "性別",
+        "parameter_name": "gender",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "男生",
+              "value": "male"
+            },
+            {
+              "key": "女生",
+              "value": "female"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "主治醫生FHIR ID",
+        "parameter_name": "general-practitioner",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "姓名-名字",
+        "parameter_name": "given",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "語言",
+        "parameter_name": "language",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "姓名",
+        "parameter_name": "name",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "組織FHIR ID",
+        "parameter_name": "organization",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "電話",
+        "parameter_name": "phone",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "聯絡資訊",
+        "parameter_name": "telecom",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+    ]
+  },
+  {
+    "resource": "Encounter",
+    "searchParameters": [
+      {
+        "ch_Name": "identifier",
+        "parameter_name": "identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者性別",
+        "parameter_name": "patient.gender",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "男生",
+              "value": "male"
+            },
+            {
+              "key": "女生",
+              "value": "female"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "參與者identifier",
+        "parameter_name": "practitioner.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就醫類別",
+        "parameter_name": "class",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "ambulatory",
+              "value": "AMB"
+            },
+            {
+              "key": "emergency",
+              "value": "EMER"
+            },
+            {
+              "key": "field",
+              "value": "FLD"
+            },
+            {
+              "key": "home health",
+              "value": "HH"
+            },
+            {
+              "key": "inpatient encounter",
+              "value": "IMP"
+            },
+            {
+              "key": "inpatient acute",
+              "value": "ACUTE"
+            },
+            {
+              "key": "inpatient non-acute",
+              "value": "NONAC"
+            },
+            {
+              "key": "observation encounter",
+              "value": "OBSENC"
+            },
+            {
+              "key": "pre-admission",
+              "value": "PRENC"
+            },
+            {
+              "key": "short stay",
+              "value": "SS"
+            },
+            {
+              "key": "virtual",
+              "value": "VR"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "日期",
+        "parameter_name": "date",
+        "selected": false,
+        "input_content": {
+          "type": "date",
+          "key": [
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": true
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": false
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": false
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": true
+                  }
+                ],
+                "value": ""
+              }
+            }
+          ]
+        },
+        "switched": true
+      },
+
+      {
+        "ch_Name": "帳戶FHIR ID",
+        "parameter_name": "account",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "預約FHIR ID",
+        "parameter_name": "appointment",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "基於ServiceRequest的FHIR ID",
+        "parameter_name": "based-on",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "基於ServiceRequest的FHIR ID",
+        "parameter_name": "class",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "診斷/處置FHIR ID",
+        "parameter_name": "diagnosis",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "照護紀錄FHIR ID",
+        "parameter_name": "episode-of-care",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就醫天數",
+        "parameter_name": "length",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就醫地點FHIR ID",
+        "parameter_name": "location",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就醫地點-時間",
+        "parameter_name": "location-period",
+        "selected": false,
+        "input_content": {
+          "type": "date",
+          "key": [
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": true
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": false
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": false
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": true
+                  }
+                ],
+                "value": ""
+              }
+            }
+          ]
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "其他相關就醫紀錄FHIR ID",
+        "parameter_name": "part-of",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "參與者類型",
+        "parameter_name": "participant-type",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "admitter",
+              "value": "ADM"
+            },
+            {
+              "key": "attender",
+              "value": "ATND"
+            },
+            {
+              "key": "attender",
+              "value": "ATND"
+            },
+            {
+              "key": "callback contact",
+              "value": "CALLBCK"
+            },
+            {
+              "key": "consultant",
+              "value": "CON"
+            },
+            {
+              "key": "discharger",
+              "value": "DIS"
+            },
+            {
+              "key": "escort",
+              "value": "ESC"
+            },
+            {
+              "key": "referrer",
+              "value": "REF"
+            },
+            {
+              "key": "secondary performer",
+              "value": "SPRF"
+            },
+            {
+              "key": "primary performer",
+              "value": "PPRF"
+            },
+            {
+              "key": "Participation",
+              "value": "PART"
+            },
+            {
+              "key": "Translator",
+              "value": "translator"
+            },
+            {
+              "key": "Emergency",
+              "value": "emergency"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者FHIR ID",
+        "parameter_name": "patient",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "參與者FHIR ID",
+        "parameter_name": "practitioner",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就醫原因代碼",
+        "parameter_name": "reason-code",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就醫原因FHIR ID",
+        "parameter_name": "reason-reference",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "服務組織",
+        "parameter_name": "service-provider",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "特別待遇代碼",
+        "parameter_name": "special-arrangement",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就診狀態",
+        "parameter_name": "status",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "Planned",
+              "value": "planned"
+            },
+            {
+              "key": "Arrived",
+              "value": "arrived"
+            },
+            {
+              "key": "Triaged",
+              "value": "triaged"
+            },
+            {
+              "key": "In Progress",
+              "value": "in-progress"
+            },
+            {
+              "key": "On Leave",
+              "value": "onleave"
+            },
+            {
+              "key": "Finished",
+              "value": "finished"
+            },
+            {
+              "key": "Cancelled",
+              "value": "cancelled"
+            },
+            {
+              "key": "Entered in Error",
+              "value": "entered-in-error"
+            },
+            {
+              "key": "Unknown",
+              "value": "unknown"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就診型態代碼",
+        "parameter_name": "type",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+    ]
+  },
+  {
+    "resource": "Practitioner",
+    "searchParameters": [
+      {
+        "ch_Name": "identifier",
+        "parameter_name": "identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+    ]
+  },
+  {
+    "resource": "ServiceRequest",
+    "searchParameters": [
+      {
+        "ch_Name": "identifier",
+        "parameter_name": "identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者性別",
+        "parameter_name": "patient.gender",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "男生",
+              "value": "male"
+            },
+            {
+              "key": "女生",
+              "value": "female"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "醫師identifier",
+        "parameter_name": "results-interpreter:Practitioner.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就診identifier",
+        "parameter_name": "encounter.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "檢驗項目",
+        "parameter_name": "code:text",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "開立日期時間",
+        "parameter_name": "authored",
+        "selected": false,
+        "input_content": {
+          "type": "date",
+          "key": [
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": true
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": false
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": false
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": true
+                  }
+                ],
+                "value": ""
+              }
+            }
+          ]
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "檢驗日期時間",
+        "parameter_name": "occurrence",
+        "selected": false,
+        "input_content": {
+          "type": "date",
+          "key": [
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": true
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": false
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": false
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": true
+                  }
+                ],
+                "value": ""
+              }
+            }
+          ]
+        },
+        "switched": true
+      },
+
+      {
+        "ch_Name": "就診FHIR ID",
+        "parameter_name": "encounter",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者FHIR ID",
+        "parameter_name": "patient",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "參與者FHIR ID",
+        "parameter_name": "results-interpreter",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+    ]
+  },
+  {
+    "resource": "DiagnosticReport",
+    "searchParameters": [
+      {
+        "ch_Name": "identifier",
+        "parameter_name": "identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者性別",
+        "parameter_name": "patient.gender",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "男生",
+              "value": "male"
+            },
+            {
+              "key": "女生",
+              "value": "female"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "基於ServiceRequest的identifier",
+        "parameter_name": "based-on:ServiceRequest.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就診identifier",
+        "parameter_name": "encounter.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就診identifier",
+        "parameter_name": "encounter.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "參與者identifier",
+        "parameter_name": "results-interpreter:Practitioner.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "檢驗結果FHIR ID",
+        "parameter_name": "result",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "報告日期",
+        "parameter_name": "date",
+        "selected": false,
+        "input_content": {
+          "type": "date",
+          "key": [
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": true
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": false
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": false
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": true
+                  }
+                ],
+                "value": ""
+              }
+            }
+          ]
+        },
+        "switched": true
+      },
+
+      {
+        "ch_Name": "就診FHIR ID",
+        "parameter_name": "encounter",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者FHIR ID",
+        "parameter_name": "patient",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+    ]
+  },
+  {
+    "resource": "Observation",
+    "searchParameters": [
+      {
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者性別",
+        "parameter_name": "patient.gender",
+        "selected": false,
+        "input_content": {
+          "type": "radio",
+          "value_list": [
+            {
+              "key": "男生",
+              "value": "male"
+            },
+            {
+              "key": "女生",
+              "value": "female"
+            }
+          ],
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就診identifier",
+        "parameter_name": "encounter.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "基於ServiceRequest的identifier",
+        "parameter_name": "based-on:ServiceRequest.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "發報告日期",
+        "parameter_name": "date",
+        "selected": false,
+        "input_content": {
+          "type": "date",
+          "key": [
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": true
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": false
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "oncheck": true,
+              "input_content": {
+                "type": "select",
+                "value_list": [
+                  {
+                    "key": "等於(=)",
+                    "value": "eq",
+                    "status": false
+                  },
+                  {
+                    "key": "大於(>)",
+                    "value": "gt",
+                    "status": false
+                  },
+                  {
+                    "key": "大於或等於(>=)",
+                    "value": "ge",
+                    "status": false
+                  },
+                  {
+                    "key": "小於(<)",
+                    "value": "lt",
+                    "status": false
+                  },
+                  {
+                    "key": "小於或等於(<=)",
+                    "value": "le",
+                    "status": true
+                  }
+                ],
+                "value": ""
+              }
+            }
+          ]
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "檢驗項目名稱(text)",
+        "parameter_name": "code:text",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "就診FHIR ID",
+        "parameter_name": "encounter",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "患者FHIR ID",
+        "parameter_name": "patient",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      },
+      {
+        "ch_Name": "檢驗項目",
+        "parameter_name": "code",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+    ]
+  }
+]

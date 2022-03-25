@@ -139,7 +139,8 @@ namespace FHIR_Demo.Controllers
                     .Where("_revinclude=Procedure:patient")
                     .Where("_revinclude=Condition:patient")
                     .Where("_revinclude=DiagnosticReport:patient")
-                    .Where("_total=accurate"); //顯示總比數
+                    .Where("_total=accurate")//顯示總比數
+                    .Where("_count=100"); //顯示100
 
                     var a = query.ToParameters();
 

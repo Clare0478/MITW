@@ -1,0 +1,106 @@
+﻿@model FHIR_Demo.Models.MedicationAdministrationViewModel
+@using FHIR_Demo.Models;
+
+@{
+    ViewBag.Title = "Update";
+}
+
+<h2>Update</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>MedicationAdministrationViewModel</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.status, new SelectList(Enum.GetValues(typeof(MedicationAdministrationStatusCodes_Ch))),
+                         "請選擇", new { @class = "form-control" })
+
+                @Html.ValidationMessageFor(model => model.status, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.medicationReference, htmlAttributes: new { @class = "control-label" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.medicationReference, new { htmlAttributes = new { @class = "form-control", @Value = "Medication/8736" } })
+                @Html.ValidationMessageFor(model => model.medicationReference, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.subject, htmlAttributes: new { @class = "control-label" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.subject, new { htmlAttributes = new { @class = "form-control", @Value = "Patient/9202" } })
+                @Html.ValidationMessageFor(model => model.subject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.effectivePeriod_start, htmlAttributes: new { @class = "control-label" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.effectivePeriod_start, new { htmlAttributes = new { @class = "form-control", @Value = "2021-09-14" } })
+                @Html.ValidationMessageFor(model => model.effectivePeriod_start, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.effectivePeriod_end, htmlAttributes: new { @class = "control-label" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.effectivePeriod_end, new { htmlAttributes = new { @class = "form-control", @Value = "2021-09-15" } })
+                @Html.ValidationMessageFor(model => model.effectivePeriod_end, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.request, htmlAttributes: new { @class = "control-label" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.request, new { htmlAttributes = new { @class = "form-control", @Value = "MedicationRequest/11480" } })
+                @Html.ValidationMessageFor(model => model.request, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @Html.LabelFor(model => model.dosage, htmlAttributes: new { @class = "control-label col-md-2 h4" })
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.dosage.Text, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.dosage.Text, new { htmlAttributes = new { @class = "form-control", @Value = "糖尿病口服藥" } })
+                        @Html.ValidationMessageFor(model => model.dosage.Text, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label" for="dosage_Dose">Dose</label>
+                        <div class="editor-label"><label for="dosage_Dose_Value">Value</label></div>
+                        <div class="editor-field"><input value="@Model.dosage.Dose.Value" class="form-control text-box single-line" data-val="true" data-val-number="欄位 Value 必須是數字。" id="dosage_Dose_Value" name="dosage.Dose.Value" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.Value" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dosage_Dose_Unit">Unit</label></div>
+                        <div class="editor-field"><input value="@Model.dosage.Dose.Unit" class="form-control text-box single-line" id="dosage_Dose_Unit" name="dosage.Dose.Unit" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.Unit" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dosage_Dose_System">System</label></div>
+                        <div class="editor-field"><input value="@Model.dosage.Dose.System" class="form-control text-box single-line" id="dosage_Dose_System" name="dosage.Dose.System" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.System" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dosage_Dose_Code">Code</label></div>
+                        <div class="editor-field"><input value="@Model.dosage.Dose.Code" class="form-control text-box single-line" id="dosage_Dose_Code" name="dosage.Dose.Code" type="text"> <span class="field-validation-valid" data-valmsg-for="dosage.Dose.Code" data-valmsg-replace="true"></span></div>
+                        <span class="field-validation-valid text-danger" data-valmsg-for="dosage.Dose" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Update" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

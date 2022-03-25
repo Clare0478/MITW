@@ -1,0 +1,170 @@
+﻿@model FHIR_Demo.Models.PatientViewModel
+@using FHIR_Demo.Models;
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <h5>Update Patient</h5>
+                <hr>
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("Update", "Patient", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.HiddenFor(model => model.Id)
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.name, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.name, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.birthDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.birthDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.birthDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.birthDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.Gender, new SelectList(Enum.GetValues(typeof(Gender))),
+                                                                        "選擇性別", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.identifier, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.identifier, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.identifier, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.telecom, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.telecom, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.telecom, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.address, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @*<div class="col-md-10">
+                                    @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })
+                                </div>*@
+                                <div class="col-md-10">
+                                    @*@Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control", @Value = "明德路365號" } })
+                                        @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })*@
+                                    <div id="zipcode3">
+                                        <div data-role="county">
+                                        </div>
+                                        <div data-role="district">
+                                        </div>
+                                    </div>
+                                    @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "address form-control" } })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.contact_name, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.contact_name, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.contact_name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.contact_relationship, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.contact_relationship, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.contact_relationship, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.contact_telecom, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.contact_telecom, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.contact_telecom, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.email, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.managingOrganization, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.managingOrganization,
+                                        new List<SelectListItem>
+                                        {
+                                            new SelectListItem { Text = "MITW.Forldntifie", Value = "Organization/MITW.Forldntifie" },
+                                            new SelectListItem { Text = "MITW.ForContact", Value = "Organization/MITW.ForContact" },
+                                            new SelectListItem { Text = "MITW.ForPHR", Value = "Organization/MITW.ForPHR" },
+                                            new SelectListItem { Text = "MITW.ForEMS", Value = "Organization/MITW.ForEMS" },
+                                        },
+                                                                        "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.managingOrganization, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="submit" value="Save" class="btn btn-success" />
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-info" })
+    </div>
+</div>
+
+@section scripts
+{
+    <script src="~/Scripts/jquery.twzipcode.min.js"></script>
+    <script>
+        $("#zipcode3").twzipcode({
+            @if (!(String.IsNullOrEmpty(Model.city)) && !(String.IsNullOrEmpty(Model.town)))
+            {
+                @:countySel: "@Model.city", // 指定城市 select name
+                @:districtSel: "@Model.town", // 指定地區 select
+            }
+            zipcodeIntoDistrict: true,
+            css: ["city form-control", "town form-control"],
+            countyName: "city", // 自訂城市 select 標籤的 name 值
+            districtName: "town" // 自訂地區 select 標籤的 name 值
+        });
+        //$("#zipcode2").twzipcode({
+        //    countySel: "臺北市", // 城市預設值, 字串一定要用繁體的 "臺", 否則抓不到資料
+        //    districtSel: "大安區", // 地區預設值
+        //    zipcodeIntoDistrict: true, // 郵遞區號自動顯示在地區
+        //    css: ["city form-control", "town form-control"], // 自訂 "城市"、"地區" class 名稱
+        //    countyName: "city", // 自訂城市 select 標籤的 name 值
+        //    districtName: "town" // 自訂地區 select 標籤的 name 值
+        //});
+    </script>
+}
+

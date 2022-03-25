@@ -1,0 +1,183 @@
+﻿@model FHIR_Demo.Models.MedicationRequestViewModel
+@using FHIR_Demo.Models;
+
+@{
+    ViewBag.Title = "Update@";
+}
+
+<h2>Update</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>MedicationRequestViewModel</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.status, new SelectList(Enum.GetValues(typeof(medicationrequestStatus_Ch))),
+                                                 "請選擇", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.status, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.intent, htmlAttributes: new { @class = "control-label" })
+
+                        @Html.DropDownListFor(model => model.intent, new SelectList(Enum.GetValues(typeof(medicationRequestIntent_Ch))),
+                                                 "請選擇", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.intent, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.categorys, htmlAttributes: new { @class = "control-label" })
+
+                        <div class="editor-label"><label for="categorys_0__Coding_0__System">System</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="categorys_0__Coding_0__System" name="categorys[0].Coding[0].System" type="text" value="@Model.categorys[0].Coding[0].System"> <span class="field-validation-valid" data-valmsg-for="categorys[0].Coding[0].System" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="categorys_0__Coding_0__Code">Code</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="categorys_0__Coding_0__Code" name="categorys[0].Coding[0].Code" type="text" value="@Model.categorys[0].Coding[0].Code"> <span class="field-validation-valid" data-valmsg-for="categorys[0].Coding[0].Code" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="categorys_0__Coding_0__Display">Display</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="categorys_0__Coding_0__Display" name="categorys[0].Coding[0].Display" type="text" value="@Model.categorys[0].Coding[0].Display"> <span class="field-validation-valid" data-valmsg-for="categorys[0].Coding[0].Display" data-valmsg-replace="true"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.medicationReference, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.medicationReference, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.medicationReference, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.subject, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.subject, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.subject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.authoredOn, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.authoredOn, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.authoredOn, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @Html.LabelFor(model => model.dosageInstruction, htmlAttributes: new { @class = "control-label col-md-2 h4" })
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.dosageInstruction[0].sequence, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.dosageInstruction[0].sequence, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.dosageInstruction[0].sequence, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.dosageInstruction[0].text, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.dosageInstruction[0].text, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.dosageInstruction[0].text, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label" for="dosageInstruction_0__timing_Code">用藥方式</label>
+                        <div class="editor-label"><label for="dosageInstruction_0__timing_Code_System">System</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dosageInstruction_0__timing_Code_System" name="dosageInstruction[0].timing_Code.System" type="text" value="@Model.dosageInstruction[0].timing_Code.System"> <span class="field-validation-valid" data-valmsg-for="dosageInstruction[0].timing_Code.System" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dosageInstruction_0__timing_Code_Code">Code</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dosageInstruction_0__timing_Code_Code" name="dosageInstruction[0].timing_Code.Code" type="text" value="@Model.dosageInstruction[0].timing_Code.Code"> <span class="field-validation-valid" data-valmsg-for="dosageInstruction[0].timing_Code.Code" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dosageInstruction_0__timing_Code_Display">Display</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dosageInstruction_0__timing_Code_Display" name="dosageInstruction[0].timing_Code.Display" type="text" value="@Model.dosageInstruction[0].timing_Code.Display"> <span class="field-validation-valid" data-valmsg-for="dosageInstruction[0].timing_Code.Display" data-valmsg-replace="true"></span></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label" for="dosageInstruction_0__route">用藥途徑</label>
+                        <div class="editor-label"><label for="dosageInstruction_0__route_System">System</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dosageInstruction_0__route_System" name="dosageInstruction[0].route.System" type="text" value="@Model.dosageInstruction[0].route.System"> <span class="field-validation-valid" data-valmsg-for="dosageInstruction[0].route.System" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dosageInstruction_0__route_Code">Code</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dosageInstruction_0__route_Code" name="dosageInstruction[0].route.Code" type="text" value="@Model.dosageInstruction[0].route.Code"> <span class="field-validation-valid" data-valmsg-for="dosageInstruction[0].route.Code" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dosageInstruction_0__route_Display">Display</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dosageInstruction_0__route_Display" name="dosageInstruction[0].route.Display" type="text" value="@Model.dosageInstruction[0].route.Display"> <span class="field-validation-valid" data-valmsg-for="dosageInstruction[0].route.Display" data-valmsg-replace="true"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @Html.LabelFor(model => model.dispenseRequest, htmlAttributes: new { @class = "control-label col-md-2 h4" })
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.dispenseRequest.validityPeriod_start, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.dispenseRequest.validityPeriod_start, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.dispenseRequest.validityPeriod_start, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.dispenseRequest.validityPeriod_end, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.dispenseRequest.validityPeriod_end, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.dispenseRequest.validityPeriod_end, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.dispenseRequest.numberOfRepeatsAllowed, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.dispenseRequest.numberOfRepeatsAllowed, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.dispenseRequest.numberOfRepeatsAllowed, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label" for="dispenseRequest_quantity">配藥總量</label>
+                        <div class="editor-label"><label for="dispenseRequest_quantity_Value">Value</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" data-val="true" data-val-number="欄位 Value 必須是數字。" id="dispenseRequest_quantity_Value" name="dispenseRequest.quantity.Value" type="text" value="@Model.dispenseRequest.quantity.Value"> <span class="field-validation-valid" data-valmsg-for="dispenseRequest.quantity.Value" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dispenseRequest_quantity_Unit">Unit</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dispenseRequest_quantity_Unit" name="dispenseRequest.quantity.Unit" type="text" value="@Model.dispenseRequest.quantity.Unit"> <span class="field-validation-valid" data-valmsg-for="dispenseRequest.quantity.Unit" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dispenseRequest_quantity_System">System</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dispenseRequest_quantity_System" name="dispenseRequest.quantity.System" type="text" value="@Model.dispenseRequest.quantity.System"> <span class="field-validation-valid" data-valmsg-for="dispenseRequest.quantity.System" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dispenseRequest_quantity_Code">Code</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dispenseRequest_quantity_Code" name="dispenseRequest.quantity.Code" type="text" value="@Model.dispenseRequest.quantity.Code"> <span class="field-validation-valid" data-valmsg-for="dispenseRequest.quantity.Code" data-valmsg-replace="true"></span></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label" for="dispenseRequest_expectedSupplyDuration">配藥天數</label>
+                        <div class="editor-label"><label for="dispenseRequest_expectedSupplyDuration_Value">Value</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" data-val="true" data-val-number="欄位 Value 必須是數字。" id="dispenseRequest_expectedSupplyDuration_Value" name="dispenseRequest.expectedSupplyDuration.Value" type="text" value="@Model.dispenseRequest.expectedSupplyDuration.Value"> <span class="field-validation-valid" data-valmsg-for="dispenseRequest.expectedSupplyDuration.Value" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dispenseRequest_expectedSupplyDuration_Unit">Unit</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dispenseRequest_expectedSupplyDuration_Unit" name="dispenseRequest.expectedSupplyDuration.Unit" type="text" value="@Model.dispenseRequest.expectedSupplyDuration.Unit"> <span class="field-validation-valid" data-valmsg-for="dispenseRequest.expectedSupplyDuration.Unit" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dispenseRequest_expectedSupplyDuration_System">System</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dispenseRequest_expectedSupplyDuration_System" name="dispenseRequest.expectedSupplyDuration.System" type="text" value="@Model.dispenseRequest.expectedSupplyDuration.System"> <span class="field-validation-valid" data-valmsg-for="dispenseRequest.expectedSupplyDuration.System" data-valmsg-replace="true"></span></div>
+                        <div class="editor-label"><label for="dispenseRequest_expectedSupplyDuration_Code">Code</label></div>
+                        <div class="editor-field"><input class="form-control text-box single-line" id="dispenseRequest_expectedSupplyDuration_Code" name="dispenseRequest.expectedSupplyDuration.Code" type="text" value="@Model.dispenseRequest.expectedSupplyDuration.Code"> <span class="field-validation-valid" data-valmsg-for="dispenseRequest.expectedSupplyDuration.Code" data-valmsg-replace="true"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Update" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

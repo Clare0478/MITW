@@ -617,6 +617,73 @@
                                                     說明：@(res.code.text)
                                                 </p>
                                             }
+                                            else if (res.code == null)
+                                            {
+                                                if (res.extension != null)
+                                                {
+                                                    <p>
+                                                        extension0_url：@(res.extension[0].extension[0].url  ?? "") <br>
+                                                        extension0_名稱：@(res.extension[0].extension[0].valueCodeableConcept.text  ?? "") <br>
+                                                        extension0_代碼：@(res.extension[0].extension[0].valueCodeableConcept.coding[0].code ?? "") <br>
+                                                    </p>
+                                                    <p>
+                                                        extension10_url：@(res.extension[1].extension[0].url  ?? "") <br>
+                                                        extension10_display：@(res.extension[1].extension[0].valueReference.display ?? "") <br>
+                                                        extension10_參考：@(res.extension[1].extension[0].valueReference.reference ?? "") <br>
+                                                        <br>
+                                                        extension11_url：@(res.extension[1].extension[1].url  ?? "") <br>
+                                                        extension11_system：@(res.extension[1].extension[1].valueQuantity.system ?? "") <br>
+                                                        extension11_代碼：@(res.extension[1].extension[1].valueQuantity.value ?? "") <br>
+                                                        <br>
+                                                        extension12_url：@(res.extension[1].extension[2].url  ?? "") <br>
+                                                        extension12_valueUnsignedInt：@(res.extension[1].extension[2].valueUnsignedInt ?? "") <br>
+                                                    </p>
+                                                    <p>
+                                                        extension20_url：@(res.extension[2].extension[0].url  ?? "") <br>
+                                                        extension20_display：@(res.extension[2].extension[0].valueReference.display ?? "") <br>
+                                                        extension20_參考：@(res.extension[2].extension[0].valueReference.reference ?? "") <br>
+                                                        <br>
+                                                        extension21_url：@(res.extension[2].extension[1].url  ?? "") <br>
+                                                        extension21_system：@(res.extension[2].extension[1].valueQuantity.system ?? "") <br>
+                                                        extension21_代碼：@(res.extension[2].extension[1].valueQuantity.value ?? "") <br>
+                                                        <br>
+                                                        extension22_url：@(res.extension[2].extension[2].url  ?? "") <br>
+                                                        extension22_valueUnsignedInt：@(res.extension[2].extension[2].valueUnsignedInt ?? "") <br>
+                                                    </p>
+                                                    <p>
+                                                        extension30_url：@(res.extension[3].extension[0].url  ?? "") <br>
+                                                        extension30_名稱：@(res.extension[3].extension[0].valueCodeableConcept.text  ?? "") <br>
+                                                        extension30_代碼：@(res.extension[3].extension[0].valueCodeableConcept.coding[0].code ?? "") <br>
+                                                    </p>
+                                                    <p>
+                                                        extension40_url：@(res.extension[4].extension[0].url  ?? "") <br>
+                                                        extension40_display：@(res.extension[4].extension[0].valueReference.display ?? "") <br>
+                                                        extension40_參考：@(res.extension[4].extension[0].valueReference.reference ?? "") <br>
+                                                        <br>
+                                                        extension41_url：@(res.extension[4].extension[1].url  ?? "") <br>
+                                                        extension41_system：@(res.extension[4].extension[1].valueQuantity.system ?? "") <br>
+                                                        extension41_代碼：@(res.extension[4].extension[1].valueQuantity.value ?? "") <br>
+                                                        <br>
+                                                        extension42_url：@(res.extension[4].extension[2].url  ?? "") <br>
+                                                        extension42_valueUnsignedInt：@(res.extension[4].extension[2].valueUnsignedInt ?? "") <br>
+                                                    </p>
+                                                }
+                                                else
+                                                {
+                                                    <p>
+                                                        我是extension例外
+                                                    </p>
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                <p>
+                                                    我是例外
+                                                </p>
+                                            }
+
+
                                         </div>
                                     </a>
                                 </div>
@@ -995,9 +1062,14 @@
                                 <tr>
                                     <th scope="row">處置/手術名稱</th>
                                     <td>
-                                        @if (Res_Search.code.coding != null)
+                                        @if (Res_Search.code == null)
                                         {
-                                            @Res_Search.code.coding[0].display<br>
+                                            @Res_Search.extension[0].extension[0].valueCodeableConcept.text <br>
+                                            @:說明:@Res_Search.extension[2].extension[0].valueReference.display
+                                        }
+                                        else if (Res_Search.code.coding != null)
+                                        {
+                                            @Res_Search.code.coding[0].display <br>
                                             @:說明:@Res_Search.code.text
                                         }
                                         else
