@@ -7,6 +7,8 @@
     var Resource_detail = ViewBag.Resource_detail; //只有obser有用到
     DateTime now = DateTime.Today;
     List<dynamic> chart_data = new List<dynamic>();
+    var Patient_a = "";
+    var Encounter_a = "";
 }
 @section Styles{
     <link href="~/Content/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -439,316 +441,406 @@
     }
 }
 @*<pre>@JsonConvert.SerializeObject(Res_Search)</pre>*@
+<div id="000" class="ccd"></div>
 <div class="row main-container">
 
     <div id="time_line" class="col-md-6 overflow-auto mh-100">
         <div class="container bootstrap snippets bootdeys">
             <div class="col-md-12">
-                <div class="timeline-centered timeline-sm">
+                <article class="timeline-entry">
+                    <div class="timeline-entry-inner col-lg-6">
+                        <select class="form-control" id="ResourceSelect" name="resource">
+                            <option value="Patient">Patient</option>
+                            <option value="Practitioner">Practitioner</option>
+                            <option>Encounter</option>
+                            <option>Observation</option>
+                            <option>Procedure</option>
+                            <option>Condition</option>
+                            <option>Medication</option>
+                            <option>MedicationRequest</option>
+                            <option>MedicationAdministration</option>
+                            <option>DiagnosticReport</option>
+                            <option>ServiceRequest</option>
+                        </select>
+                    </div>
+                </article>
+                <div class="timeline-centered timeline-sm selediv">
                     @if (Resources.Count == 0)
                     {
                         <div class="alert alert-warning" role="alert">
                             <div class="font-weight-bold text-center" style="font-size:18px">找不到任何相關資料</div>
                         </div>
                     }
-                    @foreach (var res in Resources)
-                    {
-                        if (res.resourceType == "Patient")
+                    @{
+                        foreach (var res in Resources)
                         {
-                            <article class="timeline-entry">
-                                <div class="timeline-entry-inner">
-                                    @*<time datetime="2014-01-10T03:45" class="timeline-time"><span>12:45 AM</span><span>Today</span></time>*@
-                                    <div class="timeline-icon bg-violet"><i class="fa fa-exclamation"></i></div>
-                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
-                                        <div class="timeline-label">
-                                            <h4 class="timeline-title">
-                                                病歷號：
-                                                @if (res.identifier != null)
-                                                {
-                                                    @res.identifier[0].value
-                                                }
-                                            </h4>
-                                            @{
-                                                DateTime birthday;
-                                                int age = -1;
-                                                if (res.birthDate != null)
-                                                {
-                                                    birthday = DateTime.Parse(Convert.ToString(res.birthDate));
-                                                    age = now.Year - birthday.Year;
-                                                    if (now < birthday.AddYears(age)) { age--; }
-                                                }
-                                            }
-                                            <p>
-                                                FHIR ID:@(res.id) <br>
-                                                年齡:@(age != -1 ? age.ToString() : "未知") <br>
-                                            </p>
+
+                            if (res.resourceType == "Patient")
+                            {
+                                <article class="timeline-entry">
+                                    <div class="timeline-entry-inner">
+                                        <input id="Patient_id" value="@(res.id.ToString())" hidden="hidden" />
+                                        @*<time datetime="2014-01-10T03:45" class="timeline-time"><span>12:45 AM</span><span>Today</span></time>*@
+                                        <div class="timeline-icon bg-violet">
+                                            <i class="fa fa-exclamation"></i>
                                         </div>
-                                    </a>
-                                </div>
-                            </article>
-                        }
-                        else if (res.resourceType == "Encounter")
-                        {
-                            DateTime period_start = DateTime.Parse(Convert.ToString(res.period.start));
-                            <article class="timeline-entry left-aligned">
-                                <div class="timeline-entry-inner">
-                                    <time datetime="@res.effectiveDateTime" class="timeline-time">
-                                        @if (period_start.TimeOfDay.TotalSeconds != 0)
-                                        {
-                                            <span>@period_start.ToString("tt hh:mm")</span>
-                                        }
-                                        <span>@period_start.ToString("yyyy年MM月dd日")</span>
-                                    </time>
-                                    <div class="timeline-icon bg-grey"><i class="fa fa-group"></i></div>
-                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
-                                        <div class="timeline-label bg-grey">
-                                            <h4 class="timeline-title">@res.id @(res.@class.code)</h4>
-                                            @if (res.type != null)
-                                            {
-                                                <p>
-                                                    參照連結：@(res.type[0].coding[0].system) <br>
-                                                    檢驗項目代碼：@(res.type[0].coding[0].code) <br>
-                                                    檢驗項目名稱：@(res.type[0].coding[0].display) <br>
-                                                    說明：@(res.type[0].text)
-                                                </p>
-                                            }
-                                        </div>
-                                    </a>
-                                </div>
-                            </article>
-                        }
-                        else if (res.resourceType == "Observation")
-                        {
-                            DateTime effectiveDateTime = DateTime.Parse(Convert.ToString(res.effectiveDateTime ?? res.meta.lastUpdated));
-                            <article class="timeline-entry left-aligned">
-                                <div class="timeline-entry-inner">
-                                    <time datetime="@res.effectiveDateTime" class="timeline-time">
-                                        @if (effectiveDateTime.TimeOfDay.TotalSeconds != 0)
-                                        {
-                                            <span>@effectiveDateTime.ToString("tt hh:mm")</span>
-                                        }
-                                        <span>@effectiveDateTime.ToString("yyyy年MM月dd日")</span>
-                                    </time>
-                                    <div class="timeline-icon bg-blue"><i class="fa fa-group"></i></div>
-                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
-                                        <div class="timeline-label bg-blue">
-                                            <h4 class="timeline-title">檢驗檢查/觀察值</h4>
-                                            @if (res.code != null)
-                                            {
-                                                <p>
-                                                    @if (res.code.coding != null)
+                                        <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                            <div class="timeline-label">
+
+                                                <h4 class="timeline-title">
+                                                    病歷號：
+                                                    @if (res.identifier != null)
                                                     {
-                                                        @:參照連結：@(res.code.coding[0].system)<br>
-                                                        @:檢驗項目代碼：@(res.code.coding[0].code) <br>
-                                                        @:檢驗項目名稱：@(res.code.coding[0].display) <br>
+                                                        @res.identifier[0].value
                                                     }
-                                                    說明：@(res.code.text)
+                                                </h4>
+                                                @{
+                                                    DateTime birthday;
+                                                    int age = -1;
+                                                    if (res.birthDate != null)
+                                                    {
+                                                        birthday = DateTime.Parse(Convert.ToString(res.birthDate));
+                                                        age = now.Year - birthday.Year;
+                                                        if (now < birthday.AddYears(age)) { age--; }
+                                                    }
+                                                }
+                                                <p>
+                                                    FHIR ID:@(res.id)
+                                                    <br>
+                                                    年齡:@(age != -1 ? age.ToString() : "未知")
+                                                    <br>
                                                 </p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </article>
+                            }
+                            else if (res.resourceType == "Encounter")
+                            {
+                                //Encounter_a = res.id.ToString();
+                                @*<input class="Encounter_a" value="@(res.id.ToString())" />*@
+                                DateTime period_start = DateTime.Parse(Convert.ToString(res.period.start));
+                                <article class="timeline-entry left-aligned">
+                                    <div class="timeline-entry-inner">
+                                        <time datetime="@res.effectiveDateTime" class="timeline-time">
+                                            @if (period_start.TimeOfDay.TotalSeconds != 0)
+                                            {
+                                                <span>@period_start.ToString("tt hh:mm")</span>
                                             }
+                                            <span>@period_start.ToString("yyyy年MM月dd日")</span>
+                                        </time>
+                                        <div class="timeline-icon bg-grey">
+                                            <i class="fa fa-group"></i>
                                         </div>
-                                    </a>
-                                </div>
-                            </article>
-                        }
-                        else if (res.resourceType == "MedicationRequest")
-                        {
-                            DateTime authoredOn = DateTime.Parse(Convert.ToString(res.authoredOn ?? res.meta.lastUpdated));
-                            <article class="timeline-entry">
-                                <div class="timeline-entry-inner">
-                                    <time datetime="@res.authoredOn" class="timeline-time">
-                                        @if (authoredOn.TimeOfDay.TotalSeconds != 0)
-                                        {
-                                            <span>@authoredOn.ToString("tt hh:mm")</span>
-                                        }
-                                        <span>@authoredOn.ToString("yyyy年MM月dd日")</span>
-                                    </time>
-                                    <div class="timeline-icon bg-red"><i class="fa fa-group"></i></div>
-                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
-                                        <div class="timeline-label bg-red">
-                                            <h4 class="timeline-title">藥物</h4>
-                                            @if (res.medicationCodeableConcept != null)
-                                            {
-                                                <p>
-                                                    參照連結：@(res.medicationCodeableConcept.coding[0].system) <br>
-                                                    藥物代碼：@(res.medicationCodeableConcept.coding[0].code) <br>
-                                                    藥物名稱：@(res.medicationCodeableConcept.coding[0].display) <br>
-                                                    說明：@(res.medicationCodeableConcept.text)
-                                                </p>
-                                            }
-                                            else
-                                            {
-                                                <p>
-                                                    藥物連結：@(res.medicationReference.reference)
-                                                </p>
-                                            }
-                                        </div>
-                                    </a>
-                                </div>
-                            </article>
-                        }
-                        else if (res.resourceType == "Procedure")
-                        {
-                            DateTime performedPeriod_start = DateTime.Parse(Convert.ToString(res.performedPeriod != null ? (res.performedPeriod.start != null ? res.performedPeriod.start : res.meta.lastUpdated) : res.meta.lastUpdated));
-                            DateTime performedPeriod_end = DateTime.Parse(Convert.ToString(res.performedPeriod != null ? (res.performedPeriod.end != null ? res.performedPeriod.end : res.meta.lastUpdated) : res.meta.lastUpdated));
-                            <article class="timeline-entry">
-                                <div class="timeline-entry-inner">
-                                    <time datetime="@res.authoredOn" class="timeline-time">
-                                        @if (performedPeriod_start.TimeOfDay.TotalSeconds != 0)
-                                        {
-                                            <span>@performedPeriod_start.ToString("tt hh:mm")</span>
-                                        }
-                                        <span>@performedPeriod_start.ToString("yyyy年MM月dd日")</span>
-                                        @if (performedPeriod_end.TimeOfDay.TotalSeconds != 0)
-                                        {
-                                            <span>@performedPeriod_end.ToString("tt hh:mm")</span>
-                                        }
-                                        <span>@performedPeriod_end.ToString("yyyy年MM月dd日")</span>
-                                    </time>
-                                    <div class="timeline-icon bg-pink"><i class="fa fa-group"></i></div>
-                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
-                                        <div class="timeline-label bg-pink">
-                                            <h4 class="timeline-title">處置</h4>
-                                            @if (res.code != null)
-                                            {
-                                                <p>
-                                                    參照連結：@(res.code.coding != null ? (res.code.coding[0].system ?? null ): "") <br>
-                                                    處置項目代碼：@(res.code.coding != null ? (res.code.coding[0].code ?? null ): "") <br>
-                                                    處置項目名稱：@(res.code.coding != null ? (res.code.coding[0].display ?? null ): "")<br>
-                                                    說明：@(res.code.text)
-                                                </p>
-                                            }
-                                            else if (res.code == null)
-                                            {
-                                                if (res.extension != null)
+                                        <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                            <div class="timeline-label bg-grey">
+                                                <h4 class="timeline-title">@res.id @(res.@class.code)</h4>
+                                                @if (res.type != null)
                                                 {
                                                     <p>
-                                                        extension0_url：@(res.extension[0].extension[0].url  ?? "") <br>
-                                                        extension0_名稱：@(res.extension[0].extension[0].valueCodeableConcept.text  ?? "") <br>
-                                                        extension0_代碼：@(res.extension[0].extension[0].valueCodeableConcept.coding[0].code ?? "") <br>
+                                                        參照連結：@(res.type[0].coding[0].system)
+                                                        <br>
+                                                        檢驗項目代碼：@(res.type[0].coding[0].code)
+                                                        <br>
+                                                        檢驗項目名稱：@(res.type[0].coding[0].display)
+                                                        <br>
+                                                        說明：@(res.type[0].text)
                                                     </p>
+                                                }
+                                            </div>
+                                        </a>
+                                    </div>
+                                </article>
+                            }
+                            else if (res.resourceType == "Observation")
+                            {
+                                DateTime effectiveDateTime = DateTime.Parse(Convert.ToString(res.effectiveDateTime ?? res.meta.lastUpdated));
+                                <article class="timeline-entry left-aligned">
+                                    <div class="timeline-entry-inner">
+                                        <time datetime="@res.effectiveDateTime" class="timeline-time">
+                                            @if (effectiveDateTime.TimeOfDay.TotalSeconds != 0)
+                                            {
+                                                <span>@effectiveDateTime.ToString("tt hh:mm")</span>
+                                            }
+                                            <span>@effectiveDateTime.ToString("yyyy年MM月dd日")</span>
+                                        </time>
+                                        <div class="timeline-icon bg-blue">
+                                            <i class="fa fa-group"></i>
+                                        </div>
+                                        <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                            <div class="timeline-label bg-blue">
+                                                <h4 class="timeline-title">檢驗檢查/觀察值</h4>
+                                                @if (res.code != null)
+                                                {
                                                     <p>
-                                                        extension10_url：@(res.extension[1].extension[0].url  ?? "") <br>
-                                                        extension10_display：@(res.extension[1].extension[0].valueReference.display ?? "") <br>
-                                                        extension10_參考：@(res.extension[1].extension[0].valueReference.reference ?? "") <br>
-                                                        <br>
-                                                        extension11_url：@(res.extension[1].extension[1].url  ?? "") <br>
-                                                        extension11_system：@(res.extension[1].extension[1].valueQuantity.system ?? "") <br>
-                                                        extension11_代碼：@(res.extension[1].extension[1].valueQuantity.value ?? "") <br>
-                                                        <br>
-                                                        extension12_url：@(res.extension[1].extension[2].url  ?? "") <br>
-                                                        extension12_valueUnsignedInt：@(res.extension[1].extension[2].valueUnsignedInt ?? "") <br>
+                                                        @if (res.code.coding != null)
+                                                        {
+                                                            @:參照連結：@(res.code.coding[0].system)
+                                                            <br>
+                                                            @:檢驗項目代碼：@(res.code.coding[0].code)
+                                                            <br>
+                                                            @:檢驗項目名稱：@(res.code.coding[0].display)
+                                                            <br>
+                                                        }
+                                                        說明：@(res.code.text)
                                                     </p>
+                                                }
+                                            </div>
+                                        </a>
+                                    </div>
+                                </article>
+                            }
+                            else if (res.resourceType == "MedicationRequest")
+                            {
+                                DateTime authoredOn = DateTime.Parse(Convert.ToString(res.authoredOn ?? res.meta.lastUpdated));
+                                <article class="timeline-entry">
+                                    <div class="timeline-entry-inner">
+                                        <time datetime="@res.authoredOn" class="timeline-time">
+                                            @if (authoredOn.TimeOfDay.TotalSeconds != 0)
+                                            {
+                                                <span>@authoredOn.ToString("tt hh:mm")</span>
+                                            }
+                                            <span>@authoredOn.ToString("yyyy年MM月dd日")</span>
+                                        </time>
+                                        <div class="timeline-icon bg-red">
+                                            <i class="fa fa-group"></i>
+                                        </div>
+                                        <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                            <div class="timeline-label bg-red">
+                                                <h4 class="timeline-title">藥物</h4>
+                                                @if (res.medicationCodeableConcept != null)
+                                                {
                                                     <p>
-                                                        extension20_url：@(res.extension[2].extension[0].url  ?? "") <br>
-                                                        extension20_display：@(res.extension[2].extension[0].valueReference.display ?? "") <br>
-                                                        extension20_參考：@(res.extension[2].extension[0].valueReference.reference ?? "") <br>
+                                                        參照連結：@(res.medicationCodeableConcept.coding[0].system)
                                                         <br>
-                                                        extension21_url：@(res.extension[2].extension[1].url  ?? "") <br>
-                                                        extension21_system：@(res.extension[2].extension[1].valueQuantity.system ?? "") <br>
-                                                        extension21_代碼：@(res.extension[2].extension[1].valueQuantity.value ?? "") <br>
+                                                        藥物代碼：@(res.medicationCodeableConcept.coding[0].code)
                                                         <br>
-                                                        extension22_url：@(res.extension[2].extension[2].url  ?? "") <br>
-                                                        extension22_valueUnsignedInt：@(res.extension[2].extension[2].valueUnsignedInt ?? "") <br>
-                                                    </p>
-                                                    <p>
-                                                        extension30_url：@(res.extension[3].extension[0].url  ?? "") <br>
-                                                        extension30_名稱：@(res.extension[3].extension[0].valueCodeableConcept.text  ?? "") <br>
-                                                        extension30_代碼：@(res.extension[3].extension[0].valueCodeableConcept.coding[0].code ?? "") <br>
-                                                    </p>
-                                                    <p>
-                                                        extension40_url：@(res.extension[4].extension[0].url  ?? "") <br>
-                                                        extension40_display：@(res.extension[4].extension[0].valueReference.display ?? "") <br>
-                                                        extension40_參考：@(res.extension[4].extension[0].valueReference.reference ?? "") <br>
+                                                        藥物名稱：@(res.medicationCodeableConcept.coding[0].display)
                                                         <br>
-                                                        extension41_url：@(res.extension[4].extension[1].url  ?? "") <br>
-                                                        extension41_system：@(res.extension[4].extension[1].valueQuantity.system ?? "") <br>
-                                                        extension41_代碼：@(res.extension[4].extension[1].valueQuantity.value ?? "") <br>
-                                                        <br>
-                                                        extension42_url：@(res.extension[4].extension[2].url  ?? "") <br>
-                                                        extension42_valueUnsignedInt：@(res.extension[4].extension[2].valueUnsignedInt ?? "") <br>
+                                                        說明：@(res.medicationCodeableConcept.text)
                                                     </p>
                                                 }
                                                 else
                                                 {
                                                     <p>
-                                                        我是extension例外
+                                                        藥物連結：@(res.medicationReference.reference)
+                                                    </p>
+                                                }
+                                            </div>
+                                        </a>
+                                    </div>
+                                </article>
+                            }
+                            else if (res.resourceType == "Procedure")
+                            {
+
+                                DateTime performedPeriod_start = DateTime.Parse(Convert.ToString(res.performedPeriod != null ? (res.performedPeriod.start != null ? res.performedPeriod.start : res.meta.lastUpdated) : res.meta.lastUpdated));
+                                DateTime performedPeriod_end = DateTime.Parse(Convert.ToString(res.performedPeriod != null ? (res.performedPeriod.end != null ? res.performedPeriod.end : res.meta.lastUpdated) : res.meta.lastUpdated));
+                                <article class="timeline-entry">
+                                    <div class="timeline-entry-inner">
+                                        <time datetime="@res.authoredOn" class="timeline-time">
+                                            @if (performedPeriod_start.TimeOfDay.TotalSeconds != 0)
+                                            {
+                                                <span>@performedPeriod_start.ToString("tt hh:mm")</span>
+                                            }
+                                            <span>@performedPeriod_start.ToString("yyyy年MM月dd日")</span>
+                                            @if (performedPeriod_end.TimeOfDay.TotalSeconds != 0)
+                                            {
+                                                <span>@performedPeriod_end.ToString("tt hh:mm")</span>
+                                            }
+                                            <span>@performedPeriod_end.ToString("yyyy年MM月dd日")</span>
+                                        </time>
+                                        <div class="timeline-icon bg-pink">
+                                            <i class="fa fa-group"></i>
+                                        </div>
+                                        <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                            <div class="timeline-label bg-pink">
+                                                <h4 class="timeline-title">處置</h4>
+                                                @if (res.code != null)
+                                                {
+                                                    <p>
+                                                        參照連結：@(res.code.coding != null ? (res.code.coding[0].system ?? null ): "")
+                                                        <br>
+                                                        處置項目代碼：@(res.code.coding != null ? (res.code.coding[0].code ?? null ): "")
+                                                        <br>
+                                                        處置項目名稱：@(res.code.coding != null ? (res.code.coding[0].display ?? null ): "")
+                                                        <br>
+                                                        說明：@(res.code.text)
+                                                    </p>
+                                                }
+                                                else if (res.code == null)
+                                                {
+                                                    if (res.extension != null)
+                                                    {
+                                                        <p>
+                                                            extension0_url：@(res.extension[0].extension[0].url  ?? "")
+                                                            <br>
+                                                            extension0_名稱：@(res.extension[0].extension[0].valueCodeableConcept.text  ?? "")
+                                                            <br>
+                                                            extension0_代碼：@(res.extension[0].extension[0].valueCodeableConcept.coding[0].code ?? "")
+                                                            <br>
+                                                        </p>
+                                                        <p>
+                                                            extension10_url：@(res.extension[1].extension[0].url  ?? "")
+                                                            <br>
+                                                            extension10_display：@(res.extension[1].extension[0].valueReference.display ?? "")
+                                                            <br>
+                                                            extension10_參考：@(res.extension[1].extension[0].valueReference.reference ?? "")
+                                                            <br>
+                                                            <br>
+                                                            extension11_url：@(res.extension[1].extension[1].url  ?? "")
+                                                            <br>
+                                                            extension11_system：@(res.extension[1].extension[1].valueQuantity.system ?? "")
+                                                            <br>
+                                                            extension11_代碼：@(res.extension[1].extension[1].valueQuantity.value ?? "")
+                                                            <br>
+                                                            <br>
+                                                            extension12_url：@(res.extension[1].extension[2].url  ?? "")
+                                                            <br>
+                                                            extension12_valueUnsignedInt：@(res.extension[1].extension[2].valueUnsignedInt ?? "")
+                                                            <br>
+                                                        </p>
+                                                        <p>
+                                                            extension20_url：@(res.extension[2].extension[0].url  ?? "")
+                                                            <br>
+                                                            extension20_display：@(res.extension[2].extension[0].valueReference.display ?? "")
+                                                            <br>
+                                                            extension20_參考：@(res.extension[2].extension[0].valueReference.reference ?? "")
+                                                            <br>
+                                                            <br>
+                                                            extension21_url：@(res.extension[2].extension[1].url  ?? "")
+                                                            <br>
+                                                            extension21_system：@(res.extension[2].extension[1].valueQuantity.system ?? "")
+                                                            <br>
+                                                            extension21_代碼：@(res.extension[2].extension[1].valueQuantity.value ?? "")
+                                                            <br>
+                                                            <br>
+                                                            extension22_url：@(res.extension[2].extension[2].url  ?? "")
+                                                            <br>
+                                                            extension22_valueUnsignedInt：@(res.extension[2].extension[2].valueUnsignedInt ?? "")
+                                                            <br>
+                                                        </p>
+                                                        <p>
+                                                            extension30_url：@(res.extension[3].extension[0].url  ?? "")
+                                                            <br>
+                                                            extension30_名稱：@(res.extension[3].extension[0].valueCodeableConcept.text  ?? "")
+                                                            <br>
+                                                            extension30_代碼：@(res.extension[3].extension[0].valueCodeableConcept.coding[0].code ?? "")
+                                                            <br>
+                                                        </p>
+                                                        <p>
+                                                            extension40_url：@(res.extension[4].extension[0].url  ?? "")
+                                                            <br>
+                                                            extension40_display：@(res.extension[4].extension[0].valueReference.display ?? "")
+                                                            <br>
+                                                            extension40_參考：@(res.extension[4].extension[0].valueReference.reference ?? "")
+                                                            <br>
+                                                            <br>
+                                                            extension41_url：@(res.extension[4].extension[1].url  ?? "")
+                                                            <br>
+                                                            extension41_system：@(res.extension[4].extension[1].valueQuantity.system ?? "")
+                                                            <br>
+                                                            extension41_代碼：@(res.extension[4].extension[1].valueQuantity.value ?? "")
+                                                            <br>
+                                                            <br>
+                                                            extension42_url：@(res.extension[4].extension[2].url  ?? "")
+                                                            <br>
+                                                            extension42_valueUnsignedInt：@(res.extension[4].extension[2].valueUnsignedInt ?? "")
+                                                            <br>
+                                                        </p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p>
+                                                            我是extension例外
+                                                        </p>
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    <p>
+                                                        我是例外
                                                     </p>
                                                 }
 
-                                            }
-                                            else
-                                            {
-                                                <p>
-                                                    我是例外
-                                                </p>
-                                            }
 
-
-                                        </div>
-                                    </a>
-                                </div>
-                            </article>
-                        }
-                        else if (res.resourceType == "Condition")
-                        {
-                            DateTime onsetDateTime = DateTime.Parse(Convert.ToString(res.onsetDateTime ?? res.meta.lastUpdated));
-                            <article class="timeline-entry left-aligned">
-                                <div class="timeline-entry-inner">
-                                    <time datetime="@res.onsetDateTime" class="timeline-time">
-                                        @if (onsetDateTime.TimeOfDay.TotalSeconds != 0)
-                                        {
-                                            <span>@onsetDateTime.ToString("tt hh:mm")</span>
-                                        }
-                                        <span>@onsetDateTime.ToString("yyyy年MM月dd日")</span>
-                                    </time>
-                                    <div class="timeline-icon bg-orange"><i class="fa fa-group"></i></div>
-                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
-                                        <div class="timeline-label bg-orange">
-                                            <h4 class="timeline-title">診斷結果</h4>
-                                            @if (res.code != null)
+                                            </div>
+                                        </a>
+                                    </div>
+                                </article>
+                            }
+                            else if (res.resourceType == "Condition")
+                            {
+                                DateTime onsetDateTime = DateTime.Parse(Convert.ToString(res.onsetDateTime ?? res.meta.lastUpdated));
+                                <article class="timeline-entry left-aligned">
+                                    <div class="timeline-entry-inner">
+                                        <time datetime="@res.onsetDateTime" class="timeline-time">
+                                            @if (onsetDateTime.TimeOfDay.TotalSeconds != 0)
                                             {
-                                                <p>
-                                                    參照連結：@(res.code.coding != null ? (res.code.coding[0].system ?? null ): "")<br>
-                                                    診斷代碼：@(res.code.coding != null ? (res.code.coding[0].code ?? null ): "") <br>
-                                                    診斷名稱：@(res.code.coding != null ? (res.code.coding[0].display ?? null ): "")<br>
-                                                    說明：@(res.code.text)
-                                                </p>
+                                                <span>@onsetDateTime.ToString("tt hh:mm")</span>
                                             }
+                                            <span>@onsetDateTime.ToString("yyyy年MM月dd日")</span>
+                                        </time>
+                                        <div class="timeline-icon bg-orange">
+                                            <i class="fa fa-group"></i>
                                         </div>
-                                    </a>
-                                </div>
-                            </article>
-                        }
-                        else if (res.resourceType == "DiagnosticReport")
-                        {
-                            DateTime effectiveDateTime = DateTime.Parse(Convert.ToString(res.effectiveDateTime ?? (res.effectivePeriod != null ? res.effectivePeriod.start : res.meta.lastUpdated)));
-                            <article class="timeline-entry left-aligned">
-                                <div class="timeline-entry-inner">
-                                    <time datetime="@res.effectiveDateTime" class="timeline-time">
-                                        @if (effectiveDateTime.TimeOfDay.TotalSeconds != 0)
-                                        {
-                                            <span>@effectiveDateTime.ToString("tt hh:mm")</span>
-                                        }
-                                        <span>@effectiveDateTime.ToString("yyyy年MM月dd日")</span>
-                                    </time>
-                                    <div class="timeline-icon bg-dark"><i class="fa fa-group"></i></div>
-                                    <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
-                                        <div class="timeline-label bg-dark">
-                                            <h4 class="timeline-title">檢驗報告</h4>
-                                            @if (res.code != null)
+                                        <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                            <div class="timeline-label bg-orange">
+                                                <h4 class="timeline-title">診斷結果</h4>
+                                                @if (res.code != null)
+                                                {
+                                                    <p>
+                                                        參照連結：@(res.code.coding != null ? (res.code.coding[0].system ?? null ): "")
+                                                        <br>
+                                                        診斷代碼：@(res.code.coding != null ? (res.code.coding[0].code ?? null ): "")
+                                                        <br>
+                                                        診斷名稱：@(res.code.coding != null ? (res.code.coding[0].display ?? null ): "")
+                                                        <br>
+                                                        說明：@(res.code.text)
+                                                    </p>
+                                                }
+                                            </div>
+                                        </a>
+                                    </div>
+                                </article>
+                            }
+                            else if (res.resourceType == "DiagnosticReport")
+                            {
+                                DateTime effectiveDateTime = DateTime.Parse(Convert.ToString(res.effectiveDateTime ?? (res.effectivePeriod != null ? res.effectivePeriod.start : res.meta.lastUpdated)));
+                                <article class="timeline-entry left-aligned">
+                                    <div class="timeline-entry-inner">
+                                        <time datetime="@res.effectiveDateTime" class="timeline-time">
+                                            @if (effectiveDateTime.TimeOfDay.TotalSeconds != 0)
                                             {
-                                                <p>
-
-                                                    參照連結：@(res.code.coding[0].system) <br>
-                                                    診斷代碼：@(res.code.coding[0].code) <br>
-                                                    診斷名稱：@(res.code.coding[0].display) <br>
-                                                    說明：@(res.code.text)
-                                                </p>
+                                                <span>@effectiveDateTime.ToString("tt hh:mm")</span>
                                             }
+                                            <span>@effectiveDateTime.ToString("yyyy年MM月dd日")</span>
+                                        </time>
+                                        <div class="timeline-icon bg-dark">
+                                            <i class="fa fa-group"></i>
                                         </div>
-                                    </a>
-                                </div>
-                            </article>
+                                        <a href="@Url.Action(res.resourceType.ToString(), new { @id = res.id.ToString()})">
+                                            <div class="timeline-label bg-dark">
+                                                <h4 class="timeline-title">檢驗報告</h4>
+                                                @if (res.code != null)
+                                                {
+                                                    <p>
+
+                                                        參照連結：@(res.code.coding[0].system)
+                                                        <br>
+                                                        診斷代碼：@(res.code.coding[0].code)
+                                                        <br>
+                                                        診斷名稱：@(res.code.coding[0].display)
+                                                        <br>
+                                                        說明：@(res.code.text)
+                                                    </p>
+                                                }
+                                            </div>
+                                        </a>
+                                    </div>
+                                </article>
+                            }
                         }
                     }
                 </div>
@@ -957,7 +1049,8 @@
                                     <td>
                                         @if (Res_Search.code.coding != null)
                                         {
-                                            @Res_Search.code.coding[0].display<br>
+                                            @Res_Search.code.coding[0].display
+                                            <br>
                                             @:Text:@Res_Search.code.text
                                         }
                                         else
@@ -1066,12 +1159,14 @@
                                     <td>
                                         @if (Res_Search.code == null)
                                         {
-                                            @Res_Search.extension[0].extension[0].valueCodeableConcept.text <br>
+                                            @Res_Search.extension[0].extension[0].valueCodeableConcept.text
+                                            <br>
                                             @:說明:@Res_Search.extension[2].extension[0].valueReference.display
                                         }
                                         else if (Res_Search.code.coding != null)
                                         {
-                                            @Res_Search.code.coding[0].display <br>
+                                            @Res_Search.code.coding[0].display
+                                            <br>
                                             @:說明:@Res_Search.code.text
                                         }
                                         else
@@ -1145,7 +1240,8 @@
                                     <td>
                                         @if (Res_Search.code.coding != null)
                                         {
-                                            @Res_Search.code.coding[0].display<br>
+                                            @Res_Search.code.coding[0].display
+                                            <br>
                                             @:說明:@Res_Search.code.text
                                         }
                                         else
@@ -1192,7 +1288,8 @@
                                 <tr>
                                     <th scope="row">處方類型</th>
                                     <td>
-                                        @Res_Search.intent<br>
+                                        @Res_Search.intent
+                                        <br>
                                     </td>
                                     <td></td>
                                 </tr>
@@ -1201,12 +1298,14 @@
                                     <td>
                                         @if (Res_Search.medicationCodeableConcept != null)
                                         {
-                                            @Res_Search.medicationCodeableConcept.coding[0].display<br>
+                                            @Res_Search.medicationCodeableConcept.coding[0].display
+                                            <br>
                                             @:說明:@Res_Search.medicationCodeableConcept.text
                                         }
                                         else
                                         {
-                                            @Res_Search.medicationReference.reference<br>
+                                            @Res_Search.medicationReference.reference
+                                            <br>
                                         }
                                     </td>
                                     <td></td>
@@ -1314,7 +1413,8 @@
                                     <td>
                                         @if (Res_Search.code.coding != null)
                                         {
-                                            @Res_Search.code.coding[0].display<br>
+                                            @Res_Search.code.coding[0].display
+                                            <br>
                                             @:說明:@Res_Search.code.text
                                         }
                                         else
@@ -1358,7 +1458,8 @@
                                             foreach (var result in Res_Search.result)
                                             {
                                                 @result.display
-                                                @:(檢查紀錄 ID: @(result.reference.ToString().Split('/')[1]))<br>
+                                                @:(檢查紀錄 ID: @(result.reference.ToString().Split('/')[1]))
+                                                <br>
                                             }
                                         }
                                         else
@@ -1393,7 +1494,8 @@
                                     <td>
                                         @if (Res_Search.code.coding != null)
                                         {
-                                            @Res_Search.code.coding[0].display<br>
+                                            @Res_Search.code.coding[0].display
+                                            <br>
                                             @:說明:@Res_Search.code.text
                                         }
                                         else
@@ -1601,6 +1703,59 @@
             }));
 
         }
+
+        //select事件
+        $("#ResourceSelect").on('change', function () {
+            var sele = $(this).val().toString();
+            alert(sele);
+            var pat_id = $("#Patient_id").val();
+            var data = Getdata();
+            $.ajax({
+                "url": "@Url.Action("Index", "Resc")",
+                "type": "POST",
+                "data": data,
+                "datatype": "json",
+                "success": function (msg) {
+                    var s = eval("(" + msg + ")");
+                    alert(msg);
+                    console.log(s[1].resourceType);
+                    alert("哈囉~");//請求成功後執行的操作 alert(msg);
+                    //div_card.find(".timeline-centered timeline-sm").append([
+                    //$(".selediv").append("<input type='button' value='000000000000000000000'></input>",
+                    //    "<input type='button' value='000000000000000000000'></input>");
+                    $(".selediv").empty();
+                    $(".selediv").append($('<h5/>', { "class": "font-weight-bold", "text": "份量" }));
+
+                    alert("成功~")
+                    var a1 = JSON.stringify(msg[0].resourceType);
+                    //var aa = a1[0].resourceType;
+                    alert("13213" + a1);
+                    //$.each(msg, function (i, item) {
+                    //    $(".selediv").append($('<h5/>', { "class": "font-weight-bold", "text": item}));
+                    //    //select.append($('<option>', {
+                    //    //    value: item.Value,
+                    //    //    text: item.Name + " - " + item.Describe + " - " + item.Value + "g",
+                    //    //}));
+                    //    /*$("select[name='SelQuantifier']").find("option:selected").attr("selected", true);*/
+
+                    //    //var s = div_card.find("select[name='SelQuantifier']").find("option:selected").val();
+                    //    //div_card.find('input[name=Total_weight]').val(s)
+                    //});
+
+
+                }
+            });
+            function Getdata() {
+                var data = {};
+                data.res = "Patient";
+                data.id = $("#Patient_id").val();
+                data.sele = sele;
+                /*data.resource = $("#ResourceSelect").val();*/
+                return data;
+            }
+        });
+
+       
     </script>
 }
 

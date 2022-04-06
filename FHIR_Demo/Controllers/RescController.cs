@@ -4,21 +4,24 @@ using Hl7.Fhir.Serialization;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace FHIR_Demo.Controllers
 {
-    public class ResourceController : Controller
+    public class RescController : Controller
     {
         private CookiesController cookies = new CookiesController();
         private HttpClientEventHandler handler = new HttpClientEventHandler();
-
-        public ActionResult Index(string res, string id,string sele)
+        // GET: Resc
+        public ActionResult Index(string res, string id, string sele)
         {
+
             string[] Resource = new string[] { "Patient", "Encounter", "Observation", "MedicationRequest", "Procedure", "Condition", "DiagnosticReport", "ServiceRequest" };
             if (Resource.Contains(res) && id != null && Request.Cookies["FHIR_url"] != null)
             {
@@ -275,9 +278,12 @@ namespace FHIR_Demo.Controllers
                     }
 
                     ViewBag.Resources = Patient_Search_reosurces; //左圖的
-                    return Json(ViewBag.Resources);
+                    var asd = JsonConvert.SerializeObject(Patient_Search_reosurces);
+                    //var dsa = JsonConvert.DeserializeObject<Resource>(asd);
+                    return Json(asd);
+                    //return Json(dsa);
                 }
-                else if(selerestype==null)
+                else if (selerestype == null)
                 {
                     if (patient_id != "" && Res_Bundle.Entry.Count > 0)
                     {
@@ -419,12 +425,12 @@ namespace FHIR_Demo.Controllers
                     }
 
                     ViewBag.Resources = Patient_Search_reosurces; //左圖的
-                    
+
                 }
-                
+
                 #endregion Patient 所有相關資料
 
-                return View();
+                return Json(Patient_Search_reosurces);
                 //}
                 //catch (Exception e)
                 //{
@@ -443,8 +449,5 @@ namespace FHIR_Demo.Controllers
                     return Redirect(Request.UrlReferrer.ToString());
             }
         }
-
-
-        
     }
 }

@@ -161,6 +161,7 @@
     <Compile Include="Controllers\MHBController.cs" />
     <Compile Include="Controllers\ObservationController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
+    <Compile Include="Controllers\RescController.cs" />
     <Compile Include="Controllers\ResourceController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -572,6 +573,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Views\Cookies\" />
     <Folder Include="Views\MHB\" />
+    <Folder Include="Views\Resc\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
