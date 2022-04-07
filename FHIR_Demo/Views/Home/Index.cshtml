@@ -170,6 +170,9 @@
         {
             //清空 "篩選條件"的清單
             $("#dropdown_item").empty();
+            /*new_start*/
+            $("#Parameter").empty();
+            /*new_end*/
 
             //根據JSON呈現各篩選條件清單
             $.each(parameter_json, function (i, item) {
