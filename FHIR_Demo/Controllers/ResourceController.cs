@@ -180,7 +180,7 @@ namespace FHIR_Demo.Controllers
                         {
                             var query = new SearchParams()
                             .Where("_id=" + patient_id)
-                            .Where("_revinclude=Encounter:patient")
+                            //.Where("_revinclude=Encounter:patient")
                             //.Where("_revinclude=Observation:patient")
                             //.Where("_revinclude=MedicationRequest:patient")
                             //.Where("_revinclude=Procedure:patient")

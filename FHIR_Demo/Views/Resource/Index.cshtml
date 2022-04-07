@@ -452,15 +452,15 @@
                         <select class="form-control" id="ResourceSelect" name="resource">
                             <option value="Patient">Patient</option>
                             <option value="Practitioner">Practitioner</option>
-                            <option>Encounter</option>
-                            <option>Observation</option>
-                            <option>Procedure</option>
-                            <option>Condition</option>
-                            <option>Medication</option>
-                            <option>MedicationRequest</option>
-                            <option>MedicationAdministration</option>
-                            <option>DiagnosticReport</option>
-                            <option>ServiceRequest</option>
+                            <option value="Encounter">Encounter</option>
+                            <option value="Observation">Observation</option>
+                            <option value="Procedure">Procedure</option>
+                            <option value="Condition">Condition</option>
+                            <option value="Medication">Medication</option>
+                            <option value="MedicationRequest">MedicationRequest</option>
+                            <option value="MedicationAdministration">MedicationAdministration</option>
+                            <option value="DiagnosticReport">DiagnosticReport</option>
+                            <option value="ServiceRequest">ServiceRequest</option>
                         </select>
                     </div>
                 </article>
@@ -1704,12 +1704,24 @@
 
         }
 
+        //alert('location.pathname: ' + location.pathname);
+        var selepath = location.pathname;
+        var indexOfFirst = selepath.indexOf("Resource/");
+        var st = selepath.substring(indexOfFirst + 9)
+        var indexOftwo = st.indexOf("/");
+        var st1 = st.substring(-1,indexOftwo)
+        //alert("st1=" + st1);
+        //selec預設
+        $("#ResourceSelect").val(st1);
+
+
         //select事件
         $("#ResourceSelect").on('change', function () {
             var sele = $(this).val().toString();
-            alert(sele);
+            //alert(sele);
             var pat_id = $("#Patient_id").val();
             var data = Getdata();
+            var baseSiteURL = '@Url.Content("~/")';
             $.ajax({
                 "url": "@Url.Action("Index", "Resc")",
                 "type": "POST",
@@ -1717,30 +1729,21 @@
                 "datatype": "json",
                 "success": function (msg) {
                     var s = eval("(" + msg + ")");
-                    alert(msg);
+                    //alert(msg);
                     console.log(s[1].resourceType);
-                    alert("哈囉~");//請求成功後執行的操作 alert(msg);
-                    //div_card.find(".timeline-centered timeline-sm").append([
-                    //$(".selediv").append("<input type='button' value='000000000000000000000'></input>",
-                    //    "<input type='button' value='000000000000000000000'></input>");
-                    $(".selediv").empty();
-                    $(".selediv").append($('<h5/>', { "class": "font-weight-bold", "text": "份量" }));
+                    //alert("resourceType:" + JSON.stringify(s[1].resourceType) + "id:" + JSON.stringify(s[1].id));
+                    var resourceType = JSON.stringify(s[1].resourceType).replace('"', '');
+                    var resourceType1 = resourceType.replace('"', '');
+                    //alert(resourceType1);
+                    var resourceTypeid = JSON.stringify(s[1].id).replace('"', '');
+                    var resourceTypeid1 = resourceTypeid.replace('"', '');
+                    //alert(resourceTypeid1);
+                    //alert("哈囉~");//請求成功後執行的操作 alert(msg);
 
-                    alert("成功~")
-                    var a1 = JSON.stringify(msg[0].resourceType);
-                    //var aa = a1[0].resourceType;
-                    alert("13213" + a1);
-                    //$.each(msg, function (i, item) {
-                    //    $(".selediv").append($('<h5/>', { "class": "font-weight-bold", "text": item}));
-                    //    //select.append($('<option>', {
-                    //    //    value: item.Value,
-                    //    //    text: item.Name + " - " + item.Describe + " - " + item.Value + "g",
-                    //    //}));
-                    //    /*$("select[name='SelQuantifier']").find("option:selected").attr("selected", true);*/
-
-                    //    //var s = div_card.find("select[name='SelQuantifier']").find("option:selected").val();
-                    //    //div_card.find('input[name=Total_weight]').val(s)
-                    //});
+                    //alert("成功~");
+                    var a = baseSiteURL + 'Resource/' + resourceType1 + '/' + resourceTypeid1;
+                    //alert(a);
+                    window.location.href = a;
 
 
                 }
@@ -1755,7 +1758,7 @@
             }
         });
 
-       
+
     </script>
 }
 
