@@ -279,9 +279,7 @@ namespace FHIR_Demo.Controllers
 
                     ViewBag.Resources = Patient_Search_reosurces; //左圖的
                     var asd = JsonConvert.SerializeObject(Patient_Search_reosurces);
-                    //var dsa = JsonConvert.DeserializeObject<Resource>(asd);
                     return Json(asd);
-                    //return Json(dsa);
                 }
                 else if (selerestype == null)
                 {
