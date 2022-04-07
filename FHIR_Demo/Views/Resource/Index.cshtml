@@ -1387,7 +1387,21 @@
                                     <tr>
                                         <th scope="row">服用天數</th>
                                         <td>
-                                            @Res_Search.dispenseRequest.expectedSupplyDuration.value @Res_Search.dispenseRequest.expectedSupplyDuration.unit
+                                            @{
+                                                if (@Res_Search.dispenseRequest.expectedSupplyDuration == null)
+                                                {
+
+                                                    @:無
+                                                    @:無
+
+                                                }
+
+                                                else
+                                                {
+                                                    @Res_Search.dispenseRequest.expectedSupplyDuration.value @Res_Search.dispenseRequest.expectedSupplyDuration.unit
+                                                }
+                                            }
+
                                         </td>
                                         <td></td>
                                     </tr>
