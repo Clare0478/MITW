@@ -136,7 +136,7 @@ namespace FHIR_Demo.Controllers
             handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
             if (cookies.FHIR_Server_Cookie(HttpContext, FHIR_Server) == "IBM")
             {
-                //換頁
+                //換頁//重要
                 q.Where("_page=" + page);
 
                 //使用Basic 登入
