@@ -274,7 +274,29 @@ namespace FHIR_Demo.Controllers
                                 Patient_Search_reosurces.Add((entry.Resource).ToJObject());
                             }
                         }
+                        else
+                        {
+                            var query = new SearchParams()
+                           .Where("_id=" + patient_id)
+                           //.Where("_revinclude=Encounter:patient")
+                           //.Where("_revinclude=Observation:patient")
+                           //.Where("_revinclude=MedicationRequest:patient")
+                           //.Where("_revinclude=Procedure:patient")
+                           //.Where("_revinclude=Condition:patient")
+                           //.Where("_revinclude=DiagnosticReport:patient")
+                           .Where("_total=accurate");//顯示總比數
+                            var a = query.ToParameters();
 
+                            Bundle Patient_Bundle = client.Search(query, "Patient");
+                            foreach (var entry in Patient_Bundle.Entry)
+                            {
+                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                            }
+                            //if (Patient_Search_reosurces.Count == 1)
+                            //{
+                            //    Patient_Search_reosurces.Clear();
+                            //}
+                        }
                     }
 
                     ViewBag.Resources = Patient_Search_reosurces; //左圖的
@@ -419,7 +441,29 @@ namespace FHIR_Demo.Controllers
                                 Patient_Search_reosurces.Add((entry.Resource).ToJObject());
                             }
                         }
+                        else
+                        {
+                            var query = new SearchParams()
+                           .Where("_id=" + patient_id)
+                           //.Where("_revinclude=Encounter:patient")
+                           //.Where("_revinclude=Observation:patient")
+                           //.Where("_revinclude=MedicationRequest:patient")
+                           //.Where("_revinclude=Procedure:patient")
+                           //.Where("_revinclude=Condition:patient")
+                           //.Where("_revinclude=DiagnosticReport:patient")
+                           .Where("_total=accurate");//顯示總比數
+                            var a = query.ToParameters();
 
+                            Bundle Patient_Bundle = client.Search(query, "Patient");
+                            foreach (var entry in Patient_Bundle.Entry)
+                            {
+                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                            }
+                            //if (Patient_Search_reosurces.Count == 1)
+                            //{
+                            //    Patient_Search_reosurces.Clear();
+                            //}
+                        }
                     }
 
                     ViewBag.Resources = Patient_Search_reosurces; //左圖的

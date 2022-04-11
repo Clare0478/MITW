@@ -68,9 +68,9 @@
                                 <option>Observation</option>
                                 <option>Procedure</option>
                                 <option>Condition</option>
-                                <option>Medication</option>
+                                @*<option>Medication</option>*@
                                 <option>MedicationRequest</option>
-                                <option>MedicationAdministration</option>
+@*                                <option>MedicationAdministration</option>*@
                                 <option>DiagnosticReport</option>
                                 <option>ServiceRequest</option>
                             </select>
@@ -1062,8 +1062,8 @@
                 ]
             });
         }
-
-        function ServiceRequest(searchs)
+        //Edit_start
+        function ServiceRequest(search)
         {
             //重建資料
             ReBuilddatatable();
