@@ -1744,10 +1744,27 @@
                 "success": function (msg) {
                     var s = eval("(" + msg + ")");
                     //alert(msg);
-                    if (s[1] == null) {
+                    if (sele == "Patient") {
+                        //alert("我是pat")
+                        console.log(s[0].resourceType);
+                        //alert("resourceType:" + JSON.stringify(s[1].resourceType) + "id:" + JSON.stringify(s[1].id));
+                        var resourceType = JSON.stringify(s[0].resourceType).replace('"', '');
+                        var resourceType1 = resourceType.replace('"', '');
+                        //alert(resourceType1);
+                        var resourceTypeid = JSON.stringify(s[0].id).replace('"', '');
+                        var resourceTypeid1 = resourceTypeid.replace('"', '');
+                        //alert(resourceTypeid1);
+                        //alert("哈囉~");//請求成功後執行的操作 alert(msg);
+
+                        //alert("成功~");
+                        var a = baseSiteURL + 'Resource/' + resourceType1 + '/' + resourceTypeid1;
+                        //alert(a);
+                        window.location.href = a;
+                    }
+                    else if (s[1] == null) {
                         alert("找不到任何相關資料");
                     }
-                    else {
+                    else if (s[1] != null){
                         console.log(s[1].resourceType);
                         //alert("resourceType:" + JSON.stringify(s[1].resourceType) + "id:" + JSON.stringify(s[1].id));
                         var resourceType = JSON.stringify(s[1].resourceType).replace('"', '');

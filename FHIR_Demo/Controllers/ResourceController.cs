@@ -289,10 +289,10 @@ namespace FHIR_Demo.Controllers
                             {
                                 Patient_Search_reosurces.Add((entry.Resource).ToJObject());
                             }
-                            if (Patient_Search_reosurces.Count == 1)
-                            {
-                                Patient_Search_reosurces.Clear();
-                            }
+                            //if (Patient_Search_reosurces.Count == 1)
+                            //{
+                            //    Patient_Search_reosurces.Clear();
+                            //}
                         }
 
                     }
@@ -460,10 +460,10 @@ namespace FHIR_Demo.Controllers
                             {
                                 Patient_Search_reosurces.Add((entry.Resource).ToJObject());
                             }
-                            if (Patient_Search_reosurces.Count == 1)
-                            {
-                                Patient_Search_reosurces.Clear();
-                            }
+                            //if (Patient_Search_reosurces.Count == 1)
+                            //{
+                            //    Patient_Search_reosurces.Clear();
+                            //}
                         }
                     }
 
