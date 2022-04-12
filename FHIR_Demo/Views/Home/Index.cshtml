@@ -148,22 +148,943 @@
                     //    $('#' + tag_id).tagsinput('add', this.value);
                 }
             });
+        /*new_start*/
+        var parameter_json = [
+            {
+                "resource": "Patient",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "生日",
+                        "parameter_name": "birthdate",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "性別",
+                        "parameter_name": "gender",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "男生",
+                                    "value": "male"
+                                },
+                                {
+                                    "key": "女生",
+                                    "value": "female"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "Encounter",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者性別",
+                        "parameter_name": "patient.gender",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "男生",
+                                    "value": "male"
+                                },
+                                {
+                                    "key": "女生",
+                                    "value": "female"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "參與者identifier",
+                        "parameter_name": "practitioner.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "就醫類別",
+                        "parameter_name": "class",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "ambulatory",
+                                    "value": "AMB"
+                                },
+                                {
+                                    "key": "emergency",
+                                    "value": "EMER"
+                                },
+                                {
+                                    "key": "field",
+                                    "value": "FLD"
+                                },
+                                {
+                                    "key": "home health",
+                                    "value": "HH"
+                                },
+                                {
+                                    "key": "inpatient encounter",
+                                    "value": "IMP"
+                                },
+                                {
+                                    "key": "inpatient acute",
+                                    "value": "ACUTE"
+                                },
+                                {
+                                    "key": "inpatient non-acute",
+                                    "value": "NONAC"
+                                },
+                                {
+                                    "key": "observation encounter",
+                                    "value": "OBSENC"
+                                },
+                                {
+                                    "key": "pre-admission",
+                                    "value": "PRENC"
+                                },
+                                {
+                                    "key": "short stay",
+                                    "value": "SS"
+                                },
+                                {
+                                    "key": "virtual",
+                                    "value": "VR"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "日期",
+                        "parameter_name": "date",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "Practitioner",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "ServiceRequest",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者性別",
+                        "parameter_name": "patient.gender",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "男生",
+                                    "value": "male"
+                                },
+                                {
+                                    "key": "女生",
+                                    "value": "female"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "醫師identifier",
+                        "parameter_name": "results-interpreter:Practitioner.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "就診identifier",
+                        "parameter_name": "encounter.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "檢驗項目",
+                        "parameter_name": "code:text",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "開立日期時間",
+                        "parameter_name": "authored",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "檢驗日期時間",
+                        "parameter_name": "occurrence",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "DiagnosticReport",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者性別",
+                        "parameter_name": "patient.gender",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "男生",
+                                    "value": "male"
+                                },
+                                {
+                                    "key": "女生",
+                                    "value": "female"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "基於ServiceRequest的identifier",
+                        "parameter_name": "based-on:ServiceRequest.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "就診identifier",
+                        "parameter_name": "encounter.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "參與者identifier",
+                        "parameter_name": "results-interpreter:Practitioner.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "檢驗結果FHIR ID",
+                        "parameter_name": "result",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "報告日期",
+                        "parameter_name": "date",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "Observation",
+                "searchParameters": [
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者性別",
+                        "parameter_name": "patient.gender",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "男生",
+                                    "value": "male"
+                                },
+                                {
+                                    "key": "女生",
+                                    "value": "female"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "就診identifier",
+                        "parameter_name": "encounter.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "基於ServiceRequest的identifier",
+                        "parameter_name": "based-on:ServiceRequest.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "發報告日期",
+                        "parameter_name": "date",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "檢驗項目名稱(text)",
+                        "parameter_name": "code:text",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+                ]
+            },
 
-        //篩選條件JSON
-        var parameter_json = {};
+            {
+                "resource": "Procedure",
+                "searchParameters": [
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+
+                ]
+            },
+            {
+                "resource": "Condition",
+                "searchParameters": [
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+
+                ]
+            },
+            {
+                "resource": "MedicationRequest",
+                "searchParameters": [
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+
+                ]
+            }
+        ];
+        SearchParameter(GetUrlToken().resource, null);
+        $("#dropdown_item").on("click", ".dropdown-item", function () {
+            SearchParameter(GetUrlToken().resource, $(this));
+        });
+
+
+        /*new_end*/
+
+
+
+        ////篩選條件JSON
+        //var parameter_json = {};
 
         //取得篩選條件的JSON
-        $.getJSON("@Url.Content("~/Scripts/FhirSearchParameter.json")", function (json) {
+        @*$.getJSON("@Url.Content("~/Scripts/FhirSearchParameter.json")", function (json) {
             parameter_json = json;
         }).done(async function () {
             //取得篩選條件的JSON
             SearchParameter(await GetUrlToken().resource, null)
-        });
+        });*@
 
-        //搜尋條件清單
-        $("#dropdown_item").on("click", ".dropdown-item", function () {
-            SearchParameter(GetUrlToken().resource, $(this));
-        });
+        ////搜尋條件清單
+        //$("#dropdown_item").on("click", ".dropdown-item", function () {
+        //    SearchParameter(GetUrlToken().resource, $(this));
+        //});
 
         //產生篩選條件的條件區塊
         function SearchParameter(resource, element)
