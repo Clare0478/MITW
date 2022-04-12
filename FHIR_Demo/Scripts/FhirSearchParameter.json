@@ -1502,5 +1502,53 @@
         "switched": true
       }
     ]
+  },
+  {
+    "resource": "Procedure",
+    "searchParameters": [
+      {
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+
+    ]
+  },
+  {
+    "resource": "Condition",
+    "searchParameters": [
+      {
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+
+    ]
+  },
+  {
+    "resource": "MedicationRequest",
+    "searchParameters": [
+      {
+        "ch_Name": "患者identifier",
+        "parameter_name": "patient.identifier",
+        "selected": false,
+        "input_content": {
+          "type": "text",
+          "value": ""
+        },
+        "switched": true
+      }
+
+    ]
   }
 ]
