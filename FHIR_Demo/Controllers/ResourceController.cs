@@ -133,344 +133,381 @@ namespace FHIR_Demo.Controllers
                 #region Patient 所有相關資料
                 List<dynamic> Patient_Search_reosurces = new List<dynamic>();
                 ViewBag.Resources = null;
-                if (selerestype != null)
+                if (patient_id != "" && Res_Bundle.Entry.Count > 0)
                 {
-                    if (patient_id != "" && Res_Bundle.Entry.Count > 0)
+                    var query = new SearchParams()
+                    .Where("_id=" + patient_id)
+                    .Where("_revinclude=Encounter:subject")
+                    .Where("_revinclude=Observation:subject")
+                    .Where("_revinclude=MedicationRequest:subject")
+                    .Where("_revinclude=Procedure:subject")
+                    .Where("_revinclude=Condition:subject")
+                    .Where("_revinclude=DiagnosticReport:subject")
+                    .Where("_total=accurate");//顯示總比數
+                    var a = query.ToParameters();
+                    try
                     {
-                        if (selerestype == "Procedure")
+                        Bundle Patient_Bundle = client.Search(query, "Patient");
+                        foreach (var entry in Patient_Bundle.Entry)
                         {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            .Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_count=10")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (selerestype == "Observation")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            .Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (selerestype == "Patient")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (selerestype == "Encounter")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            .Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (selerestype == "MedicationRequest")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            .Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (selerestype == "Condition")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            .Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (selerestype == "DiagnosticReport")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            .Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else
-                        {
-                            var query = new SearchParams()
-                           .Where("_id=" + patient_id)
-                           //.Where("_revinclude=Encounter:patient")
-                           //.Where("_revinclude=Observation:patient")
-                           //.Where("_revinclude=MedicationRequest:patient")
-                           //.Where("_revinclude=Procedure:patient")
-                           //.Where("_revinclude=Condition:patient")
-                           //.Where("_revinclude=DiagnosticReport:patient")
-                           .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                            //if (Patient_Search_reosurces.Count == 1)
-                            //{
-                            //    Patient_Search_reosurces.Clear();
-                            //}
-                        }
-
-                    }
-
-                    //ViewBag.Resources = Patient_Search_reosurces; //左圖的
-                    //return Json(ViewBag.Resources);
-
-                    ViewBag.Resources = Patient_Search_reosurces; //左圖的
-                    var asd = JsonConvert.SerializeObject(Patient_Search_reosurces);
-                    return Json(asd);
-                }
-                else if(selerestype==null)
-                {
-                    if (patient_id != "" && Res_Bundle.Entry.Count > 0)
-                    {
-                        if (resourcetype == "Procedure")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            .Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_count=10")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (resourcetype == "Observation")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            .Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (resourcetype == "Patient")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (resourcetype == "Encounter")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            .Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (resourcetype == "MedicationRequest")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            .Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (resourcetype == "Condition")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            .Where("_revinclude=Condition:patient")
-                            //.Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else if (resourcetype == "DiagnosticReport")
-                        {
-                            var query = new SearchParams()
-                            .Where("_id=" + patient_id)
-                            //.Where("_revinclude=Encounter:patient")
-                            //.Where("_revinclude=Observation:patient")
-                            //.Where("_revinclude=MedicationRequest:patient")
-                            //.Where("_revinclude=Procedure:patient")
-                            //.Where("_revinclude=Condition:patient")
-                            .Where("_revinclude=DiagnosticReport:patient")
-                            .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                        }
-                        else
-                        {
-                            var query = new SearchParams()
-                           .Where("_id=" + patient_id)
-                           //.Where("_revinclude=Encounter:patient")
-                           //.Where("_revinclude=Observation:patient")
-                           //.Where("_revinclude=MedicationRequest:patient")
-                           //.Where("_revinclude=Procedure:patient")
-                           //.Where("_revinclude=Condition:patient")
-                           //.Where("_revinclude=DiagnosticReport:patient")
-                           .Where("_total=accurate");//顯示總比數
-                            var a = query.ToParameters();
-
-                            Bundle Patient_Bundle = client.Search(query, "Patient");
-                            foreach (var entry in Patient_Bundle.Entry)
-                            {
-                                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
-                            }
-                            //if (Patient_Search_reosurces.Count == 1)
-                            //{
-                            //    Patient_Search_reosurces.Clear();
-                            //}
+                            Patient_Search_reosurces.Add((entry.Resource).ToJObject());
                         }
                     }
-
-                    ViewBag.Resources = Patient_Search_reosurces; //左圖的
+                    catch
+                    {
+                        TempData["message"] = "資料太大伺服器錯誤";
+                        return RedirectToAction("Index", "Home");
+                    }
                     
                 }
-                
+
+                ViewBag.Resources = Patient_Search_reosurces; //左圖的
+                                                              //************************分開的程式碼
+                                                              //if (selerestype != null)
+                                                              //{
+                                                              //    if (patient_id != "" && Res_Bundle.Entry.Count > 0)
+                                                              //    {
+                                                              //        if (selerestype == "Procedure")
+                                                              //        {
+                                                              //            var query = new SearchParams()
+                                                              //            .Where("_id=" + patient_id)
+                                                              //            .Where("_revinclude=Procedure:subject")
+                                                              //            .Where("_count=10")
+                                                              //            .Where("_total=accurate");//顯示總比數
+                                                              //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (selerestype == "Observation")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_revinclude=Observation:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (selerestype == "Patient")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (selerestype == "Encounter")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_revinclude=Encounter:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (selerestype == "MedicationRequest")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_revinclude=MedicationRequest:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (selerestype == "Condition")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_revinclude=Condition:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (selerestype == "DiagnosticReport")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_revinclude=DiagnosticReport:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (selerestype == "Medication")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_revinclude=Medication:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (selerestype == "ServiceRequest")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_revinclude=ServiceRequest:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else
+                //        {
+                //            var query = new SearchParams()
+                //           .Where("_id=" + patient_id)
+                //           //.Where("_revinclude=Encounter:subject")
+                //           //.Where("_revinclude=Observation:subject")
+                //           //.Where("_revinclude=MedicationRequest:subject")
+                //           //.Where("_revinclude=Procedure:subject")
+                //           //.Where("_revinclude=Condition:subject")
+                //           //.Where("_revinclude=DiagnosticReport:subject")
+                //           .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //            //if (Patient_Search_reosurces.Count == 1)
+                //            //{
+                //            //    Patient_Search_reosurces.Clear();
+                //            //}
+                //        }
+
+                //    }
+
+                //    ViewBag.Resources = Patient_Search_reosurces; //左圖的
+                //    var asd = JsonConvert.SerializeObject(Patient_Search_reosurces);
+                //    return Json(asd);
+                //}
+                //else if(selerestype==null)
+                //{
+                //    if (patient_id != "" && Res_Bundle.Entry.Count > 0)
+                //    {
+                //        if (resourcetype == "Procedure")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            //.Where("_revinclude=Encounter:subject")
+                //            //.Where("_revinclude=Observation:subject")
+                //            //.Where("_revinclude=MedicationRequest:subject")
+                //            .Where("_revinclude=Procedure:subject")
+                //            //.Where("_revinclude=Condition:subject")
+                //            //.Where("_revinclude=DiagnosticReport:subject")
+                //            .Where("_count=10")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (resourcetype == "Observation")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_revinclude=Observation:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (resourcetype == "Patient")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (resourcetype == "Encounter")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_revinclude=Encounter:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (resourcetype == "MedicationRequest")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            .Where("_revinclude=MedicationRequest:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (resourcetype == "Condition")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            //.Where("_revinclude=Encounter:subject")
+                //            //.Where("_revinclude=Observation:subject")
+                //            //.Where("_revinclude=MedicationRequest:subject")
+                //            //.Where("_revinclude=Procedure:subject")
+                //            .Where("_revinclude=Condition:subject")
+                //            //.Where("_revinclude=DiagnosticReport:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (resourcetype == "DiagnosticReport")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            //.Where("_revinclude=Encounter:subject")
+                //            //.Where("_revinclude=Observation:subject")
+                //            //.Where("_revinclude=MedicationRequest:subject")
+                //            //.Where("_revinclude=Procedure:subject")
+                //            //.Where("_revinclude=Condition:subject")
+                //            .Where("_revinclude=DiagnosticReport:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (resourcetype == "Medication")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            //.Where("_revinclude=Encounter:subject")
+                //            //.Where("_revinclude=Observation:subject")
+                //            //.Where("_revinclude=MedicationRequest:subject")
+                //            //.Where("_revinclude=Procedure:subject")
+                //            //.Where("_revinclude=Condition:subject")
+                //            .Where("_revinclude=Medication:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else if (resourcetype == "ServiceRequest")
+                //        {
+                //            var query = new SearchParams()
+                //            .Where("_id=" + patient_id)
+                //            //.Where("_revinclude=Encounter:subject")
+                //            //.Where("_revinclude=Observation:subject")
+                //            //.Where("_revinclude=MedicationRequest:subject")
+                //            //.Where("_revinclude=Procedure:subject")
+                //            //.Where("_revinclude=Condition:subject")
+                //            .Where("_revinclude=ServiceRequest:subject")
+                //            .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //        }
+                //        else
+                //        {
+                //            var query = new SearchParams()
+                //           .Where("_id=" + patient_id)
+                //           //.Where("_revinclude=Encounter:subject")
+                //           //.Where("_revinclude=Observation:subject")
+                //           //.Where("_revinclude=MedicationRequest:subject")
+                //           //.Where("_revinclude=Procedure:subject")
+                //           //.Where("_revinclude=Condition:subject")
+                //           //.Where("_revinclude=DiagnosticReport:subject")
+                //           .Where("_total=accurate");//顯示總比數
+                //            var a = query.ToParameters();
+
+                //            Bundle Patient_Bundle = client.Search(query, "Patient");
+                //            foreach (var entry in Patient_Bundle.Entry)
+                //            {
+                //                Patient_Search_reosurces.Add((entry.Resource).ToJObject());
+                //            }
+                //            //if (Patient_Search_reosurces.Count == 1)
+                //            //{
+                //            //    Patient_Search_reosurces.Clear();
+                //            //}
+                //        }
+                //    }
+
+                //    ViewBag.Resources = Patient_Search_reosurces; //左圖的
+
+                //}
+                //************************分開的程式碼
+
                 #endregion Patient 所有相關資料
 
                 return View();

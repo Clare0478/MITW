@@ -7,8 +7,7 @@
     var Resource_detail = ViewBag.Resource_detail; //只有obser有用到
     DateTime now = DateTime.Today;
     List<dynamic> chart_data = new List<dynamic>();
-    var Patient_a = "";
-    var Encounter_a = "";
+   
 }
 @section Styles{
     <link href="~/Content/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -448,21 +447,20 @@
         <div class="container bootstrap snippets bootdeys">
             <div class="col-md-12">
                 <article class="timeline-entry">
-                    <div class="timeline-entry-inner col-lg-6">
+                    <!--<div class="timeline-entry-inner col-lg-6">
                         <select class="form-control" id="ResourceSelect" name="resource">
                             <option value="Patient">Patient</option>
-                            <option value="Practitioner">Practitioner</option>
                             <option value="Encounter">Encounter</option>
                             <option value="Observation">Observation</option>
                             <option value="Procedure">Procedure</option>
                             <option value="Condition">Condition</option>
                             <option value="Medication">Medication</option>
-                            <option value="MedicationRequest">MedicationRequest</option>
-                            <option value="MedicationAdministration">MedicationAdministration</option>
-                            <option value="DiagnosticReport">DiagnosticReport</option>
+                            <option value="MedicationRequest">MedicationRequest</option>-->
+                    @*<option value="MedicationAdministration">MedicationAdministration</option>*@
+                    <!--<option value="DiagnosticReport">DiagnosticReport</option>
                             <option value="ServiceRequest">ServiceRequest</option>
                         </select>
-                    </div>
+                    </div>-->
                 </article>
                 <div class="timeline-centered timeline-sm selediv">
                     @if (Resources.Count == 0)
@@ -538,7 +536,7 @@
                                                 @if (res.type != null)
                                                 {
                                                     <p>
-                                                        參照連結：@(res.type[0].coding[0].system)
+                                                        參照連結：@(res.type[0].coding[0].system) @*沒有顆*@
                                                         <br>
                                                         檢驗項目代碼：@(res.type[0].coding[0].code)
                                                         <br>
@@ -1049,9 +1047,23 @@
                                     <td>
                                         @if (Res_Search.code.coding != null)
                                         {
-                                            @Res_Search.code.coding[0].display
-                                            <br>
-                                            @:Text:@Res_Search.code.text
+                                            if (Res_Search.code.coding[0].display != null)
+                                            {
+                                                @Res_Search.code.coding[0].display
+                                            }
+                                            else if (Res_Search.code.text != null)
+                                            {
+                                                @Res_Search.code.text
+                                            }
+                                            else if (Res_Search.code.coding[0].code != null)
+                                            {
+                                                @Res_Search.code.coding[0].code
+                                            }
+                                            else
+                                            {
+                                                @:無
+                                            }
+
                                         }
                                         else
                                         {
@@ -1725,12 +1737,13 @@
         var indexOftwo = st.indexOf("/");
         var st1 = st.substring(-1,indexOftwo)
         //alert("st1=" + st1);
-        //selec預設
-        $("#ResourceSelect").val(st1);
+
+        ////selec預設
+        //$("#ResourceSelect").val(st1);
 
 
         //select事件
-        $("#ResourceSelect").on('change', function () {
+        @*$("#ResourceSelect").on('change', function () {
             var sele = $(this).val().toString();
             //alert(sele);
             var pat_id = $("#Patient_id").val();
@@ -1780,7 +1793,7 @@
                         //alert(a);
                         window.location.href = a;
                     }
-                    
+
 
 
                 }
@@ -1793,7 +1806,7 @@
                 /*data.resource = $("#ResourceSelect").val();*/
                 return data;
             }
-        });
+        });*@
 
 
     </script>

@@ -11,6 +11,13 @@
     {
         FHIR_Token = Request.Cookies["FHIR_Token"].Value;
     }
+    if (TempData["message"] != null)
+    {
+        <script type="text/javascript">
+        var message = @Html.Raw(Json.Encode(TempData.Peek("message")));
+        alert(message);
+        </script>
+    }
 }
 @section Styles{
     @*<link href="~/Content/datatables.min.css" rel="stylesheet" />*@
@@ -70,7 +77,7 @@
                                 <option>Condition</option>
                                 @*<option>Medication</option>*@
                                 <option>MedicationRequest</option>
-@*                                <option>MedicationAdministration</option>*@
+                                @*                                <option>MedicationAdministration</option>*@
                                 <option>DiagnosticReport</option>
                                 <option>ServiceRequest</option>
                             </select>
