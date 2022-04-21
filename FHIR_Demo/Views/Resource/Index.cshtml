@@ -1233,10 +1233,13 @@
                                     <td>
                                         @if (Res_Search.code != null)
                                         {
-                                            if (Res_Search.code.coding[0].code != null)
+                                            if (Res_Search.code.coding != null)
                                             {
-                                                @Res_Search.code.coding[0].code
-                                                <br>
+                                                if (Res_Search.code.coding[0].code != null)
+                                                {
+                                                    @Res_Search.code.coding[0].code
+                                                    <br>
+                                                }
                                             }
                                             if (Res_Search.code.text != null)
                                             {
@@ -1303,10 +1306,14 @@
                                     <td>
                                         @if (Res_Search.outcome != null)
                                         {
-                                            if (Res_Search.outcome.coding[0].code != null)
+                                            if (Res_Search.outcome.coding != null)
                                             {
-                                                @Res_Search.outcome.coding[0].code
+                                                if (Res_Search.outcome.coding[0].code != null)
+                                                {
+                                                    @Res_Search.outcome.coding[0].code
+                                                }
                                             }
+
 
                                         }
                                         else
