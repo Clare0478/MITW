@@ -7,7 +7,7 @@
     var Resource_detail = ViewBag.Resource_detail; //只有obser有用到
     DateTime now = DateTime.Today;
     List<dynamic> chart_data = new List<dynamic>();
-   
+
 }
 @section Styles{
     <link href="~/Content/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -919,6 +919,10 @@
                                             DateTime birthDate = DateTime.Parse(Convert.ToString(Res_Search.birthDate));
                                             @: @birthDate.ToString("yyyy年MM月dd日") (年齡：@Age(birthDate))
                                         }
+                                        else
+                                        {
+                                            @:無
+                                        }
                                     </td>
                                     <td></td>
                                 </tr>
@@ -944,9 +948,53 @@
                                             }
 
                                         }
+                                        else
+                                        {
+                                            @:無
+                                        }
                                     </td>
                                     <td></td>
                                 </tr>
+                                @*右邊必填的或是非必填但裡面有值必填_start*@
+                                <tr>
+                                    <th scope="row">是否過世</th>
+                                    <td>
+                                        @if (Res_Search.deceased != null)
+                                        {
+                                            switch (Res_Search.gender.ToString())
+                                            {
+                                                case "1":
+                                                    @:存活
+                                                    break;
+                                                case "0":
+                                                    @:死亡
+                                                    break;
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">溝通語言</th>
+                                    <td>
+                                        @if (Res_Search.communication != null)
+                                        {
+                                            @(Res_Search.communication[0].language.text != null ? Res_Search.communication[0].language.text : (Res_Search.communication[0].language.text.ToString()) ?? "無")
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+
+                                @*右邊必填的或是非必填但裡面有值必填_end*@
                             </tbody>
 
                         </table>
@@ -1004,6 +1052,10 @@
                                         {
                                             @Res_Search.period.start
                                         }
+                                        else
+                                        {
+                                            @:無
+                                        }
                                     </td>
                                     <td></td>
                                 </tr>
@@ -1045,23 +1097,17 @@
                                 <tr>
                                     <th scope="row">檢驗項目名稱</th>
                                     <td>
+                                        @if (Res_Search.code.text != null)
+                                        {
+                                            @Res_Search.code.text
+                                            <br>
+                                        }
+
                                         @if (Res_Search.code.coding != null)
                                         {
-                                            if (Res_Search.code.coding[0].display != null)
-                                            {
-                                                @Res_Search.code.coding[0].display
-                                            }
-                                            else if (Res_Search.code.text != null)
-                                            {
-                                                @Res_Search.code.text
-                                            }
-                                            else if (Res_Search.code.coding[0].code != null)
+                                            if (Res_Search.code.coding[0].code != null)
                                             {
                                                 @Res_Search.code.coding[0].code
-                                            }
-                                            else
-                                            {
-                                                @:無
                                             }
 
                                         }
@@ -1093,6 +1139,10 @@
                                         {
                                             @Res_Search.valueQuantity.value @Res_Search.valueQuantity.unit
                                         }
+                                        else
+                                        {
+                                            @:無
+                                        }
                                     </td>
                                     <td></td>
                                 </tr>
@@ -1106,6 +1156,10 @@
                                             {
                                                 @effectiveDateTime.Value.ToString("tt hh:mm")
                                             }
+                                        }
+                                        else
+                                        {
+                                            @:無
                                         }
                                     </td>
                                     <td></td>
@@ -1144,7 +1198,15 @@
                                         {
                                             chart_data.Add(new { date = DateTime.Parse(Convert.ToString(res_detail.effectiveDateTime)).ToString("yyyy-MM-dd"), value = Convert.ToSingle(res_detail.valueQuantity.value) });
                                         }
+                                        @*else
+                                            {
+                                                @:無
+                                            }*@
                                     }
+                                    @*else
+                                        {
+                                            @:無
+                                        }*@
                                 }
                             </tbody>
                         </table>
@@ -1169,17 +1231,18 @@
                                 <tr>
                                     <th scope="row">處置/手術名稱</th>
                                     <td>
-                                        @if (Res_Search.code == null)
+                                        @if (Res_Search.code != null)
                                         {
-                                            @Res_Search.extension[0].extension[0].valueCodeableConcept.text
-                                            <br>
-                                            @:說明:@Res_Search.extension[2].extension[0].valueReference.display
-                                        }
-                                        else if (Res_Search.code.coding != null)
-                                        {
-                                            @Res_Search.code.coding[0].display
-                                            <br>
-                                            @:說明:@Res_Search.code.text
+                                            if (Res_Search.code.coding[0].code != null)
+                                            {
+                                                @Res_Search.code.coding[0].code
+                                                <br>
+                                            }
+                                            if (Res_Search.code.text != null)
+                                            {
+                                                @:說明:@Res_Search.code.text
+                                            }
+
                                         }
                                         else
                                         {
@@ -1210,6 +1273,10 @@
                                             @Res_Search.performer[0].actor.display
                                             @:(Practitioner ID: @(Res_Search.performer[0].actor.reference.ToString().Split('/')[1]))
                                         }
+                                        else
+                                        {
+                                            @:無
+                                        }
                                     </td>
                                     <td></td>
                                 </tr>
@@ -1223,6 +1290,28 @@
                                             {
                                                 @performedDateTime.Value.ToString("tt hh:mm")
                                             }
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">處置/手術結果</th>
+                                    <td>
+                                        @if (Res_Search.outcome != null)
+                                        {
+                                            if (Res_Search.outcome.coding[0].code != null)
+                                            {
+                                                @Res_Search.outcome.coding[0].code
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            @:無
                                         }
                                     </td>
                                     <td></td>
@@ -1239,6 +1328,10 @@
                     {
                         DateTime.Parse(Convert.ToString(Res_Search.onsetDateTime));
                     }
+                    else
+                    {
+                        @:無
+                    }
                     <div class="table-responsive">
                         <table class="table">
                             <thead class="thead-dark">
@@ -1250,11 +1343,19 @@
                                 <tr>
                                     <th scope="row">疾病診斷名稱</th>
                                     <td>
-                                        @if (Res_Search.code.coding != null)
+                                        @if (Res_Search.code != null)
                                         {
-                                            @Res_Search.code.coding[0].display
-                                            <br>
-                                            @:說明:@Res_Search.code.text
+                                            if (Res_Search.code.coding != null)
+                                            {
+                                                @Res_Search.code.coding[0].code
+                                                <br>
+                                            }
+                                            if (Res_Search.code.text != null)
+                                            {
+                                                @:說明:@Res_Search.code.text
+                                            }
+
+
                                         }
                                         else
                                         {
@@ -1273,6 +1374,68 @@
                                             {
                                                 @onsetDateTime.Value.ToString("tt hh:mm")
                                             }
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">疾病類別</th>
+                                    <td>
+                                        @if (Res_Search.category != null)
+                                        {
+                                            if (Res_Search.category[0].text != null)
+                                            {
+                                                @Res_Search.category[0].text
+                                            }
+                                            if (Res_Search.category[0].coding[0].code != null)
+                                            {
+                                                @Res_Search.category[0].coding[0].code
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">疾病代碼</th>
+                                    <td>
+                                        @if (Res_Search.code != null)
+                                        {
+                                            if (Res_Search.code.coding[0].display != null)
+                                            {
+                                                @Res_Search.code.coding[0].display
+                                            }
+                                            if (Res_Search.code.coding[0].code != null)
+                                            {
+                                                @Res_Search.code.coding[0].code
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            @:無
+                                        }
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">疾病記錄日期</th>
+                                    <td>
+                                        @if (Res_Search.recordedDate != null)
+                                        {
+                                            @Res_Search.recordedDate
+                                        }
+                                        else
+                                        {
+                                            @:無
                                         }
                                     </td>
                                     <td></td>
@@ -1333,6 +1496,10 @@
                                                 @authoredOn.Value.ToString("tt hh:mm")
                                             }
                                         }
+                                        else
+                                        {
+                                            @:無
+                                        }
                                     </td>
                                     <td></td>
                                 </tr>
@@ -1378,11 +1545,19 @@
                                                     {
                                                         @validityPeriod_start.ToString("tt hh:mm")
                                                     }
+                                                    else
+                                                    {
+                                                        @:無
+                                                    }
                                                     ~
                                                     @validityPeriod_end.ToString("yyyy年MM月dd日")
                                                     @if (validityPeriod_end.TimeOfDay.TotalSeconds != 0)
                                                     {
                                                         @validityPeriod_end.ToString("tt hh:mm")
+                                                    }
+                                                    else
+                                                    {
+                                                        @:無
                                                     }
                                                 </td>
                                                 <td></td>
@@ -1417,6 +1592,10 @@
                                         </td>
                                         <td></td>
                                     </tr>
+                                }
+                                else
+                                {
+                                    @:無
                                 }
                             </tbody>
 
@@ -1457,6 +1636,10 @@
                                         @if (effectiveDateTime.TimeOfDay.TotalSeconds != 0)
                                         {
                                             @effectiveDateTime.ToString("tt hh:mm")
+                                        }
+                                        else
+                                        {
+                                            @:無
                                         }
                                     </td>
                                     <td></td>
@@ -1539,6 +1722,10 @@
                                         {
                                             @occurrenceDateTime.Value.ToString("tt hh:mm")
                                         }
+                                        else
+                                        {
+                                            @:無
+                                        }
                                     </td>
                                     <td></td>
                                 </tr>
@@ -1570,6 +1757,10 @@
                                                 @Res_Search.subject.display
                                             }
                                             @:(@Res_Search.subject.reference.ToString().Split('/')[0] ID: @(Res_Search.subject.reference.ToString().Split('/')[1]))
+                                        }
+                                        else
+                                        {
+                                            @:無
                                         }
                                     </td>
                                     <td></td>
