@@ -957,7 +957,7 @@
                                 </tr>
                                 @*右邊必填的或是非必填但裡面有值必填_start*@
                                 <tr>
-                                    <th scope="row">是否過世</th>
+                                    <th scope="row">生存狀態</th>
                                     <td>
                                         @if (Res_Search.deceased != null)
                                         {
@@ -974,7 +974,7 @@
                                         }
                                         else
                                         {
-                                            @:無
+                                            @:未知
                                         }
                                     </td>
                                     <td></td>
@@ -1473,9 +1473,16 @@
                                     <td>
                                         @if (Res_Search.medicationCodeableConcept != null)
                                         {
-                                            @Res_Search.medicationCodeableConcept.coding[0].display
-                                            <br>
-                                            @:說明:@Res_Search.medicationCodeableConcept.text
+                                            if (Res_Search.medicationCodeableConcept.coding != null)
+                                            {
+                                                @Res_Search.medicationCodeableConcept.coding[0].display
+                                                <br>
+                                            }
+                                            if (Res_Search.medicationCodeableConcept.text != null)
+                                            {
+                                                @:說明:@Res_Search.medicationCodeableConcept.text
+                                            }
+
                                         }
                                         else
                                         {
