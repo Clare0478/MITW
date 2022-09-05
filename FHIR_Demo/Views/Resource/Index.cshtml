@@ -1404,8 +1404,9 @@
                                                             if (Res_Search.category[0].coding[0].code != null)
                                                             {
                                                                 @Res_Search.category[0].coding[0].code
-                                                                if (Res_Search.category[0].coding[0].code != null)
+                                                                if (Res_Search.category[0].text != null)
                                                                 {
+
                                                                     @:(@Res_Search.category[0].text)
                                                                     <br>
                                                                 }
@@ -2929,6 +2930,10 @@
                                                     {
                                                         @Res_Search.dosageInstruction[0].route.coding[0].code
                                                     }
+                                                    else
+                                                    {
+                                                        @:無
+                                                    }
 
                                                 }
                                                 else
@@ -2946,14 +2951,6 @@
                                                     }
 
                                                 }
-                                                else
-                                                {
-                                                    @:無
-                                                }
-                                            }
-                                            else
-                                            {
-                                                @:無
                                             }
                                         }
                                         else
@@ -3093,21 +3090,28 @@
                                                 DateTime validityPeriod_end = DateTime.Parse(Convert.ToString(Res_Search.dispenseRequest.validityPeriod.end));
                                                 <th scope="row">處方服用時間</th>
                                                 <td>
-                                                    @validityPeriod_start.ToString("yyyy年MM月dd日")
-                                                    @if (validityPeriod_start.TimeOfDay.TotalSeconds != 0)
+                                                    @if (validityPeriod_start != null)
                                                     {
-                                                        @validityPeriod_start.ToString("tt hh:mm")
+                                                        @validityPeriod_start.ToString("yyyy年MM月dd日")
+                                                        if (validityPeriod_start.TimeOfDay.TotalSeconds != 0)
+                                                        {
+                                                            @validityPeriod_start.ToString("tt hh:mm")
+                                                        }
                                                     }
                                                     else
                                                     {
                                                         @:無
                                                     }
                                                     ~
-                                                    @validityPeriod_end.ToString("yyyy年MM月dd日")
-                                                    @if (validityPeriod_end.TimeOfDay.TotalSeconds != 0)
+                                                    @if (validityPeriod_end != null)
                                                     {
-                                                        @validityPeriod_end.ToString("tt hh:mm")
+                                                        @validityPeriod_end.ToString("yyyy年MM月dd日")
+                                                        if (validityPeriod_end.TimeOfDay.TotalSeconds != 0)
+                                                        {
+                                                            @validityPeriod_end.ToString("tt hh:mm")
+                                                        }
                                                     }
+
                                                     else
                                                     {
                                                         @:無
