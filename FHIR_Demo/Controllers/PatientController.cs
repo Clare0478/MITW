@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -21,10 +22,25 @@ namespace FHIR_Demo.Controllers
         // GET: Patient
         public ActionResult Index()
         {
-            handler.OnBeforeRequest += (sender, e) =>
+            //讓系統通過對於不安全的https連線
+            handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
+            //不知道錯哪裡
+            if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
             {
-                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
-            };
+                //使用Basic 登入
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
+                };
+            }
+            else
+            {
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+            }
+            
             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
             ViewBag.status = TempData["status"];
             ViewBag.Error = TempData["Error"];
@@ -42,7 +58,8 @@ namespace FHIR_Demo.Controllers
             }
             catch (Exception e)
             {
-                ViewBag.Error = e.ToString();
+                //ViewBag.Error = e.ToString();
+                ViewBag.Error = "發生錯誤";
                 return View();
             }
         }
@@ -72,7 +89,8 @@ namespace FHIR_Demo.Controllers
             }
             catch (Exception e)
             {
-                ViewBag.Error = e.ToString();
+                //ViewBag.Error = e.ToString();
+                ViewBag.Error = "發生錯誤";
                 return PartialView("_GetRecord");
             }
         }
@@ -84,10 +102,27 @@ namespace FHIR_Demo.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            handler.OnBeforeRequest += (sender, e) =>
+            //讓系統通過對於不安全的https連線
+            handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
+            if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
             {
-                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
-            };
+                //使用Basic 登入
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
+                };
+            }
+            else
+            {
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+            }
+            //handler.OnBeforeRequest += (sender, e) =>
+            //{
+            //    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+            //};
             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
             try
             {
@@ -113,10 +148,24 @@ namespace FHIR_Demo.Controllers
         {
             if (ModelState.IsValid)
             {
-                handler.OnBeforeRequest += (sender, e) =>
+                //讓系統通過對於不安全的https連線
+                handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
+                if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
                 {
-                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
-                };
+                    //使用Basic 登入
+                    handler.OnBeforeRequest += (sender, e) =>
+                    {
+                        e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
+                    };
+                }
+                else
+                {
+                    handler.OnBeforeRequest += (sender, e) =>
+                    {
+                        e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                    };
+                }
+                
                 FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
                 try
                 {
@@ -215,12 +264,14 @@ namespace FHIR_Demo.Controllers
                     var patient_ToJson = patient.ToJson();
                     //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
                     var created_pat_A = client.Create<Patient>(patient, conditions);
+                    //var created_pat_A = client.Create<Patient>(patient);
                     TempData["status"] = "Create succcess! Reference url:" + created_pat_A.Id;
                     return RedirectToAction("Index");
                 }
                 catch (Exception e)
                 {
-                    TempData["Error"] = e.ToString();
+                    //TempData["Error"] = e.ToString();
+                    TempData["Error"] = "發生錯誤或該資料已存在";
                     return RedirectToAction("Index");
                     //return View();
                 }
@@ -235,10 +286,23 @@ namespace FHIR_Demo.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            handler.OnBeforeRequest += (sender, e) =>
+            if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
             {
-                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
-            };
+                //讓系統通過對於不安全的https連線
+                handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
+                //使用Basic 登入
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
+                };
+            }
+            else
+            {
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+            }
             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
             try
             {
@@ -258,10 +322,27 @@ namespace FHIR_Demo.Controllers
         {
             if (ModelState.IsValid)
             {
-                handler.OnBeforeRequest += (sender, e) =>
+                //讓系統通過對於不安全的https連線
+                handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
+                if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
                 {
-                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
-                };
+                    //使用Basic 登入
+                    handler.OnBeforeRequest += (sender, e) =>
+                    {
+                        e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
+                    };
+                }
+                else
+                {
+                    handler.OnBeforeRequest += (sender, e) =>
+                    {
+                        e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                    };
+                }
+                //handler.OnBeforeRequest += (sender, e) =>
+                //{
+                //    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                //};
                 FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
                 try
                 {

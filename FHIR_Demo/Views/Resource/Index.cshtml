@@ -2215,7 +2215,7 @@
                 }
                 else if (Res_Search.resourceType == "Condition")
                 {
-                    DateTime? onsetDateTime = null;
+                    @*DateTime? onsetDateTime = null;
                     if (Res_Search.onsetDateTime != null)
                     {
                         DateTime.Parse(Convert.ToString(Res_Search.onsetDateTime));
@@ -2223,7 +2223,7 @@
                     else
                     {
                         @:無
-                    }
+                    }*@
                     <div class="table-responsive">
                         <table class="table">
                             <thead class="thead-dark">
@@ -2940,6 +2940,10 @@
                                                 {
                                                     @:無
                                                 }
+                                            }
+                                            else
+                                            {
+                                                @:無
                                             }
                                             if (Res_Search.dosageInstruction[0].site != null)
                                             {
