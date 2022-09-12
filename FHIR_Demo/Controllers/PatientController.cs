@@ -2,12 +2,16 @@
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -67,10 +71,23 @@ namespace FHIR_Demo.Controllers
         [HttpPost]
         public ActionResult GetRecord(string url, string token, string search)
         {
-            handler.OnBeforeRequest += (sender, e) =>
+            //讓系統通過對於不安全的https連線
+            handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
+            if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
             {
-                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, token));
-            };
+                //使用Basic 登入
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
+                };
+            }
+            else
+            {
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+            }
             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings, handler);
 
             try
@@ -144,7 +161,7 @@ namespace FHIR_Demo.Controllers
 
         // POST: Patient/Create
         [HttpPost]
-        public ActionResult Create(PatientViewModel model)
+        public async Task<ActionResult>  Create(PatientViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -263,9 +280,25 @@ namespace FHIR_Demo.Controllers
                     var b = patient.Identifier;
                     var patient_ToJson = patient.ToJson();
                     //如果找到同樣資料，會回傳該筆資料，但如果找到多筆資料，會產生Error
-                    var created_pat_A = client.Create<Patient>(patient, conditions);
+                    //var created_pat_A = client.Create<Patient>(patient, conditions);
+                    if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
+                    {
+                        var resullt = await GetandShare_Block(patient_ToJson);
+                        int resulltnumber1 = resullt.IndexOf("/Patient/") + 9;
+                        int resulltnumber2 = resullt.IndexOf("/_history");
+                        int length = resulltnumber2 - resulltnumber1;
+                        var resulltid = resullt.Substring(resulltnumber1, length);
+                        TempData["status"] = "Create succcess! Reference url:" + resulltid;
+
+                    }
+                    else
+                    {
+                        var created_pat_A = client.Create<Patient>(patient, conditions);
+                        TempData["status"] = "Create succcess! Reference url:" + created_pat_A.Id;
+                    }
+
                     //var created_pat_A = client.Create<Patient>(patient);
-                    TempData["status"] = "Create succcess! Reference url:" + created_pat_A.Id;
+                    //TempData["status"] = "Create succcess! Reference url:" + created_pat_A.Id;
                     return RedirectToAction("Index");
                 }
                 catch (Exception e)
@@ -318,7 +351,7 @@ namespace FHIR_Demo.Controllers
 
         // POST: Patient/Edit/5
         [HttpPost]
-        public ActionResult Update(string id, PatientViewModel model)
+        public async Task<ActionResult> Update(string id, PatientViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -425,6 +458,20 @@ namespace FHIR_Demo.Controllers
                     };
                     var a = pat_A.ToJson();
                     var updated_pat = client.Update<Patient>(pat_A);
+                    //if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
+                    //{
+                    //    var resullt = await GetandShare_Block(a);
+                    //    int resulltnumber1 = resullt.IndexOf("/Patient/") + 9;
+                    //    int resulltnumber2 = resullt.IndexOf("/_history");
+                    //    int length = resulltnumber2 - resulltnumber1;
+                    //    var resulltid = resullt.Substring(resulltnumber1, length);
+                    //    TempData["status"] = "Create succcess! Reference url:" + resulltid;
+
+                    //}
+                    //else
+                    //{
+                    //    var updated_pat = client.Update<Patient>(pat_A);
+                    //}
 
                     return RedirectToAction("Index");
                 }
@@ -458,5 +505,31 @@ namespace FHIR_Demo.Controllers
         //        return View();
         //    }
         //}
+
+
+        //測試
+        [HttpPost]
+        public async Task<dynamic> GetandShare_Block(string bundlejson)
+        {
+            //var json = JsonConvert.SerializeObject(Post_data);
+            var data = new StringContent(bundlejson, Encoding.UTF8, "application/json");
+
+            //var url = "http://localhost:12904/api/Geth/" + Request_Url;
+            var url = cookies.FHIR_URL_Cookie(HttpContext)+"/Patient";
+            var Token = cookies.FHIR_Token_Cookie(HttpContext);
+
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            HttpClient client = new HttpClient();
+
+            //specify to use TLS 1.2 as default connection
+            var byteArray = Encoding.ASCII.GetBytes(Token);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+            //POST資料
+            var response = await client.PostAsync(url, data);
+            var resultheader = response.Headers.Location.LocalPath.ToString();
+            return resultheader;
+        }
     }
 }

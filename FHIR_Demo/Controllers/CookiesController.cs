@@ -12,12 +12,12 @@ namespace FHIR_Demo.Controllers
         //public string FHIR_url = "https://oauth.dicom.org.tw/fhir";
         //public string FHIR_Token = "3d821661-6dc0-40b1-a8d5-2e91389255bb";
         //
-        public string FHIR_url;
-        public string FHIR_Token;
-        public string FHIR_Server;
-        //public string FHIR_url = "https://vtb02p.vghks.gov.tw/fhir-server/api/v4";
-        //public string FHIR_Token = "3d821661-6dc0-40b1-a8d5-2e91389255bb";
-        //public string FHIR_Server = "HAPi";
+        //public string FHIR_url;
+        //public string FHIR_Token;
+        //public string FHIR_Server;
+        public string FHIR_url = "https://vtb02p.vghks.gov.tw/fhir-server/api/v4";
+        public string FHIR_Token = "3d821661-6dc0-40b1-a8d5-2e91389255bb";
+        public string FHIR_Server = "HAPi";
 
         public FhirClientSettings settings = new FhirClientSettings
         {
