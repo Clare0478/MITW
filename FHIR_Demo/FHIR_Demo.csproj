@@ -568,6 +568,9 @@
     <Content Include="Views\Immunization\Update.cshtml" />
     <Content Include="Views\Home\Resource.cshtml" />
     <Content Include="Views\Resource\Index.cshtml" />
+    <Content Include="Views\MedicationRequest\Details.cshtml" />
+    <Content Include="Views\MedicationAdministration\Details.cshtml" />
+    <Content Include="Views\MedicationRequest\update2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

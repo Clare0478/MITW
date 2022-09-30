@@ -125,6 +125,7 @@ namespace FHIR_Demo.Controllers
                 FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
                 try
                 {
+                    //製作Observation
                     Observation observation = new Observation()
                     {
                         Status = (ObservationStatus)model.status,

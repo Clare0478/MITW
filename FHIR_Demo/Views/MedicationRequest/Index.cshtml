@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<FHIR_Demo.Models.MedicationRequestViewModel>
-
 @{
     ViewBag.Title = "Index";
     string FHIR_url = "";
@@ -41,12 +40,12 @@
                         <hr>
                         <div class="table-border-style" id="ajaxTargetDiv">
                             @*@if (!string.IsNullOrEmpty(ViewBag.AlertMessage))
-        {
-            <script type="text/javascript">
-               alert("@ViewBag.AlertMessage");
-               ViewBag.AlertMessage = "";
-            </script>
-        }*@
+                                {
+                                    <script type="text/javascript">
+                                       alert("@ViewBag.AlertMessage");
+                                       ViewBag.AlertMessage = "";
+                                    </script>
+                                }*@
                             @if (ViewBag.status != null)
                             {
                                 <div class="alert alert-success" role="alert">
@@ -164,7 +163,7 @@
                                                                     <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dispenseRequest.validityPeriod_start)</th>
                                                                     <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dispenseRequest.validityPeriod_end)</th>
                                                                     <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dispenseRequest.quantity)</th>
-                                                                    <th class="text-center align-middle">@Html.DisplayNameFor(model => model.dispenseRequest.expectedSupplyDuration)</th>
+                                                                    @*<th class="text-center align-middle">@Html.DisplayNameFor(model => model.dispenseRequest.expectedSupplyDuration)</th>*@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -172,7 +171,7 @@
                                                                     <td class="text-center align-middle">@item.dispenseRequest.validityPeriod_start</td>
                                                                     <td class="text-center align-middle">@item.dispenseRequest.validityPeriod_end</td>
                                                                     <td class="text-center align-middle">@item.dispenseRequest.quantity.Value @item.dispenseRequest.quantity.Unit</td>
-                                                                    <td class="text-center align-middle">@item.dispenseRequest.expectedSupplyDuration.Value @item.dispenseRequest.expectedSupplyDuration.Unit</td>
+                                                                    @*<td class="text-center align-middle">@item.dispenseRequest.expectedSupplyDuration.Value @item.dispenseRequest.expectedSupplyDuration.Unit </td>*@
                                                                 </tr>
                                                             </tbody>
                                                         </table>

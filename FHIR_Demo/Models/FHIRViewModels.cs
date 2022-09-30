@@ -183,11 +183,15 @@ namespace FHIR_Demo.Models
             if (observation.Category.Count > 0)
                 if (observation.Category[0].Coding.Count > 0)
                     this.catogory = observation.Category[0].Coding[0].Display;
-            this.subject = observation.Subject.Reference ?? "";
-            if (observation.Effective.TypeName != "Period")
-                this.effectiveDateTime = DateTime.Parse(observation.Effective.ToString());
-            else
-                this.effectiveDateTime = DateTime.Parse(((Period)observation.Effective).Start);
+            if (observation.Subject !=null)
+                this.subject = observation.Subject.Reference ?? "";//有修改過
+            if (observation.Effective!=null) {
+                if (observation.Effective.TypeName != "Period")
+                    this.effectiveDateTime = DateTime.Parse(observation.Effective.ToString());
+                else
+                    this.effectiveDateTime = DateTime.Parse(((Period)observation.Effective).Start);
+            }
+            
             this.Code_value = new Obser_Code_Value();
             if (observation.Code != null)
             {

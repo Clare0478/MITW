@@ -79,7 +79,26 @@ namespace FHIR_Demo.Controllers
         // GET: MedicationAdministration/Details/5
         public ActionResult Details(string id)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
+            try
+            {
+                var MedA = client.Read<MedicationAdministration>("MedicationAdministration/" + id);
+                var MedA_view = new MedicationAdministrationViewModel().MedicationAdministrationViewModelMapping(MedA);
+
+                return View(MedA_view);
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }
 
         // GET: MedicationAdministration/Create

@@ -106,8 +106,8 @@ namespace FHIR_Demo.Controllers
             }
             catch (Exception e)
             {
-                //ViewBag.Error = e.ToString();
-                ViewBag.Error = "發生錯誤";
+                ViewBag.Error = e.ToString();
+                //ViewBag.Error = "發生錯誤";
                 return PartialView("_GetRecord");
             }
         }
@@ -186,6 +186,7 @@ namespace FHIR_Demo.Controllers
                 FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
                 try
                 {
+                    //製造Patient
                     Patient patient = new Patient()
                     {
                         Name = new List<HumanName>()
