@@ -1,0 +1,3767 @@
+﻿@*MEDICAL*@
+@{
+    ViewBag.Title = "Index2";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string FHIR_url = "";
+    if (Request.Cookies["FHIR_url"] != null)
+    {
+        FHIR_url = Request.Cookies["FHIR_url"].Value;
+    }
+    string FHIR_Token = "";
+    if (Request.Cookies["FHIR_Token"] != null)
+    {
+        FHIR_Token = Request.Cookies["FHIR_Token"].Value;
+    }
+}
+@section Styles{
+    <link href="~/Content/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/Content/FixedHeader/css/fixedHeader.bootstrap4.css" rel="stylesheet" />
+    <style>
+        .dropdown-item-checked::before {
+            position: absolute;
+            left: .4rem;
+            content: '✓';
+            font-weight: 600;
+        }
+
+        .dropdown-menu {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        /*lodingstyle*/
+        div.loadingdiv {
+            /*            height: 100%;*/
+            height: 100%;
+            /*100%覆蓋網頁內容, 避免user在loading時進行其他操作*/ width: 100%;
+            position: fixed;
+            z-index: 99999;
+            /*須大於網頁內容*/ top: 0;
+            left: 0;
+            display: block;
+            background: #000;
+            opacity: 0.6;
+            text-align: center;
+        }
+
+            div.loadingdiv img {
+                position: relative;
+                vertical-align: middle;
+                text-align: center;
+                margin: 0 auto;
+                margin-top: 50vh;
+            }
+    </style>
+}
+<div class="loadingdiv" id="loading" style="display: none">
+    @*<div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
+            </svg>
+        </div>*@
+    <div style="margin-top:20%;">
+        <i class="fa fa-spinner fa-spin" style="font-size:100px;"></i>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><b>篩選多重條件</b></h5>
+            </div>
+            <div class="card-block">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group" hidden="hidden">
+                            <label for="ResourceSelect">Resource</label>
+                            <select class="form-control" id="ResourceSelect" name="resource">
+                                <option>Patient</option>
+                                <option>Practitioner</option>
+                                <option>Encounter</option>
+                                <option>Observation</option>
+                                @*new_start*@
+                                <option>Procedure</option>
+                                <option>Condition</option>
+                                <option>MedicationRequest</option>
+                                @*new_end*@
+                                <option>DiagnosticReport</option>
+                                <option>ServiceRequest</option>
+                            </select>
+                        </div>
+                        <form name="myForm">
+                            <div class="container" style="margin-left:0px;">
+                                <div class="row justify-content-start">
+                                    @*<div class="card" style="font-size:larger">*@
+                                    <div class="form-group">
+                                        Resource：
+                                        <select class="form-control" onChange="renew(this.selectedIndex);" id="sleResource">
+                                            <option id="s1">請選擇Resource
+                                            <option value="Patient" id="p1">Patient
+                                            <option value="Encounter">Encounter
+                                            <option value="Practitioner">Practitioner
+                                            <option value="ServiceRequest">ServiceRequest
+                                            <option value="DiagnosticReport">DiagnosticReport
+                                            <option value="Observation">Observation
+                                            <option value="Procedure">Procedure
+                                            <option value="Condition">Condition
+                                            <option value="MedicationRequest">MedicationRequest
+                                        </select>
+                                    </div>
+                                    @*</div>*@
+                                    <div style="margin-left: 20px;"></div>
+                                    @*<div class="card" style="font-size:larger">*@
+                                    <div class="form-group">
+                                        Search Parameters：
+                                        @*<div class="form-group">*@
+                                        <select name="member" class="slesecvalue form-control">
+                                            <option value="">請由左方選取大項
+                                        </select>
+                                    </div>
+
+                                    @*</div>*@
+                                    <div class="d-flex align-items-center" style="font-size: larger; margin-left: 20px;">
+                                        @*文字*@
+                                        <input type="text" id="txtWrite" hidden="hidden" class="form-control" placeholder="請輸入值" />
+                                    </div>
+                                    @*RDB*@
+                                    @*<div class="d-flex align-items-center col-md-3" style="font-size: larger; background-color:aqua">*@
+                                    <div class="d-flex align-items-center">
+                                        @*不能加col*@
+                                        <div id="rdbGender" hidden="hidden" class="" style="font-size: large; margin-left: 10px;">
+                                            @*不能加d-flex*@
+                                            <div class="row">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" id="male" name="gender" value="male">
+                                                    <label class="form-check-label" for="male">Male</label><br>
+                                                </div>
+
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" id="female" name="gender" value="female">
+                                                    <label class="form-check-label" for="female">Female</label><br>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" id="unknown" name="gender" value="unknown">
+                                                    <label class="form-check-label" for="unknown">Unknown</label><br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*</div>*@
+                                    <div class="d-flex align-items-center">
+                                        <div id="rdbClass" hidden="hidden" class="" style="font-size: large; margin-left: 10px;">
+                                            <div class="row">
+                                                <div class="form-check" style="font-size: large; margin-left: 10px;">
+                                                    <input class="form-check-input" type="radio" id="AMB" name="class1" value="AMB">
+                                                    <label class="form-check-label" for="AMB">Ambulatory</label><br>
+                                                    <input class="form-check-input" type="radio" id="EMER" name="class1" value="EMER">
+                                                    <label class="form-check-label" for="EMER">Emergency</label><br>
+                                                    <input class="form-check-input" type="radio" id="FLD" name="class1" value="FLD">
+                                                    <label class="form-check-label" for="FLD">Field</label><br>
+                                                </div>
+                                                <div class="form-check" style="font-size: large; margin-left: 10px;">
+                                                    <input class="form-check-input" type="radio" id="HH" name="class1" value="HH">
+                                                    <label class="form-check-label" for="HH">Home health</label><br>
+                                                    <input class="form-check-input" type="radio" id="IMP" name="class1" value="IMP">
+                                                    <label class="form-check-label" for="IMP">Inpatient encounter</label><br>
+                                                    <input class="form-check-input" type="radio" id="ACUTE" name="class1" value="ACUTE">
+                                                    <label class="form-check-label" for="ACUTE">Inpatient acute</label><br>
+                                                </div>
+                                                <div class="form-check" style="font-size: large; margin-left: 10px;">
+                                                    <input class="form-check-input" type="radio" id="NONAC" name="class1" value="NONAC">
+                                                    <label class="form-check-label" for="NONAC">Inpatient non-acute</label><br>
+                                                    <input class="form-check-input" type="radio" id="OBSENC" name="class1" value="OBSENC">
+                                                    <label class="form-check-label" for="OBSENC">Observation encounter</label><br>
+                                                    <input class="form-check-input" type="radio" id="PRENC" name="class1" value="PRENC">
+                                                    <label class="form-check-label" for="PRENC">Pre-admission</label><br>
+                                                </div>
+                                                <div class="form-check" style="font-size: large; margin-left: 10px;">
+                                                    <input class="form-check-input" type="radio" id="SS" name="class1" value="SS">
+                                                    <label class="form-check-label" for="SS">Short stay</label><br>
+                                                    <input class="form-check-input" type="radio" id="VR" name="class1" value="VR">
+                                                    <label class="form-check-label" for="VR">Virtual</label><br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*日曆*@
+                                    <div class="d-flex align-items-center" style="font-size: larger; margin-left: 20px;">
+                                        <select id="selbigsmall" class="form-control btn-outline-secondary dropdown-toggle" hidden="hidden">
+                                            <option value="eq">等於</option>
+                                            <option value="gt">大於</option>
+                                            <option value="ge">大於或等於</option>
+                                            <option value="lt">小於</option>
+                                            <option value="le">小於或等於</option>
+                                        </select>
+                                        <input type="datetime-local" class="form-control" id="txtDate" hidden="hidden" />
+                                    </div>
+
+                                    @*valuequantity*@
+                                    <div class="d-flex align-items-center" style="font-size: larger; margin-left: 20px;">
+                                        <select id="selValueQuantity" class="form-control btn-outline-secondary dropdown-toggle" hidden="hidden">
+                                            <option value="eq">等於</option>
+                                            <option value="gt">大於</option>
+                                            <option value="ge">大於或等於</option>
+                                            <option value="lt">小於</option>
+                                            <option value="le">小於或等於</option>
+                                        </select>
+                                        <input type="text" class="form-control" id="txtValueQ" hidden="hidden" />
+                                    </div>
+
+                                    @*component-value-quantity*@
+                                    <div class="d-flex align-items-center" style="font-size: larger; margin-left: 20px;">
+                                        <select id="selComVQ" class="form-control btn-outline-secondary dropdown-toggle" hidden="hidden">
+                                            <option value="eq">等於</option>
+                                            <option value="gt">大於</option>
+                                            <option value="ge">大於或等於</option>
+                                            <option value="lt">小於</option>
+                                            <option value="le">小於或等於</option>
+                                        </select>
+                                        <input type="text" class="form-control" id="txtComVQ" hidden="hidden" />
+                                    </div>
+
+                                    <input type="text" id="txtBundleID" hidden="hidden" />
+
+                                    @*新增按鈕*@
+                                    <div class="d-flex align-items-center" style="font-size:larger">
+                                        <input type="button" id="btnPlus" class="btn-glow-dark btn-primary btn" value="新增" />
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                        </form>
+                        <p>
+                            <input hidden="hidden" type="text" id="txtAlltext" class="form-control" size="180" readonly="readonly" />
+                        </p>
+                        <p>
+                            <input hidden="hidden" type="text" id="txtAlltext2" class="form-control" size="180" readonly="readonly" />
+                        </p>
+                        @*<div class="container">
+                                <div class="row">
+                                    <div class="col">
+                                        1 of 2
+                                    </div>
+                                    <div class="col">
+                                        2 of 2
+                                    </div>
+                                </div>
+
+                            </div>*@
+
+
+                        <p>
+                            <input type="button" value="送出" class="btn-glow-dark btn-dark col-12 btn" id="btnSendmulsearch" size="180" />
+                        </p>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><b>已搜尋條件</b></h5>
+                <input type="button" value="清空" class="btn-glow-dark btn-danger col-1 btn" id="btnclean" @*size="180"*@ />
+
+                <p>
+                </p>
+            </div>
+            <div class="card-block">
+                <div class="container">
+                    <div class="row col-12">
+                        <div class="row col-12" style="font-size: medium;" id="searchresult2">
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><b>篩選條件</b></h5>
+            </div>
+            <div class="card-block">
+                <div class="btn-group dropright mb-2 mr-2">
+                    <button id="searchParameter" class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        搜尋條件
+                    </button>
+                    <div id="dropdown_item" class="dropdown-menu">
+                    </div>
+                </div>-->
+@*搜尋*@
+<!--<form id="search_form">
+                    <div class="row" id="Parameter">
+
+                    </div>
+
+                    <button type="submit" id="Parameter_btn" class="btn btn-glow-dark btn-dark col-12">送出</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>-->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><b>搜尋結果</b></h5>
+            </div>
+
+
+            <div class="card-block">
+
+                <div class="table-responsive">
+                    @*<form class="form-inline mt-2 mt-md-0">
+                            <input id="input1" data-table="order-table" class="light-table-filter form-control mr-sm-2" type="Search" placeholder="Search" aria-label="Search">
+                        </form>*@
+                    @*<form class="form-inline mt-2 mt-md-0">
+                            <input id="input1" data-table="order-table" class="light-table-filter form-control mr-sm-2" type="Search" placeholder="Search" aria-label="Search">
+                        </form>*@
+                    @*<input type="search" class="form-control" placeholder="Search Dashboard" aria-label="Search Dashboard">
+                        <div class="drop-down   d-md-none">
+                            <form action="#">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </form>
+                        </div>*@
+                    @*<input type="search" class="form-control" placeholder="Search Dashboard" aria-label="Search Dashboard">*@
+                    @*<div class="drop-down   d-md-none">
+                            <form action="#">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </form>
+                        </div>*@
+                    @*0624_teststart*@
+                    @*<div id="wrapper">
+                            <section>
+                                <div class="data-container"></div>
+                                <div id="demo"></div>
+                            </section>
+                        </div>*@
+                    @*0624_testend*@
+
+
+
+                    <table id="cutomerTable" class="order-table table-bordered zero-configuration display table table-striped table-hover dataTable text-break" style="width: 100%;" role="grid">
+                    </table>
+                    <table id="cutomerTable2" class="order-table table-bordered zero-configuration display table table-striped table-hover dataTable text-break" style="width: 100%;" role="grid">
+                    </table>
+                    <div class="form-group">
+                        <div class="d-flex justify-content-end" style="font-size: larger; margin-left: 20px;">
+                            <select id="selpagi" class="form-control btn-outline-secondary dropdown-toggle col-md-2" hidden="hidden">
+                                @*<option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>*@
+                            </select>
+                        </div>
+                    </div>
+
+                    @*<div id="texttt">
+                            <button onclick="A(12)">22</button>
+                        </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @*<script src="~/Scripts/FixedHeader/js/dataTables.fixedHeader.min.js"></script>*@
+
+    <script src="~/Scripts/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Scripts/FixedHeader/js/dataTables.fixedHeader.min.js"></script>
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>*@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.4/pagination.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.4/pagination.css" rel="stylesheet" />
+
+    @*datatable_file_export*@
+    @*<script src="https://code.jquery.com/jquery-3.5.1.js"></script>*@
+    @*<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>*@
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+
+    <script type="text/javascript">
+
+        let totalnumber = 0;
+        let ab = 10;
+
+
+
+        //function A(tt)
+        //{
+        //    var nownum = tt * ab; //20 B
+        //    var nowlastone = nownum - 9; //11 A
+        //    for (i = nowlastone; i <= nownum; i++)//11~20 show
+        //    {
+        //        $('.pag_'+i).removeAttr('hidden');
+        //    }
+
+        //    var nowstart = nowlastone - 1; //10 C
+        //    for (j = 1; j <= nowstart; j++)//1~10 hide
+        //    {
+        //        $('.pag_' + j).attr("hidden", true);
+        //    }
+
+        //    var nownextone = nownum + 1; //21 D
+
+        //    for (k = nownextone; k <= totalnumber; k++)//21~最後 hide
+        //    {
+        //        $('.pag_' + k).attr("hidden", true);
+        //    }
+
+        //    //var
+        //    //alert(tt + 'JJJ');
+        //    //if (tt == 1) {
+        //    //    $(".pag_1").attr("hidden", true);
+
+        //    //} else {
+        //    //    $('.pag_1').removeAttr('hidden');
+        //    //}
+
+        //}
+
+        //// 搜尋
+        //$(function () {
+        //    'use strict';
+
+        //    // 建立 LightTableFilter
+        //    var LightTableFilter = (function (Arr) {
+
+        //        var _input;
+
+        //        // 資料輸入事件處理函數
+        //        function _onInputEvent(e) {
+        //            _input = e.target;
+        //            var tables = document.getElementsByClassName(_input.getAttribute('data-table'));
+        //            Arr.forEach.call(tables, function (table) {
+        //                Arr.forEach.call(table.tBodies, function (tbody) {
+        //                    Arr.forEach.call(tbody.rows, _filter);
+        //                });
+        //            });
+        //        }
+
+
+        //        function _filter(row) {
+        //            var text = row.textContent.toLowerCase(),
+        //                val = _input.value.toLowerCase();
+        //            row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+        //        }
+
+        //        return {
+        //            // 初始化函數
+        //            init: function () {
+        //                var inputs = document.getElementsByClassName('light-table-filter');
+        //                Arr.forEach.call(inputs, function (input) {
+        //                    input.oninput = _onInputEvent;
+        //                });
+        //            }
+        //        };
+        //    })(Array.prototype);
+
+        //    // 網頁載入完成後，啟動 LightTableFilter
+        //    document.addEventListener('readystatechange', function () {
+        //        if (document.readyState === 'complete') {
+        //            LightTableFilter.init();
+        //        }
+        //    });
+
+        //})(document);
+
+
+
+
+
+
+
+
+   /*     //------------------*/
+        var baseSiteURL = '@Url.Content("~/")';
+
+        $(document).on('keypress', 'input[type="text"]',
+            function (e) {
+                if (e.which == '13') {
+                    e.preventdefault();
+                }
+            });
+        var parameter_json = [
+            {
+                "resource": "Patient",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "生日",
+                        "parameter_name": "birthdate",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "性別",
+                        "parameter_name": "gender",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "男生",
+                                    "value": "male"
+                                },
+                                {
+                                    "key": "女生",
+                                    "value": "female"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "Encounter",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者性別",
+                        "parameter_name": "patient.gender",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "男生",
+                                    "value": "male"
+                                },
+                                {
+                                    "key": "女生",
+                                    "value": "female"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "參與者identifier",
+                        "parameter_name": "practitioner.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "就醫類別",
+                        "parameter_name": "class",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "ambulatory",
+                                    "value": "AMB"
+                                },
+                                {
+                                    "key": "emergency",
+                                    "value": "EMER"
+                                },
+                                {
+                                    "key": "field",
+                                    "value": "FLD"
+                                },
+                                {
+                                    "key": "home health",
+                                    "value": "HH"
+                                },
+                                {
+                                    "key": "inpatient encounter",
+                                    "value": "IMP"
+                                },
+                                {
+                                    "key": "inpatient acute",
+                                    "value": "ACUTE"
+                                },
+                                {
+                                    "key": "inpatient non-acute",
+                                    "value": "NONAC"
+                                },
+                                {
+                                    "key": "observation encounter",
+                                    "value": "OBSENC"
+                                },
+                                {
+                                    "key": "pre-admission",
+                                    "value": "PRENC"
+                                },
+                                {
+                                    "key": "short stay",
+                                    "value": "SS"
+                                },
+                                {
+                                    "key": "virtual",
+                                    "value": "VR"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "日期",
+                        "parameter_name": "date",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "Practitioner",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "ServiceRequest",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者性別",
+                        "parameter_name": "patient.gender",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "男生",
+                                    "value": "male"
+                                },
+                                {
+                                    "key": "女生",
+                                    "value": "female"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "醫師identifier",
+                        "parameter_name": "results-interpreter:Practitioner.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "就診identifier",
+                        "parameter_name": "encounter.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "檢驗項目",
+                        "parameter_name": "code:text",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "開立日期時間",
+                        "parameter_name": "authored",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "檢驗日期時間",
+                        "parameter_name": "occurrence",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "DiagnosticReport",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者性別",
+                        "parameter_name": "patient.gender",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "男生",
+                                    "value": "male"
+                                },
+                                {
+                                    "key": "女生",
+                                    "value": "female"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "基於ServiceRequest的identifier",
+                        "parameter_name": "based-on:ServiceRequest.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "就診identifier",
+                        "parameter_name": "encounter.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "參與者identifier",
+                        "parameter_name": "results-interpreter:Practitioner.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "檢驗結果FHIR ID",
+                        "parameter_name": "result",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "報告日期",
+                        "parameter_name": "date",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "Observation",
+                "searchParameters": [
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "患者性別",
+                        "parameter_name": "patient.gender",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "男生",
+                                    "value": "male"
+                                },
+                                {
+                                    "key": "女生",
+                                    "value": "female"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "就診identifier",
+                        "parameter_name": "encounter.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "基於ServiceRequest的identifier",
+                        "parameter_name": "based-on:ServiceRequest.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "發報告日期",
+                        "parameter_name": "date",
+                        "selected": false,
+                        "input_content": {
+                            "type": "date",
+                            "key": [
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": true
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": false
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                },
+                                {
+                                    "oncheck": true,
+                                    "input_content": {
+                                        "type": "select",
+                                        "value_list": [
+                                            {
+                                                "key": "等於(=)",
+                                                "value": "eq",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於(>)",
+                                                "value": "gt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "大於或等於(>=)",
+                                                "value": "ge",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於(<)",
+                                                "value": "lt",
+                                                "status": false
+                                            },
+                                            {
+                                                "key": "小於或等於(<=)",
+                                                "value": "le",
+                                                "status": true
+                                            }
+                                        ],
+                                        "value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "檢驗項目名稱(text)",
+                        "parameter_name": "code:text",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+                ]
+            },
+            {
+                "resource": "Procedure",
+                "searchParameters": [
+                    {
+                        "ch_Name": "identifier",
+                        "parameter_name": "identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+
+                ]
+            },
+            {
+                "resource": "Condition",
+                "searchParameters": [
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+
+                ]
+            },
+            {
+                "resource": "MedicationRequest",
+                "searchParameters": [
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+
+                ]
+            }
+        ];
+
+
+        SearchParameter(GetUrlToken().resource, null);
+
+        $("#dropdown_item").on("click", ".dropdown-item", function () {
+            SearchParameter(GetUrlToken().resource, $(this));
+        });
+
+        function SearchParameter(resource, element)
+        {
+            $("#dropdown_item").empty();
+            /*new_start*/
+            $("#Parameter").empty();
+            /*new_end*/
+
+            $.each(parameter_json, function (i, item) {
+                if (item.resource == resource)
+                {
+                    $.each(item.searchParameters, function (i, parameter) {
+                        if (element != null) {
+                            if (element.text() == parameter.ch_Name) {
+                                if (parameter.selected == true)
+                                    parameter.selected = false;
+                                else
+                                    parameter.selected = true;
+                            }
+                        }
+                        ParameterCreate(parameter);
+                        $("#dropdown_item").append(
+                            $("<a/>", { "class": "dropdown-item" + (parameter.selected == true ? " dropdown-item-checked":""), "href": "#!", "text": parameter.ch_Name})
+                        );
+                    });
+                }
+            });
+        }
+
+        function ParameterCreate(searchParameter)
+        {
+            var param_div = $("<div/>", { "class": "col-sm-6", "id": (searchParameter.parameter_name) }).append([
+                $("<div/>", { "class": "card text-white bg-secondary" }).append([
+                    $("<div/>", { "class": "card-header d-flex justify-content-between align-items-center" }).append([
+                        $("<h5/>", { "class": "f-w-700 text-white", "text": searchParameter.ch_Name }),
+                        $("<div/>", { "class": "switch switch-warning d-inline m-r-10" }).append([
+                            searchParameter.switched ?
+                                $("<input/>", { "type": "checkbox", "switch":"","id": (searchParameter.parameter_name + "_switch"), "checked": "" })
+                                : $("<input/>", { "type": "checkbox", "switch": "","id": (searchParameter.parameter_name + "_switch") }),
+                            $("<label/>", { "class": "cr", "for": (searchParameter.parameter_name + "_switch") })
+                        ]),
+                    ]),
+                    $("<div/>", { "class": "card-body" })
+                ]),
+            ]);
+
+            if (!searchParameter.switched)
+                param_div.find("div.card-body").attr("disabled", "false");
+
+            if ($("#" + searchParameter.parameter_name).length == 0 && searchParameter.selected) {
+                if (searchParameter.input_content.type == "text") {
+                    param_div.find("div.card-body").attr("type", searchParameter.input_content.type).append($("<div/>", { "class": "form-group" }).append([
+                        $("<label/>", { "text": "匹配值" }),
+                        $("<input/>", { "type": "text", "class": "form-control", /*"parameter-name": searchParameter.parameter_name,*/ "name": searchParameter.parameter_name }),
+                    ]));
+                    $("#Parameter").append(param_div);
+                }
+                else if (searchParameter.input_content.type == "radio") {
+                    $.each(searchParameter.input_content.value_list, function (i, value_list) {
+                        param_div.find("div.card-body").attr("type", searchParameter.input_content.type).append(
+                            $("<div/>", { "class": "form-group d-inline" }).append([
+                                $("<div/>", { "class": "radio radio-info d-inline" }).append([
+                                    $("<input/>", {
+                                        "type": "radio", "id": searchParameter.parameter_name + "_" + value_list.key,
+                                        "name": (searchParameter.parameter_name),
+                                        /*"parameter-name": searchParameter.parameter_name,*/
+                                        "value": value_list.value
+                                    }),
+                                    $("<label/>", { "text": value_list.key, "class": "cr", "for": searchParameter.parameter_name + "_" + value_list.key}),
+                                ])
+                            ])
+                        );
+                    });
+
+                    $("#Parameter").append(param_div);
+                }
+                else if (searchParameter.input_content.type == "date")
+                {
+                    $.each(searchParameter.input_content.key, function (i, key) {
+                        var select = $("<div/>", { "class": "col-md-3"}).append([
+                            $("<select/>", { "class": "form-control", "name": (searchParameter.parameter_name + "_Prefixes") ,"parameter-name": (searchParameter.parameter_name + "_Prefixes") }),
+                        ]);
+                        $.each(key.input_content.value_list, function (i, value_list) {
+                            select.find("select").append(
+                                $("<option/>", { "value": value_list.value, "text": value_list.key})
+                            );
+                            if (value_list.status)
+                                select.find("select").val(value_list.value).change();
+                        });
+                        param_div.find("div.card-body").attr("type", searchParameter.input_content.type).append(
+                            $("<div/>", { "class": "form-row" }).append([
+                                $("<div/>", { "class": "col-md-1" }).append([
+                                    $("<input/>", { "type": "checkbox", "class": "form-control", "checked": "" }),
+                                ]),
+                                select,
+                                $("<div/>", { "class": "col-md-8" }).append([
+                                    $("<input/>", { "type": "datetime-local", "class": "form-control", "parameter-name": searchParameter.parameter_name, "name": searchParameter.parameter_name }),
+                                ]),
+                            ])
+                        );
+                    });
+
+                    $("#Parameter").append(param_div);
+                }
+            }
+            else if ($("#" + searchParameter.parameter_name).length != 0 && !searchParameter.selected)
+            {
+                $("#" + searchParameter.parameter_name).remove();
+            }
+        }
+        //$(document).on('click', 'div#cutomerTable_paginate', function () {
+        //    console.log("測試用");
+
+        //    var search_query = $("#search_form").find("div.card-body:not([type=date],[disabled=disabled])").find("input, select").serialize();
+        //    $("#search_form").find("div.card-body[type=date]:not([disabled=disabled])").find(".form-row").each(function (i) {
+        //        if ($("#search_form").find("input[type=checkbox]").is(":checked")) {
+        //            var input_date = $("#search_form").find("input[type=datetime-local]");
+        //            if (search_query != "") {
+        //                search_query = search_query + "&";
+        //            }
+        //            search_query = search_query + input_date.attr("name") + "=" + $("#search_form").find("select").val() + input_date.val();
+        //        }
+        //    });
+        //    //var div_card = $("a.page-link").parents("li.active");
+        //    //var div_card2 = div_card.find("a.page-link").text();
+
+        //    //alert(div_card2);
+        //    setTimeout(
+        //        function () {
+        //            var div_card = $("a.page-link").parents("li.active");
+        //            var div_card2 = div_card.find("a.page-link").text();
+        //            alert(div_card2);
+
+
+        //    switch (GetUrlToken().resource) {
+        //        case "Patient": Patient(search_query); break;
+        //        case "Practitioner": Practitioner(search_query); break;
+        //        /*new_start*/
+        //        case "Procedure": Procedure(search_query); break;
+        //        case "Condition": Condition(search_query); break;
+        //        case "MedicationRequest": MedicationRequest(search_query); break;
+        //        /*new_end*/
+        //        case "Encounter": Encounter(search_query); break;
+        //        case "Observation": Observation(search_query, div_card2); break;
+        //        case "DiagnosticReport": DiagnosticReport(search_query); break;
+        //        case "ServiceRequest": ServiceRequest(search_query); break;
+
+
+        //    }
+        //    }, 1000);
+
+
+        //    return false;
+
+
+        //});
+
+        $("#search_form").submit(function () {
+            var search_query = $(this).find("div.card-body:not([type=date],[disabled=disabled])").find("input, select").serialize();
+            $(this).find("div.card-body[type=date]:not([disabled=disabled])").find(".form-row").each(function (i) {
+                if ($(this).find("input[type=checkbox]").is(":checked")) {
+                    var input_date = $(this).find("input[type=datetime-local]");
+                    if (search_query != "") {
+                        search_query = search_query + "&";
+                    }
+                    search_query = search_query + input_date.attr("name") + "=" + $(this).find("select").val() + input_date.val();
+                }
+            });
+            var div_cardstart = $("li.active").parents("div#cutomerTable_paginate");
+            var div_card = $("a.page-link").parents("li.active");
+            var div_card2 = div_card.find("a.page-link").text();
+
+            //alert(div_card2);
+
+
+            switch (GetUrlToken().resource) {
+                case "Patient": Patient(search_query); break;
+                case "Practitioner": Practitioner(search_query); break;
+                /*new_start*/
+                case "Procedure": Procedure(search_query); break;
+                case "Condition": Condition(search_query); break;
+                case "MedicationRequest": MedicationRequest(search_query); break;
+                /*new_end*/
+                case "Encounter": Encounter(search_query); break;
+                case "Observation": Observation(search_query, div_card2); break;
+                case "DiagnosticReport": DiagnosticReport(search_query); break;
+                case "ServiceRequest": ServiceRequest(search_query); break;
+
+            }
+            return false;
+        });
+
+        $("#Parameter").on("change", "input[type='checkbox']", function ()
+        {
+            if ($(this).is(':checked')) {
+                $(this).parents(".form-row").find("input[type=datetime-local],select").removeAttr("disabled");
+            }
+            else
+            {
+                $(this).parents(".form-row").find("input[type=datetime-local],select").attr("disabled", "true");
+            }
+        });
+
+        $("#Parameter").on("change", "input[type='checkbox'][switch]", function () {
+            var radio = $(this);
+            var parameter_name = $(this).attr('id').split('_')[0];
+            $.each(parameter_json, function (i, item) {
+                if (item.resource == GetUrlToken().resource)
+                {
+                    $.each(item.searchParameters, function (i, obj) {
+                        if (obj.parameter_name == parameter_name) {
+                            console.log(radio.is(':checked'));
+                            if (radio.is(':checked')) {
+                                obj.switched = true;
+                                radio.parents("div.col-sm-6").find("div.card-body").removeAttr("disabled")
+                            }
+                            else {
+                                obj.switched = false;
+                                radio.parents("div.col-sm-6").find("div.card-body").attr("disabled", "true")
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#cutomerTable').tooltip({
+            selector: '.cr_tooltips',
+            html: true
+        });
+
+        //初始畫面
+        Patient();
+        var tttt = $("#cutomerTable").DataTable();
+        //alert("1232");
+        $('#myInput').on('keyup', function () {
+            table.search(this.value).draw();
+        //    alert("123");
+        //    alert(a);
+        });
+        $("#ResourceSelect").on("change", function () {
+            $("#Parameter").empty();
+            SearchParameter(GetUrlToken().resource, null)
+            switch ($(this).val())
+            {
+                case "Patient": Patient(); break;
+                case "Practitioner": Practitioner(); break;
+                case "Encounter": Encounter(); break;
+                case "Observation": Observation(); break;
+                case "Procedure": Procedure(); break;
+                case "Condition": Condition(); break;
+                case "MedicationRequest": MedicationRequest(); break;
+                case "DiagnosticReport": DiagnosticReport(); break;
+                case "ServiceRequest": ServiceRequest(); break;
+            }
+            var table = $("#cutomerTable").DataTable();
+            $("#myInput").on('keyup', function () {
+                table.search(this.value).draw();
+                var a = $("#myInput").text();
+                //alert(a);
+                //alert("123");
+                //    alert(a);
+            });
+
+        });
+
+        function ReBuilddatatable()
+        {
+            if ($.fn.dataTable.isDataTable('#cutomerTable')) {
+                $("#cutomerTable").DataTable().clear().destroy();
+                $("#cutomerTable").empty();
+            }
+        }
+
+        function Patient(search)
+        {
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            if (search != null && search != "") {
+                data["search"] = search;
+            }
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                /*欄位置頂*/
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "paging": false,
+                "ajax": {
+                    "url": "@Url.Action("Index2_3", "Home")",
+                    "type": "POST",
+                    "data": data.entry,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id"},
+                    { "data": "identifier[, ].value", "name": "identifier", "title": "Identifier"},
+                    { "data": "name[, ].text", "name": "name", "title": "姓名"},
+                    { "data": "gender", "name": "gender", "title": "性別"},
+                    { "data": "birthDate", "name": "birthdate", "title": "生日"},
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function Practitioner(search)
+        {
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            if (search != null && search != "") {
+                data["search"] = search;
+            }
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id"},
+                    { "data": "identifier[, ].value", "name": "identifier", "title": "醫師卡號"},
+                    { "data": "name[, ].text", "name": "name", "title": "姓名"},
+                    { "data": "gender", "name": "gender", "title": "性別"},
+                    { "data": "birthDate", "name": "birthdate", "title": "生日"},
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function Encounter(search)
+        {
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            if (search != null && search != "") {
+                data["search"] = search;
+            }
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    { "data": "identifier[, ].value", "name": "identifier", "title": "就醫序號" },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "participant[, ].individual.reference",
+                        "name": "participant",
+                        "title": "醫師ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "class.code",
+                        "name": "class",
+                        "title": "就醫類別"
+                    },
+                    {
+                        "data": "period.start",
+                        "name": "date",
+                        "title": "就醫/入院日期時間"
+                    },
+                    {
+                        "data": "period.end",
+                        "name": "date",
+                        "title": "離院/出院日期時間"
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function Observation(search)
+        {
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            if (search != null && search != "") {
+                data["search"] = search;
+            //    alert(data["search"]);
+            }
+            //if (div_card2 != null && div_card2 != "") {
+            //    data["div_card2"] = div_card2;
+            //    alert("this is " + data["div_card2"]);
+            //}
+            console.log(data);
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "effectiveDateTime",
+                        "name": "date",
+                        "title": "發報告日期"
+                    },
+                    {
+                        "data": "effectiveDateTime",
+                        "name": "date",
+                        "title": "發報告日期"
+                    },
+                    {
+                        "data": "performer.0.reference",
+                        "name": "performer",
+                        "title": "醫師ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "code",
+                        "name": "code",
+                        "title": "檢驗檢查項目",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            if (sData.coding != null)
+                                $(nTd).html(
+                                    '<button type="button" class="btn btn-outline-secondary cr_tooltips disabled" data-toggle="tooltip" data-placement="right" \
+                                    title="<b>system: </b>' + sData.coding[0].system + '<br><b>code: </b>' + sData.coding[0].code + '<br><b>code: </b>' + sData.coding[0].display +'<br>" >\
+                                    ' + sData.coding[0].display ?? sData.coding[0].code  +'</button>'
+                                );
+                            else
+                                $(nTd).html(
+                                    '<button type="button" class="btn btn-outline-secondary disabled" data-placement="right" >\
+                                    ' + sData.text + '</button>'
+                                );
+                        }
+                    },
+                    {
+                        "data": "bodySite.coding.0.code",
+                        "orderable": false,
+                        "title": "檢驗部位",
+                    },
+                    {
+                        "data": "valueQuantity.value",
+                        "name": "value-quantity",
+                        "title": "檢驗值",
+                    },
+                    {
+                        "data": "valueQuantity.unit",
+                        "orderable": false,
+                        "title": "檢驗單位",
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function Procedure(search)
+        {
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            if (search != null && search != "") {
+                data["search"] = search;
+            }
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    {
+                        "data": "status",
+                        "name": "status",
+                        "title": "處置狀態"
+                    },
+                    {
+                        "data": "statusReason.coding.0.code",
+                        "orderable": false,
+                        "title": "處置狀態原因"
+                    },
+                    {
+                        "data": "category.coding.0.code",
+                        "name": "category",
+                        "title": "處置分類"
+                    },
+                    {
+                        "data": "code",
+                        "name": "code",
+                        "title": "處置項目",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            if (sData.coding != null)
+                                $(nTd).html(
+                                    '<button type="button" class="btn btn-outline-secondary cr_tooltips disabled" data-toggle="tooltip" data-placement="right" \
+                                    title="<b>system: </b>' + sData.coding[0].system + '<br><b>code: </b>' + sData.coding[0].code + '<br><b>code: </b>' + sData.coding[0].display + '<br>" >\
+                                    ' + sData.coding[0].display ?? sData.coding[0].code + '</button>'
+                                );
+                            else
+                                $(nTd).html(
+                                    '<button type="button" class="btn btn-outline-secondary disabled" data-placement="right" >\
+                                    ' + sData.text + '</button>'
+                                );
+                        }
+                    },
+                    {
+                        "data": "encounter.reference",
+                        "name": "encounter",
+                        "title": "就醫ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "asserter.reference",
+                        "name": "subject",
+                        "title": "執行者ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "performedDateTime",
+                        "name": "date",
+                        "title": "執行日期時間/年齡",
+                        "render": function (data, type, row, meta) {
+                            if (data != null)
+                                return data;
+                            else if (row.performedPeriod)
+                                return row.performedPeriod.start + "~" + row.performedPeriod.end;
+                            else if (row.performedAge)
+                                return row.performedAge;
+                        }
+                    },
+                    {
+                        "data": "bodySite.coding.0.code",
+                        "orderable": false,
+                        "title": "處置部位",
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function Condition(search)
+        {
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            if (search != null && search != "") {
+                data["search"] = search;
+            }
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    {
+                        "data": "encounter.reference",
+                        "name": "encounter",
+                        "title": "就醫ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "recorder.reference",
+                        "name": "recorder",
+                        "title": "醫師ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "code.coding.0.display",
+                        "name": "code",
+                        "title": "疾病名稱"
+                    },
+                    {
+                        "data": "clinicalStatus.coding.0.code",
+                        "name": "clinical-status",
+                        "title": "疾病狀態"
+                    },
+                    {
+                        "data": "onsetDateTime",
+                        "name": "onset-date",
+                        "title": "發生日期時間"
+                    },
+                    {
+                        "data": "recordedDate",
+                        "name": "recorded-date",
+                        "title": "紀錄日期時間"
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function MedicationRequest(search)
+        {
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            if (search != null && search != "") {
+                data["search"] = search;
+            }
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    {
+                        "data": "status",
+                        "name": "status",
+                        "title": "藥囑狀態"
+                    },
+                    {
+                        "data": "intent",
+                        "name": "intent",
+                        "title": "藥囑種類"
+                    },
+                    {
+                        "data": "medicationReference.reference",
+                        "name": "medication",
+                        "title": "藥物代碼",
+                        "render": function (data, type, row, meta) {
+                            if (data != null)
+                                return data != null ? data.split('/')[1] : data;
+                            else
+                                return row.medicationCodeableConcept.coding[0].display;
+                        }
+                    },
+                    {
+                        "data": "encounter.reference",
+                        "name": "encounter",
+                        "title": "就醫ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "category.0.coding.0.code",
+                        "name": "category",
+                        "title": "就醫類別",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "requester.reference",
+                        "name": "requester",
+                        "title": "開藥醫師ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "authoredOn",
+                        "name": "date",
+                        "title": "處方日期時間"
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function DiagnosticReport(search)
+        {
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            if (search != null && search != "") {
+                data["search"] = search;
+            }
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    { "data": "identifier[, ].value", "name": "identifier", "title": "申請序號" },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "encounter.reference",
+                        "name": "encounter",
+                        "title": "就醫ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "result.reference",
+                        "orderable": false,
+                        "title": "報告結果ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "effectiveDateTime",
+                        "name": "date",
+                        "title": "報告日期"
+                    },
+                    {
+                        "data": "code.coding.0.display",
+                        "name": "code",
+                        "title": "檢驗項目"
+                    },
+                    {
+                        "data": "code.coding.0.code",
+                        "name": "code",
+                        "title": "檢驗項目(Loinc)"
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function ServiceRequest(search)
+        {
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            if (search != null && search != "") {
+                data["search"] = search;
+            }
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    { "data": "identifier[, ].value", "name": "identifier", "title": "申請序號" },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta)
+                        {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "requester.reference",
+                        "name": "requester",
+                        "title": "醫師ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "encounter.reference",
+                        "name": "encounter",
+                        "title": "就醫ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "code.coding[0].code",
+                        "name": "code",
+                        "title": "檢驗項目",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
+                    {
+                        "data": "authoredOn",
+                        "name": "date",
+                        "title": "開立日期時間"
+                    },
+                    {
+                        "data": "occurrenceDateTime",
+                        "name": "date",
+                        "title": "檢驗日期時間"
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function GetUrlToken()
+        {
+            var data = {};
+            //data.url = $("#FHIR_url").val();
+            //data.token = $("#FHIR_Token").val();
+            data.resource = $("#ResourceSelect").val();
+            return data;
+        }
+
+
+        /*new0609*/
+        department = new Array();
+        department[0] = [];
+        department[1] = ["identifier", "birthdate", "gender"];//Patient
+        department[2] = ["identifier", "class", "date","reason-code"];// Encounter
+        department[3] = ["identifier", "name", "gender"];// practitioner
+        department[4] = ["identifier", "authored", "occurrence"];// servicerequest
+        department[5] = ["identifier", "code", "result","date"];// diagnosticreport
+        department[6] = ["identifier", "code", "date", "value-quantity", "component-value-quantity", "value-concept","category"];// observation
+        department[7] = ["identifier", "code", "category","reason-code","date"];// procedure
+        department[8] = ["identifier", "code", "body-site"];// condition
+        department[9] = ["identifier", "date", "category","code"];// medicationrequest
+
+
+
+
+
+        function renew(index) {
+            for (var i = 0; i < department[index].length; i++)
+                document.myForm.member.options[i] = new Option(department[index][i], department[index][i]);	// 設定新選項
+            document.myForm.member.length = department[index].length;	// 刪除多餘的選項
+
+            $("#txtWrite").val("");
+            $("#txtComVQ").val("");
+            $("#txtValueQ").val("");
+            $("#txtDate").val("");
+            //$('#txtWrite').attr('hidden', true);
+            //$('#rdbGender').attr('hidden', true);
+            //$('#txtDate').attr('hidden', true);
+
+        }
+        $("#sleResource").click(function () {
+            $("#s1").attr("disabled", "true");
+            $("#sleResource option:selected").val();
+            var resouceval = $("#sleResource option:selected").val();
+            var secvalue = $(".slesecvalue").val();
+
+            if (secvalue =="identifier"&&(resouceval == "Patient" || resouceval == "Encounter" || resouceval == "Practitioner" || resouceval == "ServiceRequest" || resouceval == "DiagnosticReport" || resouceval == "Observation" || resouceval == "Procedure" || resouceval == "Condition" || resouceval == "MedicationRequest"))
+            {
+                //$('#txtWrite').removeAttr('hidden');
+                //$('#selValueQuantity').attr('hidden', true);
+                //$('#selbigsmall').attr('hidden', true);
+                //$('#txtValueQ').attr('hidden', true);
+                //$('#txtDate').attr('hidden', true);
+
+                $('#txtWrite').removeAttr('hidden');
+                $('#txtDate').attr('hidden', true);
+                $('#txtValueQ').attr('hidden', true);
+                $('#rdbGender').attr('hidden', true);
+                $('#rdbClass').attr('hidden', true);
+                $('#selbigsmall').attr('hidden', true);
+                $('#selValueQuantity').attr('hidden', true);
+                $('#selComVQ').attr('hidden', true);
+
+            };
+
+        })
+        //起始的
+        $(".slesecvalue").change(function () {
+
+            var secvalue = $(".slesecvalue").val();
+            $('#txtWrite').val("");
+            $('#txtDate').val("");
+            $('#txtValueQ').val("");
+            $('#txtComVQ').val();
+
+            //text
+            if (secvalue == "identifier" || secvalue == "name" || secvalue == "code" || secvalue == "result" || secvalue == "body-site" || secvalue == "reason-code" || secvalue == "value-concept" || secvalue =="category") {
+
+                //alert("會");
+                //alert("文字");
+                $('#txtWrite').removeAttr('hidden');
+                $('#txtDate').attr('hidden', true);
+                $('#txtValueQ').attr('hidden', true);
+                $('#txtComVQ').attr('hidden', true);
+
+                $('#rdbGender').attr('hidden', true);
+                $('#rdbClass').attr('hidden', true);
+                $('#selbigsmall').attr('hidden', true);
+                $('#selValueQuantity').attr('hidden', true);
+                $('#selComVQ').attr('hidden', true);
+
+
+            }
+            //rdb
+            else if (secvalue == "gender") {
+                //alert("rdb");
+                $('#rdbClass').attr('hidden', true);
+                $('#rdbGender').removeAttr('hidden');
+                $('#txtDate').attr('hidden', true);
+                $('#txtValueQ').attr('hidden', true);
+                $('#txtComVQ').attr('hidden', true);
+
+                $('#txtWrite').attr('hidden', true);
+                $('#selbigsmall').attr('hidden', true);
+                $('#selValueQuantity').attr('hidden', true);
+                $('#selComVQ').attr('hidden', true);
+
+
+                /*                var abc = $('input[name="gender"]:checked').val();*/
+            }
+                //rdb
+            else if (secvalue == "class") {
+                $('#rdbClass').removeAttr('hidden');
+                $('#rdbGender').attr('hidden', true);
+                $('#txtDate').attr('hidden', true);
+                $('#txtValueQ').attr('hidden', true);
+                $('#txtComVQ').attr('hidden', true);
+
+                $('#txtWrite').attr('hidden', true);
+                $('#selbigsmall').attr('hidden', true);
+                $('#selValueQuantity').attr('hidden', true);
+                $('#selComVQ').attr('hidden', true);
+
+            }
+                //text
+            else if (secvalue == "authoredon" || secvalue == "occurrence" || secvalue == "date" || secvalue == "birthdate") {
+                //alert("日期");
+                $('#txtDate').removeAttr('hidden');
+                //$('#txtValueQ').removeAttr('hidden');
+                $('#txtValueQ').attr('hidden', true);
+                $('#txtComVQ').attr('hidden', true);
+
+                $('#selbigsmall').removeAttr('hidden');
+                $('#selValueQuantity').attr('hidden', true);
+                $('#selComVQ').attr('hidden', true);
+
+                $('#rdbGender').attr('hidden', true);
+                $('#rdbClass').attr('hidden', true);
+                $('#txtWrite').attr('hidden', true);
+            }
+                //text
+            else if (secvalue == "value-quantity") {
+                $('#txtDate').attr('hidden', true);
+                $('#txtValueQ').removeAttr('hidden');
+                $('#txtComVQ').attr('hidden', true);
+
+                $('#selbigsmall').attr('hidden', true);
+                $('#selValueQuantity').removeAttr('hidden');
+                $('#selComVQ').attr('hidden', true);
+
+                $('#rdbGender').attr('hidden', true);
+                $('#rdbClass').attr('hidden', true);
+                $('#txtWrite').attr('hidden', true);
+
+            }
+                //text
+            else if (secvalue == "component-value-quantity")
+            {
+                $('#txtDate').attr('hidden', true);
+                $('#txtValueQ').attr('hidden', true);
+                $('#txtComVQ').removeAttr('hidden');
+
+                $('#selbigsmall').attr('hidden', true);
+                $('#selValueQuantity').attr('hidden', true);
+                $('#selComVQ').removeAttr('hidden');
+
+                $('#rdbGender').attr('hidden', true);
+                $('#rdbClass').attr('hidden', true);
+                $('#txtWrite').attr('hidden', true);
+
+            }
+            var resource_secvalue = $(".slesecvalue").val();
+        });
+        $("#btnPlus").click(function () {
+            addipno()
+        })
+
+        // 新增細項
+        function addipno() {
+            //var abc = $("#sleResource option:selected").val() + $(".slesecvalue").val();
+            var resourcevalue = $("#sleResource option:selected").val();
+            var resource_secvalue = $(".slesecvalue").val();
+            var extention = ":patient:";
+
+            /*0614起始*/
+            var secvalue = $(".slesecvalue").val();
+
+
+
+
+
+            if (secvalue == "identifier" || secvalue == "name" || secvalue == "code" || secvalue == "result" || secvalue == "body-site" || secvalue == "reason-code" || secvalue == "value-concept" || secvalue == "category") {
+                //文字
+                var txtwriting = $("#txtWrite").val();
+            }
+            else if (secvalue == "gender") {
+                //選項
+                var txtwriting = $('input[name="gender"]:checked').val();
+                //alert("性別" + txtwriting);
+
+            }
+            else if (secvalue == "class") {
+                //選項
+                var txtwriting = $('input[name="class1"]:checked').val();
+                //alert("性別" + txtwriting);
+
+            }
+            else if (/*secvalue == "authoredon" ||*/ secvalue == "occurrence" || secvalue == "date" || secvalue == "birthdate") {
+                //日曆
+                var equdate = $("#selbigsmall option:selected").val();
+                var txtwriting = equdate + $("#txtDate").val();
+                /*var txtdel = "-T";*/
+                //alert(txtwriting);
+
+
+            }
+            else if (secvalue == "value-quantity") {
+                var equdate = $("#selValueQuantity option:selected").val();
+                var txtwriting = equdate + $("#txtValueQ").val();
+            }
+            else if (secvalue == "component-value-quantity")
+            {
+                var equdate = $("#selComVQ option:selected").val();
+                var txtwriting = equdate + $("#txtComVQ").val();
+            }
+            /*0614結束*/
+
+            var newHtml2 = "";
+
+            //newHtml2 += '<div class="">';
+            newHtml2 += resourcevalue + '-' + secvalue + ':' + txtwriting + ',';
+            //newHtml2 += '</div>';
+
+            $("#searchresult2").append(newHtml2);
+
+
+
+            if (resourcevalue == "Patient" && resource_secvalue != "") {
+                //var abc = resourcevalue + resource_secvalue +"="+ txtwriting;
+                var lblPatient = resource_secvalue + "=" + txtwriting;
+                var abc = resource_secvalue + "=" + txtwriting;
+                //alert("1");
+
+            }
+            else if (resourcevalue == "Patient" && resource_secvalue == "") {
+                alert("有誤");
+            }
+            else {
+                var abc = resourcevalue + extention + resource_secvalue + "=" + txtwriting;
+                var lblPatient = resource_secvalue
+                //alert("2");
+
+            }
+
+            //if (resourcevalue == "Patient" && resource_secvalue != "") {
+            //    var lblPatient = resource_secvalue + "="
+            //    alert("第一關");
+
+            //}
+            //else if (resourcevalue == "Patient" && resource_secvalue == "") {
+            //    alert("有誤");
+            //}
+            //else
+            //{
+            //    var lblPatient = resource_secvalue
+            //}
+
+            var text = $("#txtAlltext").val();
+
+            //alert(text);
+            //alert(text_str);
+
+            if (abc != "") {
+                if (text == "") {
+                    /*第一回*/
+                    if (resourcevalue == "Patient") {
+                        //alert("hellomoto")
+                        var lblstart = "Patient?" + lblPatient; //lblPatient是上面的
+                        $("#txtAlltext").val(lblstart);
+                    //    alert("1");
+                    }
+                    else {
+                        var lblstart = "Patient?_has:" + abc
+                        $("#txtAlltext").val(lblstart);
+                        $('#p1').attr('hidden', true);
+
+                    }
+
+
+                } else {
+                    /*第一回之後*/
+                    var str = new Array(text);
+                    //alert("str1111=" + str)
+                    //var str = text.split("&_has:");
+                    $('#p1').attr('hidden', true);
+
+                    if (str.indexOf(abc) == -1) {
+                        // 比對是否有一樣的項目 -1表示不存在
+                        str.push(abc);
+                    }
+
+
+
+                    var toAppend = "";
+                    for (i = 0; i < str.length; i++) {
+                        //alert("str2222=" + str);
+                        if (i == 0) {
+
+                        }
+                        else {
+
+                            if (resourcevalue == "Patient") {
+                                toAppend += "&"; /*+ lblPatient;*/
+
+                            } else {
+                                toAppend += '&_has:';
+
+                            }
+                        }
+                        toAppend += str[i];
+                    //    alert("最後" + toAppend);
+                    }
+                    $("#txtAlltext").val(toAppend);
+                    //alert(str);
+                }
+            }
+
+
+        }
+        /*new0609*/
+
+
+        //舊的_起始
+        $("#btnSendmulsearch").click(function () {
+            $('#p1').removeAttr("hidden", "hidden");
+            //var sendAlltext = $("#txtAlltext").val() +"&_total=accurate&_sort";
+            var sendAlltext = $("#txtAlltext").val() + "&_total=accurate&_sort&_count=20&_page=1";
+            var sendAlltext2 = $("#txtAlltext").val();
+
+            if ($("#txtAlltext2").val() != "")
+            {
+                $("#txtAlltext2").val("");
+                $("#txtAlltext2").val(sendAlltext2);
+            } else
+            {
+                $("#txtAlltext2").val(sendAlltext2);
+            }
+
+            //var data2 = GetUrl2();
+            //alert("現在傳送的是" + sendAlltext);
+
+             $.ajax({
+                type: 'POST',
+                url: "@Url.Action("Index2", "Home")",
+                data: {
+                    sendalltext: sendAlltext
+                },
+                //type: "POST",
+                dataType: "json",
+                 success: function (data) {//第一層
+                     //alert("可以喔");
+                    /*var a=  JSON.stringify(msg)*/
+                     //alert(msg);
+                     if (JSON.stringify(data) == 500)
+                     {
+                         alert("伺服器逾時，請重新操作");
+                     }
+                     console.log("-------");
+                    console.log(data);
+                     var data = JSON.parse(data);
+                     console.log("-------pase");
+                     console.log(data);
+
+
+                     var datatotal = data.total;//*****************資料總數
+                     //var datapagi = datatotal / 20;
+                    var datapagi = Math.floor(datatotal / 20);
+
+                    //alert(datapagi)
+                    if (datatotal % 20 != 0) {
+                        //有餘數
+                        datapagi += 1;
+                        //alert("有餘數");
+                        //alert(datapagi);
+                    }
+                                         $("#selpagi").removeAttr("hidden","hidden")
+
+                    for (var i =1; i <= datapagi; i++)
+                    {
+                        $("#selpagi").append($('<option>', {
+                            value: i,
+                            text: i,
+                        }));
+                    }
+
+                    //var datatotal = data.total;//資料總數
+
+                    //擷取頁數
+                    var datac = data.link;
+                    var datac_c = datac[0].url;//這個網站的差別 原本給出的資料是第0個
+                    var datapageid = datac_c.indexOf("getpages=") + 9;
+                    var datapageid1 = datac_c.indexOf("&_getpagesoffset=");
+                    var datapageid2 = datac_c.indexOf("&_getpagesoffset=") + 17;
+                    var datapageid3 = datac_c.indexOf("&_count");
+                    var getpages = datac_c.substring(datapageid, datapageid1);
+                    var getpagesoffset = datac_c.substring(datapageid2, datapageid3);
+
+                    //新的頁面網址
+                    var newurlpage = "https://hapi.fhir.org/baseR4?_getpages=" + getpages +"&_getpagesoffset="+ getpagesoffset+"&_count=20&_pretty=true&_bundletype=searchset";
+
+                    console.log("12345----------");
+                    console.log(datac_c);
+                    console.log(datapageid);
+                    console.log(datapageid1);
+                    console.log("//////getpages////getpagesoffset");
+                    console.log(getpages);
+                    console.log(getpagesoffset);
+                    console.log("//////newurlpage////datatotal");
+                    console.log(newurlpage);
+                    console.log(datatotal);
+                    //alert("54565464454556");
+                    console.log(data);
+                    //console.log(searchResult);
+
+                    //console.log(data3);
+                    ReBuilddatatable();
+                    var newHtml = "";
+
+
+                    var table = $("#cutomerTable").DataTable({
+                        "searching": true,
+                          /*欄位置頂*/
+                          "fixedHeader": true,
+                        "proccessing": true,
+                        "iDisplayLength": 20,/*一頁顯示筆數*/
+                        "paging": false, /*要不要分頁*/
+                          //"serverSide": true,
+                          @*"ajax": {
+                              "url": "@Url.Action("Index2", "Home")",
+                              "type": "POST",
+                          },*@
+                          "data": data.entry,
+                          "datatype": "json",
+                          "columnDefs": [{
+                              "targets": '_all',
+                              "defaultContent": ""
+                        }],
+                        "dom": 'Bfrtip',
+                        "buttons": [
+                            'copy', 'excel', 'print'
+                        ],
+                          "columns": [
+                              { "data": "resource.id", "name": "id", "title": "id" },
+                              { "data": "resource.identifier[, ].value", "name": "identifier", "title": "Identifier" },
+                              { "data": "resource.name[, ].text", "name": "name", "title": "姓名" },
+                              { "data": "resource.gender", "name": "gender", "title": "性別"},
+                              { "data": "resource.birthDate", "name": "birthdate", "title": "生日"},
+                              {
+                                  "data": "resource.id",
+                                  "name": "id",
+                                  "title": "連結",
+                                  "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                                      if (nTd < 1) {
+                                          $(td).css('color', 'red');
+                                      } else
+                                      {
+                                          $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href = "' + baseSiteURL + 'Resource/' + oData.resource.resourceType + '/' + oData.resource.id+ '" ><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a >');
+                                          //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+
+                                      }
+                                  }
+                                  //"fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                                  //    //newHtml += '<td> <a class="btn drp-icon btn-outline-info dropdown-toggle" href = "/Resource/Patient/' + entry.resource.id + '" ><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a >';
+                                                                //"createdCell": function (td, cellData, rowData, row, col) {
+
+
+                                  //    $(nTd).addClass('text-center');
+                                  //    $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href = "/Resource/Patient/' + entry.resource.id + '" ><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a >');
+                                  //}
+                              },
+
+                          ]
+
+                      });
+
+                },
+                error: function (data) {
+                    alert("Error");
+                },
+                beforeSend: function () {
+                    $('.loadingdiv').show();
+                },
+                complete: function () {
+                    $('.loadingdiv').hide();
+                }
+            });
+
+
+
+
+
+            /*現在可以用start*/
+              @*$.ajax({
+                type: 'POST',
+                url: "@Url.Action("Index2", "Home")",
+                  data: {
+                      sendalltext: sendAlltext
+                  },
+                //type: "POST",
+                dataType: "json",
+                  success: function (data) {//第一層
+                    /*var a=  JSON.stringify(msg)*/
+                      //alert(msg);
+                      var searchResult = JSON.parse(data);
+                      //console.log(data);
+                      //console.log(searchResult);
+                      let number = searchResult.entry.length;
+                      totalnumber = number;
+                      alert(searchResult.entry.length);
+                      //var a = searchResult.entry.resource.id;
+                      //alert(a.length);
+
+
+
+                      //console.log(data3);
+                      ReBuilddatatable();
+                      //string url = ;
+
+
+                      var getUrlString = location.href;
+                      var NewString_con = getUrlString.split(",");
+
+
+                      if (searchResult != null) {
+                          var newHtml = "";
+
+                          var panginationdiv = "";
+
+
+
+
+                          newHtml += '<tr>';
+                          newHtml += '<td>id</td>';
+                          newHtml += '<td>identifier</td>';
+                          newHtml += '<td>姓名</td>';
+                          newHtml += '<td>性別</td>';
+                          newHtml += '<td>出生年月日</td>';
+                          newHtml += '<td>連結</td>';
+
+                          newHtml += '</tr>';
+
+                          let num = 0;
+                          let num2 = 0;
+                          alert(getUrlString);
+                          $.each(searchResult.entry, function (index, entry) {
+
+
+                              num += 1;
+                              //console.log(searchResult);
+
+                              //alert("1");
+                              //alert(entry.resource.id);
+                              //alert(entry.resource.identifier[0].value);//因為值藏在[{}]裡，所以要加[0]
+                              ////alert(entry.resource.name[0].family + entry.resource.name[0].given);
+                              //alert(entry.resource.gender);
+                              //alert(entry.resource.birthDate);
+
+
+                              //0622new_start
+                              //$('#cutomerTable').DataTable({
+                              //    data: searchResult,
+                              //    columns: [
+                              //        { data: 'entry.resource.id' },
+                              //        { data: 'entry.resource.identifier[0].value' },
+                              //        { data: 'entry.resource.gender' },
+                              //        { data: 'entry.resource.birthDate' }
+                              //    ]
+                              //});
+                              //0622new_end
+
+
+                              newHtml += '<tr class =pag_' + num + '>';
+
+                              newHtml += '<td>' + num + '</td>';
+                              newHtml += '<td>' + entry.resource.identifier[0].value + '</td>';
+                              newHtml += '<td></td>';
+                              newHtml += '<td>' + entry.resource.gender + '</td>';
+                              newHtml += '<td>' + entry.resource.birthDate + '</td>';
+
+                              newHtml += '<td> <a class="btn drp-icon btn-outline-info dropdown-toggle" href = "/Resource/Patient/' + entry.resource.id + '" ><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a >';
+                              newHtml += '</tr>';
+
+
+                              if (num % 10 == 0) {
+
+                                  //alert(num + "是10的倍数");
+                                  num2 += 1;
+                                  alert(num2);
+                                  //panginationdiv += '<li> <a href =Index2?' + num2 + '>' + num2 + '</li>';
+                                  panginationdiv += '<button onclick="A(' + num2 + ')">' + num2 + '</button>';
+                                  //panginationdiv += '<li><a href="' + NewString_con + '?aaapage=' + num2 + '\">' + num2 + '</a></li>';
+                              //    alert(panginationdiv);
+                              };
+                              $("#texttt").html(panginationdiv);
+                          });
+
+                          $("#cutomerTable2").html(newHtml);
+                          for (M = 11; M <= totalnumber; M++)//11~最後 hide
+                          {
+                              $('.pag_' + M).attr("hidden", true);
+                          }
+
+
+                          //var text = $("#txtAlltext").val();
+                          //$(function () {
+                          //    var container = $('#cutomerTable');
+                          //    container.pagination({
+                          //        dataSource: 'https://api.flickr.com/services/feeds/photos_public.gne?tags=cat&tagmode=any&format=json&jsoncallback=?',
+                          //        locator: 'items',
+                          //        totalNumber: 20,
+                          //        pageSize: 3,
+                          //        ajax: {
+                          //            beforeSend: function () {
+                          //                container.prev().html('Loading data from flickr.com ...');
+                          //            }
+                          //        },
+                          //        callback: function (response, pagination) {
+                          //            alert("u.3rup4");
+                          //            var dataHtml = '<ul>';
+                          //            var pageStart = (pagination.pageNumber - 1) * pagination.pageSize;
+                          //            var pageEnd = pageStart + pagination.pageSize;
+                          //            var pageItems = response.slice(pageStart, pageEnd);
+                          //            alert("pagination.pageSize=" + pagination.pageSize);
+                          //            alert("pagination.pageNumber=" + pagination.pageNumber);
+                          //            alert("pageStart="+pageStart);
+                          //            alert("pageEnd="+pageEnd);
+                          //            alert("pageItems="+pageItems);
+                          //            $.each(pageItems, function (index, item) {
+                          //                alert("耶");
+                          //                dataHtml += '<li>' + item.title + '</li>';
+                          //            });
+
+                          //            dataHtml += '</ul>';
+
+                          //            container.prev().html(dataHtml);
+                          //        }
+                          //    })
+                          //})
+
+                           //$(function () {
+                           //    var container = $('#cutomerTable');
+                           //   container.pagination({
+                           //       dataSource: 'data',
+                           //       locator: 'entry',
+                           //       totalNumber: number,
+                           //       pageSize: 10,
+                           //       ajax: {
+                           //           beforeSend: function () {
+                           //               container.prev().html('救命');
+                           //           }
+                           //       },
+                           //       callback: function (response, pagination) {
+                           //           var dataHtml = '<ul>';
+                           //           var pageStart = (pagination.pageNumber - 1) * pagination.pageSize;
+                           //           var pageEnd = pageStart + pagination.pageSize;
+                           //           var pageItems = response.slice(pageStart, pageEnd);
+                           //           alert("pagination.pageSize=" + pagination.pageSize);
+                           //           alert("pagination.pageNumber=" + pagination.pageNumber);
+                           //           alert("pageStart="+pageStart);
+                           //           alert("pageEnd="+pageEnd);
+                           //           alert("pageItems="+pageItems);
+                           //           $.each(pageItems, function (index, item) {
+                           //               alert("耶");
+                           //               dataHtml += '<li>' + item.fullUrl + '</li>';
+                           //           });
+
+                           //           dataHtml += '</ul>';
+
+                           //           container.prev().html(dataHtml);
+                           //       }
+                           //   })
+                           //})
+                      //    $("#cutomerTable").DataTable(newHtml);
+                      } else
+                      {
+                          newHtml += '<tr>';
+                          newHtml += '<td>查無資料</td>';
+                          newHtml += '</tr>';
+
+                          alert("沒有資料");
+                      }
+
+
+
+                },
+                  error: function (data) {
+                      alert("no");
+                },
+                beforeSend: function () {
+                    $('.loadingdiv').show();
+                },
+                complete: function () {
+                    $('.loadingdiv').hide();
+                }
+            });*@
+            /*現在可以用end*/
+            @*$.ajax({
+                type: 'POST',
+                url: "@Url.Action("Index2", "Home")",
+                data: {
+                    sendalltext: sendAlltext
+                },
+                type: "POST",
+                dataType: "json",
+                success: OnSuccess,
+                success: function (msg)
+                {
+                    ReBuilddatatable();
+                    var test2 = JSON.parse(msg);
+
+                    $('#cutomerTable').DataTable({
+                        processing: true,
+                        serverSide: true,
+
+                        ajax: {
+                            url: "@Url.Action("Index2", "Home")",
+                            type: 'POST',
+                            data: {
+                                sendalltext: sendAlltext
+                            },
+                        },
+                        columns: [
+                             { "data": "id", "name": "id", "title": "id" },
+//                    { "data": "identifier[, ].value", "name": "identifier", "title": "Identifier" }
+                        ],
+                    });
+                },
+                  error: function (data) {
+                      alert("no");
+                },
+                beforeSend: function () {
+                    $('.loadingdiv').show();
+                },
+                complete: function () {
+                    $('.loadingdiv').hide();
+                }
+            });*@
+
+            $("#txtAlltext").val("");
+            $("#searchresult2").empty();
+            $("#txtWrite").val("");
+            $("#txtDate").val("");
+            $("#txtValueQ").val("");
+
+            //$("#sleResource").val();
+
+        })
+        /*舊的_結束*/
+
+        /*new0615起始*/
+        //不可刪
+        //$("#btnSendmulsearch").click(function () {
+        //    $('#p1').removeAttr('hidden');
+        //    var sendAlltext = $("#txtAlltext").val();/* +"&_total=accurate&_sort";*/
+            //var data2 = GetUrl2();
+            @*alert("現在傳送的是" + sendAlltext);
+
+             $.ajax({
+                type: 'POST',
+                url: "@Url.Action("Index2", "Home")",
+                data: {
+                    sendalltext: sendAlltext
+                },
+                //type: "POST",
+                dataType: "json",
+                 success: function (data) {//第一層
+                     alert(data);*@
+                    /*var a=  JSON.stringify(msg)*/
+                    ////alert(msg);
+                    //$("#selpagi").removeAttr("hidden","hidden")
+                    //alert("data="+data);
+
+                    //var data = JSON.parse(data);
+
+                    //var datatotal = data.total;//*****************資料總數
+                    ////var datapagi = datatotal / 20;
+                    //var datapagi = Math.floor(datatotal / 20);
+
+                    ////alert(datapagi)
+                    //if (datatotal % 20 != 0) {
+                    //    //有餘數
+                    //    datapagi += 1;
+                    //    //alert("有餘數");
+                    //    //alert(datapagi);
+                    //}
+
+                    //for (var i =1; i <= datapagi; i++)
+                    //{
+                    //    $("#selpagi").append($('<option>', {
+                    //        value: i,
+                    //        text: i,
+                    //    }));
+                    //}
+                    ////$.each(items, function (i, item) {
+                    ////    $('#mySelect').append($('<option>', {
+                    ////        value: item.value,
+                    ////        text: item.text
+                    ////    }));
+                    ////});
+                    ////var select = $("#selpagi");
+                    ////$(datapagi).each(function (datapagi) {
+                    ////    alert(datapagi);
+                    ////    select.append($('<option>', {
+                    ////        value: datapagi.Value,
+                    ////        text: datapagi.Value,
+                    ////    }));
+                    ////});
+
+                    ////$.each(datatotal, function (i, datapagi) {
+                    ////    //alert("2");
+                    ////    select.append($('<option>', {
+                    ////        value: datapagi.Value,
+                    ////        text: datapagi.Value,
+                    ////    }));
+                    ////    //$("#selpagi").find("option:selected").attr("selected", true);
+
+                    ////    //var s = $("#selpagi").find("option:selected").val();
+                    ////    //alert(s);
+                    ////    //div_card.find('input[name=Total_weight]').val(s)
+                    ////});
+
+                    ////擷取頁數
+                    //var datac = data.link;
+                    //var datac_c = datac[1].url;
+                    //var datapageid = datac_c.indexOf("getpages=") + 9;
+                    //var datapageid1 = datac_c.indexOf("&_getpagesoffset=");
+                    //var datapageid2 = datac_c.indexOf("&_getpagesoffset=") + 17;
+                    //var datapageid3 = datac_c.indexOf("&_count");
+                    //var getpages = datac_c.substring(datapageid, datapageid1);
+                    //var getpagesoffset = datac_c.substring(datapageid2, datapageid3);
+
+                    ////***************新的頁面網址
+                    //var newurlpage = "https://hapi.fhir.org/baseR4?_getpages=" + getpages +"&_getpagesoffset="+ getpagesoffset+"&_count=20&_pretty=true&_bundletype=searchset";
+
+                    //$("#txtBundleID").val(getpages);
+
+
+                    //console.log("12345----------");
+                    //console.log(datac_c);
+                    //console.log(datapageid);
+                    //console.log(datapageid1);
+                    //console.log("//////getpages////getpagesoffset");
+                    //console.log(getpages);
+                    //console.log(getpagesoffset);
+                    //console.log("//////newurlpage////datatotal");
+                    //console.log(newurlpage);
+                    //console.log(datatotal);
+                    ////alert("54565464454556");
+                    //console.log(data);
+                    ////console.log(searchResult);
+
+                    ////console.log(data3);
+                    //ReBuilddatatable();
+                    //var newHtml = "";
+
+
+                    //var table = $("#cutomerTable").DataTable({
+                    //    "searching": true,
+                    //      /*欄位置頂*/
+                    //      "fixedHeader": true,
+                    //    "proccessing": true,
+                    //    "paging": false,
+                          //"serverSide": true,
+                          @*"ajax": {
+                              "url": "@Url.Action("Index2", "Home")",
+                              "type": "POST",
+                          },*@
+            //              "data": data.entry,
+            //              "datatype": "json",
+            //              "columnDefs": [{
+            //                  "targets": '_all',
+            //                  "defaultContent": ""
+            //            }],
+            //            "dom": 'Bfrtip',
+            //            "buttons": [
+            //                'copy', 'excel', 'print'
+            //            ],
+            //              "columns": [
+            //                  { "data": "resource.id", "name": "id", "title": "id" },
+            //                  { "data": "resource.identifier[, ].value", "name": "identifier", "title": "Identifier" },
+            //                  { "data": "resource.name[, ].text", "name": "name", "title": "姓名" },
+            //                  { "data": "resource.gender", "name": "gender", "title": "性別"},
+            //                  { "data": "resource.birthDate", "name": "birthdate", "title": "生日"},
+            //                  {
+            //                      "data": "resource.id",
+            //                      "name": "id",
+            //                      "title": "連結",
+            //                      "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+            //                          if (nTd < 1) {
+            //                              $(td).css('color', 'red');
+            //                          } else
+            //                          {
+            //                              $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href = "' + baseSiteURL + 'Resource/' + oData.resource.resourceType + '/' + oData.resource.id+ '" ><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a >');
+            //                              //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+
+            //                          }
+            //                      }
+            //                      //"fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+            //                      //    //newHtml += '<td> <a class="btn drp-icon btn-outline-info dropdown-toggle" href = "/Resource/Patient/' + entry.resource.id + '" ><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a >';
+            //                                                    //"createdCell": function (td, cellData, rowData, row, col) {
+
+
+            //                      //    $(nTd).addClass('text-center');
+            //                      //    $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href = "/Resource/Patient/' + entry.resource.id + '" ><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a >');
+            //                      //}
+            //                  },
+
+            //              ]
+
+            //          });
+
+            //    },
+            //    error: function (data) {
+            //        alert("no");
+            //    },
+            //    beforeSend: function () {
+            //        $('.loadingdiv').show();
+            //    },
+            //    complete: function () {
+            //        $('.loadingdiv').hide();
+            //    }
+            //});
+
+
+
+
+
+            /*現在可以用start*/
+              @*$.ajax({
+                type: 'POST',
+                url: "@Url.Action("Index2", "Home")",
+                  data: {
+                      sendalltext: sendAlltext
+                  },
+                //type: "POST",
+                dataType: "json",
+                  success: function (data) {//第一層
+                    /*var a=  JSON.stringify(msg)*/
+                      //alert(msg);
+                      var searchResult = JSON.parse(data);
+                      //console.log(data);
+                      //console.log(searchResult);
+                      let number = searchResult.entry.length;
+                      totalnumber = number;
+                      alert(searchResult.entry.length);
+                      //var a = searchResult.entry.resource.id;
+                      //alert(a.length);
+
+
+
+                      //console.log(data3);
+                      ReBuilddatatable();
+                      //string url = ;
+
+
+                      var getUrlString = location.href;
+                      var NewString_con = getUrlString.split(",");
+
+
+                      if (searchResult != null) {
+                          var newHtml = "";
+
+                          var panginationdiv = "";
+
+
+
+
+                          newHtml += '<tr>';
+                          newHtml += '<td>id</td>';
+                          newHtml += '<td>identifier</td>';
+                          newHtml += '<td>姓名</td>';
+                          newHtml += '<td>性別</td>';
+                          newHtml += '<td>出生年月日</td>';
+                          newHtml += '<td>連結</td>';
+
+                          newHtml += '</tr>';
+
+                          let num = 0;
+                          let num2 = 0;
+                          alert(getUrlString);
+                          $.each(searchResult.entry, function (index, entry) {
+
+
+                              num += 1;
+                              //console.log(searchResult);
+
+                              //alert("1");
+                              //alert(entry.resource.id);
+                              //alert(entry.resource.identifier[0].value);//因為值藏在[{}]裡，所以要加[0]
+                              ////alert(entry.resource.name[0].family + entry.resource.name[0].given);
+                              //alert(entry.resource.gender);
+                              //alert(entry.resource.birthDate);
+
+
+                              //0622new_start
+                              //$('#cutomerTable').DataTable({
+                              //    data: searchResult,
+                              //    columns: [
+                              //        { data: 'entry.resource.id' },
+                              //        { data: 'entry.resource.identifier[0].value' },
+                              //        { data: 'entry.resource.gender' },
+                              //        { data: 'entry.resource.birthDate' }
+                              //    ]
+                              //});
+                              //0622new_end
+
+
+                              newHtml += '<tr class =pag_' + num + '>';
+
+                              newHtml += '<td>' + num + '</td>';
+                              newHtml += '<td>' + entry.resource.identifier[0].value + '</td>';
+                              newHtml += '<td></td>';
+                              newHtml += '<td>' + entry.resource.gender + '</td>';
+                              newHtml += '<td>' + entry.resource.birthDate + '</td>';
+
+                              newHtml += '<td> <a class="btn drp-icon btn-outline-info dropdown-toggle" href = "/Resource/Patient/' + entry.resource.id + '" ><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a >';
+                              newHtml += '</tr>';
+
+
+                              if (num % 10 == 0) {
+
+                                  //alert(num + "是10的倍数");
+                                  num2 += 1;
+                                  alert(num2);
+                                  //panginationdiv += '<li> <a href =Index2?' + num2 + '>' + num2 + '</li>';
+                                  panginationdiv += '<button onclick="A(' + num2 + ')">' + num2 + '</button>';
+                                  //panginationdiv += '<li><a href="' + NewString_con + '?aaapage=' + num2 + '\">' + num2 + '</a></li>';
+                              //    alert(panginationdiv);
+                              };
+                              $("#texttt").html(panginationdiv);
+                          });
+
+                          $("#cutomerTable2").html(newHtml);
+                          for (M = 11; M <= totalnumber; M++)//11~最後 hide
+                          {
+                              $('.pag_' + M).attr("hidden", true);
+                          }
+
+
+                          //var text = $("#txtAlltext").val();
+                          //$(function () {
+                          //    var container = $('#cutomerTable');
+                          //    container.pagination({
+                          //        dataSource: 'https://api.flickr.com/services/feeds/photos_public.gne?tags=cat&tagmode=any&format=json&jsoncallback=?',
+                          //        locator: 'items',
+                          //        totalNumber: 20,
+                          //        pageSize: 3,
+                          //        ajax: {
+                          //            beforeSend: function () {
+                          //                container.prev().html('Loading data from flickr.com ...');
+                          //            }
+                          //        },
+                          //        callback: function (response, pagination) {
+                          //            alert("u.3rup4");
+                          //            var dataHtml = '<ul>';
+                          //            var pageStart = (pagination.pageNumber - 1) * pagination.pageSize;
+                          //            var pageEnd = pageStart + pagination.pageSize;
+                          //            var pageItems = response.slice(pageStart, pageEnd);
+                          //            alert("pagination.pageSize=" + pagination.pageSize);
+                          //            alert("pagination.pageNumber=" + pagination.pageNumber);
+                          //            alert("pageStart="+pageStart);
+                          //            alert("pageEnd="+pageEnd);
+                          //            alert("pageItems="+pageItems);
+                          //            $.each(pageItems, function (index, item) {
+                          //                alert("耶");
+                          //                dataHtml += '<li>' + item.title + '</li>';
+                          //            });
+
+                          //            dataHtml += '</ul>';
+
+                          //            container.prev().html(dataHtml);
+                          //        }
+                          //    })
+                          //})
+
+                           //$(function () {
+                           //    var container = $('#cutomerTable');
+                           //   container.pagination({
+                           //       dataSource: 'data',
+                           //       locator: 'entry',
+                           //       totalNumber: number,
+                           //       pageSize: 10,
+                           //       ajax: {
+                           //           beforeSend: function () {
+                           //               container.prev().html('救命');
+                           //           }
+                           //       },
+                           //       callback: function (response, pagination) {
+                           //           var dataHtml = '<ul>';
+                           //           var pageStart = (pagination.pageNumber - 1) * pagination.pageSize;
+                           //           var pageEnd = pageStart + pagination.pageSize;
+                           //           var pageItems = response.slice(pageStart, pageEnd);
+                           //           alert("pagination.pageSize=" + pagination.pageSize);
+                           //           alert("pagination.pageNumber=" + pagination.pageNumber);
+                           //           alert("pageStart="+pageStart);
+                           //           alert("pageEnd="+pageEnd);
+                           //           alert("pageItems="+pageItems);
+                           //           $.each(pageItems, function (index, item) {
+                           //               alert("耶");
+                           //               dataHtml += '<li>' + item.fullUrl + '</li>';
+                           //           });
+
+                           //           dataHtml += '</ul>';
+
+                           //           container.prev().html(dataHtml);
+                           //       }
+                           //   })
+                           //})
+                      //    $("#cutomerTable").DataTable(newHtml);
+                      } else
+                      {
+                          newHtml += '<tr>';
+                          newHtml += '<td>查無資料</td>';
+                          newHtml += '</tr>';
+
+                          alert("沒有資料");
+                      }
+
+
+
+                },
+                  error: function (data) {
+                      alert("no");
+                },
+                beforeSend: function () {
+                    $('.loadingdiv').show();
+                },
+                complete: function () {
+                    $('.loadingdiv').hide();
+                }
+            });*@
+            /*現在可以用end*/
+            @*$.ajax({
+                type: 'POST',
+                url: "@Url.Action("Index2", "Home")",
+                data: {
+                    sendalltext: sendAlltext
+                },
+                type: "POST",
+                dataType: "json",
+                success: OnSuccess,
+                success: function (msg)
+                {
+                    ReBuilddatatable();
+                    var test2 = JSON.parse(msg);
+
+                    $('#cutomerTable').DataTable({
+                        processing: true,
+                        serverSide: true,
+
+                        ajax: {
+                            url: "@Url.Action("Index2", "Home")",
+                            type: 'POST',
+                            data: {
+                                sendalltext: sendAlltext
+                            },
+                        },
+                        columns: [
+                             { "data": "id", "name": "id", "title": "id" },
+//                    { "data": "identifier[, ].value", "name": "identifier", "title": "Identifier" }
+                        ],
+                    });
+                },
+                  error: function (data) {
+                      alert("no");
+                },
+                beforeSend: function () {
+                    $('.loadingdiv').show();
+                },
+                complete: function () {
+                    $('.loadingdiv').hide();
+                }
+            });*@
+
+        //    $("#txtAlltext").val("");
+        //    $("#searchresult2").empty();
+        //    $("#txtWrite").val("");
+        //    $("#txtDate").val("");
+        //    $("#txtValueQ").val("");
+
+        //    //$("#sleResource").val();
+
+        //})
+       //不可刪
+
+        $("#btnclean").click(function () {
+            $('#p1').removeAttr(("hidden", "hidden"));
+            $("#txtAlltext").val("");
+            $("#searchresult2").empty();
+        })
+    function OnSuccess(response) {
+        ReBuilddatatable();
+
+//        $("#cutomerTable").DataTable(
+//            {
+//                bLengthChange: true,
+//                bFilter: true,
+//                bSort: true,
+//                bPaginate: true,
+//                data: response,
+//                columns: [
+//                    { "data": "id", "name": "id", "title": "id" },
+//                    { "data": "identifier[, ].value", "name": "identifier", "title": "Identifier" }
+//                    /*,*/
+///*                    { 'data': 'type' }*/
+//                //    ,
+//                //{ 'data': 'City' },
+//                //    { 'data': 'Country' }
+//                ]
+//            });
+    };
+        /*new0615結束*/
+
+
+        /*0722_new_start*/
+        $("#selpagi").change(function () {
+            var pagi = $("#selpagi option:selected").val();
+            //var pagi2 = (pagi - 1) * 20;
+            var sendAlltext3 = $("#txtAlltext2").val();
+
+            //alert(pagi);
+            //alert("現在資料比數"+pagi2);
+            //var getpages = $('#txtBundleID').val();
+            //var getpagesoffset = pagi2;
+
+            //alert(getpages);
+            var newurlpage = sendAlltext3 + "&_total=accurate&_sort&_count=20&_page=" + pagi ;
+
+             $.ajax({
+                type: 'POST',
+                url: "@Url.Action("Index2", "Home")",
+                data: {
+                    sendalltext: newurlpage
+                },
+                //type: "POST",
+                dataType: "json",
+                 success: function (data) {//第一層
+                     //alert(data);
+                     //alert("ok");
+                    /*var a=  JSON.stringify(msg)*/
+                    //alert(msg);
+                     if (JSON.stringify(data) == 500) {
+                         alert("伺服器逾時，請重新操作");
+                     }
+                    var data = JSON.parse(data);
+                     var select = $("#selpagi");
+
+                     var datatotal = data.total;//*****************資料總數
+                     //var datapagi = datatotal / 20 + 1;
+
+                     //$.each(datapagi, function (i, item) {
+                     //    //alert("2");
+                     //    select.append($('<option>', {
+                     //        value: item.Value,
+                     //        text: item.Value,
+                     //    }));
+                     //    $("#selpagi").find("option:selected").attr("selected", true);
+
+                     //    var s = $("#selpagi").find("option:selected").val();
+                     //    alert(s);
+                     //    div_card.find('input[name=Total_weight]').val(s)
+                     //});
+
+
+
+                    //擷取頁數
+                    var datac = data.link;
+                     var datac_c = datac[0].url;//差異差別這邊也要改
+                    var datapageid = datac_c.indexOf("getpages=") + 9;
+                    var datapageid1 = datac_c.indexOf("&_getpagesoffset=");
+                    var datapageid2 = datac_c.indexOf("&_getpagesoffset=") + 17;
+                    var datapageid3 = datac_c.indexOf("&_count");
+                    var getpages = datac_c.substring(datapageid, datapageid1);
+                    var getpagesoffset = datac_c.substring(datapageid2, datapageid3);
+
+                    //***************新的頁面網址
+                    var newurlpage = "https://hapi.fhir.org/baseR4?_getpages=" + getpages +"&_getpagesoffset="+ getpagesoffset+"&_count=20&_pretty=true&_bundletype=searchset";
+
+                    $("#txtBundleID").val(getpages);
+
+
+                    console.log("12345----------");
+                    console.log(datac_c);
+                    console.log(datapageid);
+                    console.log(datapageid1);
+                    console.log("//////getpages////getpagesoffset");
+                    console.log(getpages);
+                    console.log(getpagesoffset);
+                    console.log("//////newurlpage////datatotal");
+                    console.log(newurlpage);
+                    console.log(datatotal);
+                    //alert("54565464454556");
+                    console.log(data);
+                    //console.log(searchResult);
+
+                    //console.log(data3);
+                    ReBuilddatatable();
+                    var newHtml = "";
+
+
+                    var table = $("#cutomerTable").DataTable({
+                        "searching": true,
+                          "fixedHeader": true,
+                        "proccessing": true,
+                        "paging": false,
+                          "data": data.entry,
+                          "datatype": "json",
+                          "columnDefs": [{
+                              "targets": '_all',
+                              "defaultContent": ""
+                        }],
+                        "dom": 'Bfrtip',
+                        "buttons": [
+                            'copy', 'excel', 'print'
+                        ],
+                          "columns": [
+                              { "data": "resource.id", "name": "id", "title": "id" },
+                              { "data": "resource.identifier[, ].value", "name": "identifier", "title": "Identifier" },
+                              { "data": "resource.name[, ].text", "name": "name", "title": "姓名" },
+                              { "data": "resource.gender", "name": "gender", "title": "性別"},
+                              { "data": "resource.birthDate", "name": "birthdate", "title": "生日"},
+                              {
+                                  "data": "resource.id",
+                                  "name": "id",
+                                  "title": "連結",
+                                  "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                                      if (nTd < 1) {
+                                          $(td).css('color', 'red');
+                                      } else
+                                      {
+                                          $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href = "' + baseSiteURL + 'Resource/' + oData.resource.resourceType + '/' + oData.resource.id+ '" ><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a >');
+
+                                      }
+                                  }
+
+                              },
+
+                          ]
+
+                      });
+
+                },
+                error: function (data) {
+                    alert("Error");
+                },
+               beforeSend: function () {
+                    $('.loadingdiv').show();
+                },
+                complete: function () {
+                    $('.loadingdiv').hide();
+                }
+            });
+
+        });
+        /*0722_new_end*/
+
+    </script>
+}
+

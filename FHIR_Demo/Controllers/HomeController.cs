@@ -7,14 +7,19 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;//NRE
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;//NEW
+using System.Net.Http;//NEW
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks; //NEW
 using System.Web;
 using System.Web.Mvc;
+
 
 namespace FHIR_Demo.Controllers
 {
@@ -40,6 +45,108 @@ namespace FHIR_Demo.Controllers
 
             return View();
         }
+
+        //index2
+        public ActionResult Index2()
+        {
+            return View();
+        }
+
+        //初始
+        public async Task<ActionResult> Index2_3()
+        {
+
+            //var Getomi_json = "'entry': [{'fullUrl': 'http://10.40.8.45:8080/fhir/Patient/C04DA5FB362ACBE0D8B8E889364A10C9DA0E6E76'} ]";
+            var Getomi_json = await Get_MultipleSearch_3();
+            ViewBag.getjson = Getomi_json;
+            return Json(Getomi_json);
+
+        }
+
+        //Index2_3
+        [HttpGet]
+        public async Task<string> Get_MultipleSearch_3()
+        {
+            //a = Request.Form["sendAlltext"];
+            var url = ConfigurationManager.AppSettings.Get("FHIRAPI"); //改FHIRAPI
+            //var Authorization = ConfigurationManager.AppSettings.Get("Authorization");
+
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;//憑證一定要通過
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;//版本
+            HttpClient client = new HttpClient(); //請求
+                                                  //client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", Authorization);
+            var Username = ConfigurationManager.AppSettings.Get("Username");
+            var Password = ConfigurationManager.AppSettings.Get("Password");
+            //var response = await client.GetAsync(url);
+            var byteArray = Encoding.ASCII.GetBytes($"{Username}:{Password}");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+            var response = await client.GetAsync(url);
+            if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)/*回傳500*/
+            {
+                return "500";
+            }
+            else
+            {
+                var result = response.Content.ReadAsStringAsync().Result;
+                return result;
+            }
+
+            //var result = response.Content.ReadAsStringAsync().Result;
+            //return result;
+
+        }
+
+        [HttpGet]
+        public async Task<string> Get_MultipleSearch(string sendalltext)
+        {
+            //a = Request.Form["sendAlltext"];
+            var url = ConfigurationManager.AppSettings.Get("FHIRAPI") + "/" + sendalltext; //改FHIRAPI
+            //var Authorization = ConfigurationManager.AppSettings.Get("Authorization");
+
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;//憑證一定要通過
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;//版本
+            HttpClient client = new HttpClient(); //請求
+                                                  //client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", Authorization);
+            var Username = ConfigurationManager.AppSettings.Get("Username");
+            var Password = ConfigurationManager.AppSettings.Get("Password");
+            //var response = await client.GetAsync(url);
+            var byteArray = Encoding.ASCII.GetBytes($"{Username}:{Password}");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+            var response = await client.GetAsync(url);
+            if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)/*回傳500*/
+            {
+                return "500";
+            }
+            else
+            {
+                var result = response.Content.ReadAsStringAsync().Result;
+                return result;
+            }
+
+            //var result = response.Content.ReadAsStringAsync().Result;
+            //return result;
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Index2(string sendalltext)
+        {
+            //var Getomi_json = "'entry': [{'fullUrl': 'http://10.40.8.45:8080/fhir/Patient/C04DA5FB362ACBE0D8B8E889364A10C9DA0E6E76'} ]";
+            var Getomi_json = await Get_MultipleSearch(sendalltext);
+            ViewBag.getjson = Getomi_json;
+            if (Getomi_json == "500")
+            {
+                return Json(500);
+            }
+            else
+            {
+                return Json(Getomi_json);
+            }
+
+        }
+
 
         #region Datatable 表單功能
         private string FHIR_url;
