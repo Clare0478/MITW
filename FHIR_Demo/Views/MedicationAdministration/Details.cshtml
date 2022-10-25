@@ -1,0 +1,58 @@
+﻿@model FHIR_Demo.Models.MedicationAdministrationViewModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>MedicationAdministrationViewModel</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.medicationReference)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.medicationReference)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.subject)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.subject)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.effectivePeriod_start)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.effectivePeriod_start)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.effectivePeriod_end)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.effectivePeriod_end)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.request)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.request)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @*@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |*@
+    @Html.ActionLink("Back to List", "Index")
+</p>

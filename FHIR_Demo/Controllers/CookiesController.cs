@@ -15,8 +15,8 @@ namespace FHIR_Demo.Controllers
         //public string FHIR_url;
         //public string FHIR_Token;
         //public string FHIR_Server;
-        public string FHIR_url = "https://vtb02p.vghks.gov.tw/fhir-server/api/v4";
-        public string FHIR_Token = "3d821661-6dc0-40b1-a8d5-2e91389255bb";
+        public string FHIR_url = "http://10.40.8.45:8080/fhir"; //https://hapi.fhir.org/baseR4/
+        public string FHIR_Token = "";
         public string FHIR_Server = "HAPi";
 
         public FhirClientSettings settings = new FhirClientSettings

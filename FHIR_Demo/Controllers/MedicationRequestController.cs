@@ -78,10 +78,29 @@ namespace FHIR_Demo.Controllers
         // GET: MedicationRequest/Details/5
         public ActionResult Details(string id)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            handler.OnBeforeRequest += (sender, e) =>
+            {
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+            };
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
+            try
+            {
+                var MedR = client.Read<MedicationRequest>("MedicationRequest/" + id);
+                var MedR_view = new MedicationRequestViewModel().MedicationRequestViewModelMapping(MedR);
+
+                return View(MedR_view);
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }
 
-        // GET: MedicationRequest/Create
+        // GET: MedicationRequest/Create0
         public ActionResult Create()
         {
             return View();
@@ -142,6 +161,10 @@ namespace FHIR_Demo.Controllers
             return View(model);
         }
 
+        public ActionResult update2(string id)
+        {
+            return View();
+        }
         // GET: MedicationRequest/Update/5
         public ActionResult Update(string id)
         {

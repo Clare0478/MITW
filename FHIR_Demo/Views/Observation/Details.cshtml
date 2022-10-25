@@ -43,9 +43,11 @@
         </dd>
 
         <dt>
-            @Html.DisplayFor(model => model.Code_value.code_display)
+            @Html.DisplayNameFor(model => model.Code_value.code_display)
         </dt>
         <dd>
+            @Html.DisplayFor(model => model.Code_value.code_display)
+            @Html.DisplayNameFor(model => model.Code_value.value)
             @Html.DisplayFor(model => model.Code_value.value)
             @Html.DisplayFor(model => model.Code_value.unit)
         </dd>

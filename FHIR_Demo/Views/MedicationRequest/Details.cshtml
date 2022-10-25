@@ -1,0 +1,218 @@
+﻿@model FHIR_Demo.Models.MedicationRequestViewModel
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>MedicationRequestViewModel</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.medicationReference)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.medicationReference)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.subject)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.subject)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.authoredOn)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.authoredOn)
+        </dd>
+        @*//////////*@
+
+        <dt>
+            @Html.DisplayNameFor(model => model.medicationCodeableConcept)
+        </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.medicationCodeableConcept.Code)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.medicationCodeableConcept.Code)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.medicationCodeableConcept.Display)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.medicationCodeableConcept.Display)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dosageInstruction)
+        </dt>
+        @foreach (var item in Model.dosageInstruction)
+        {
+
+            <dt>
+                @Html.DisplayNameFor(model => item.sequence)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => item.sequence)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => item.text)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => item.text)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => item.timing_Code)
+            </dt>
+            <dt>
+                @Html.DisplayNameFor(model => item.timing_Code.Code)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => item.timing_Code.Code)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => item.timing_Code.System)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => item.timing_Code.System)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => item.timing_Code.Display)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => item.timing_Code.Display)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => item.route)
+            </dt>
+            <dt>
+                @Html.DisplayNameFor(model => item.route.Code)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => item.route.Code)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => item.route.System)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => item.route.System)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => item.route.Display)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => item.route.Display)
+            </dd>
+        }
+
+
+
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest)
+        </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.validityPeriod_start)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.validityPeriod_start)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.validityPeriod_end)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.validityPeriod_end)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.numberOfRepeatsAllowed)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.numberOfRepeatsAllowed)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.quantity)
+        </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.quantity.Value)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.quantity.Value)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.quantity.Unit)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.quantity.Unit)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.quantity.System)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.quantity.System)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.quantity.Code)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.quantity.Code)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.expectedSupplyDuration)
+        </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.expectedSupplyDuration.Value)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.expectedSupplyDuration.Value)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.expectedSupplyDuration.Unit)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.expectedSupplyDuration.Unit)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.expectedSupplyDuration.System)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.expectedSupplyDuration.System)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.dispenseRequest.expectedSupplyDuration.Code)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.dispenseRequest.expectedSupplyDuration.Code)
+        </dd>
+    </dl>
+</div>
+<p>
+    @*@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |*@
+    @Html.ActionLink("Back to List", "Index")
+</p>
