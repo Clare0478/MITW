@@ -77,7 +77,7 @@
                                 <option>Condition</option>
                                 @*<option>Medication</option>*@
                                 <option>MedicationRequest</option>
-                                @*                                <option>MedicationAdministration</option>*@
+                                @*<option>MedicationAdministration</option>*@
                                 @*<option>DiagnosticReport</option>
                                 <option>ServiceRequest</option>*@
                             </select>
@@ -1260,7 +1260,7 @@
                 case "Observation": Observation(search_query); break;
                 case "Procedure": Procedure(search_query); break;
                 case "Condition": Condition(search_query); break;
-                //case "Medication": Medication(); break; //還沒建置
+               /* case "Medication": Medication(); break;*/ //還沒建置
                 case "MedicationRequest": MedicationRequest(search_query); break;
                 //case "MedicationAdministration": MedicationAdministration(); break; //還沒建置
                 case "DiagnosticReport": DiagnosticReport(search_query); break;
@@ -1909,6 +1909,52 @@
                 ]
             });
         }
+
+        function Medication(search)
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            //console.log(search);
+            if (search != null && search != "") {
+                data["search"] = search;
+                //console.log(data);
+            }
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    {
+                        "data": "status",
+                        "name": "status",
+                        "title": "藥囑狀態"
+                    },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
 
         function DiagnosticReport(search)
         {
