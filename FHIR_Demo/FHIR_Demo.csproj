@@ -161,6 +161,7 @@
     <Compile Include="Controllers\MHBController.cs" />
     <Compile Include="Controllers\ObservationController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
+    <Compile Include="Controllers\PostmanwebController.cs" />
     <Compile Include="Controllers\RescController.cs" />
     <Compile Include="Controllers\ResourceController.cs" />
     <Compile Include="Global.asax.cs">
@@ -572,6 +573,7 @@
     <Content Include="Views\MedicationAdministration\Details.cshtml" />
     <Content Include="Views\MedicationRequest\update2.cshtml" />
     <Content Include="Views\Home\Index2.cshtml" />
+    <Content Include="Views\Postmanweb\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

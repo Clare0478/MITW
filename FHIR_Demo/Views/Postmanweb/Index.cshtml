@@ -1,0 +1,262 @@
+﻿@model IEnumerable<FHIR_Demo.Models.PatientViewModel>
+@{
+    ViewBag.Title = "Index";
+    string FHIR_url = "";
+    if (Request.Cookies["FHIR_url"] != null)
+    {
+        FHIR_url = Request.Cookies["FHIR_url"].Value;
+    }
+    string FHIR_Token = "";
+    if (Request.Cookies["FHIR_Token"] != null)
+    {
+        FHIR_Token = Request.Cookies["FHIR_Token"].Value;
+    }
+}
+<style>
+    /*lodingstyle*/
+    div.loadingdiv {
+        /*            height: 100%;*/
+        height: 100%;
+        /*100%覆蓋網頁內容, 避免user在loading時進行其他操作*/ width: 100%;
+        position: fixed;
+        z-index: 99999;
+        /*須大於網頁內容*/ top: 0;
+        left: 0;
+        display: block;
+        background: #000;
+        opacity: 0.6;
+        text-align: center;
+    }
+
+        div.loadingdiv img {
+            position: relative;
+            vertical-align: middle;
+            text-align: center;
+            margin: 0 auto;
+            margin-top: 50vh;
+        }
+</style>
+<div class="row">
+    <div class="loadingdiv" id="loading" style="display: none">
+        @*<div class="loader">
+                <svg class="circular" viewBox="25 25 50 50">
+                    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
+                </svg>
+            </div>*@
+        <div style="margin-top:20%;">
+            <i class="fa fa-spinner fa-spin" style="font-size:100px;"></i>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Ajax.BeginForm("GetRecord", new AjaxOptions
+                        {
+                            HttpMethod = "POST",
+                            UpdateTargetId = "ajaxTargetDiv",
+                        }))
+                        {
+                            <div class="input-group mb-3">
+                                <select class="form-control" id="FunSelect" name="resource">
+                                    <option value="GET" selected>GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="DELETE">DELETE</option>
+                                </select>
+                            </div>
+
+                            <label for="exampleInputEmail1">FHIR Server URL & Token</label>
+                            <div class="input-group mb-3">
+                                <input type="url" id="url" name="url" class="form-control" placeholder="http://hapi.fhir.org/baseR4">
+                                <input type="text" id="TokenValue" name="TokenValue" class="form-control" placeholder="token">
+                            </div>
+                            <label for="exampleInputEmail1">帳號 & 密碼</label>
+                            <div class="input-group mb-3">
+                                <input type="text" id="Username" name="Username" class="form-control" placeholder="帳號">
+                                <input type="text" id="Password" name="Password" class="form-control" placeholder="密碼">
+                            </div>
+                            <label for="exampleInputEmail1">Raw body</label>
+                            <div class="input-group mb-3">
+                                <textarea rows="5" id="databundlejson" name="databundlejson" placeholder="data" class="form-control" style="height:340px"></textarea>
+                            </div>
+                            <label id="TxtResultlabel" for="exampleInputEmail1" hidden="hidden">回傳結果</label>
+                            <div class="input-group mb-3">
+                                <textarea rows="5" id="TxtResult" name="getdatabundlejson" class="form-control" style="height:340px" hidden="hidden"></textarea>
+                            </div>
+                            @*<label for="exampleInputEmail1">REST搜尋</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" name="search" class="form-control" placeholder="search(ex:_id=xxx)" value="">
+                                    <div class="input-group-append">
+                                        <button type="Submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </div>*@
+                        }
+                        <hr>
+                        <div class="table-border-style" id="ajaxTargetDiv">
+                            @*@if (!string.IsNullOrEmpty(ViewBag.AlertMessage))
+                                {
+                                    <script type="text/javascript">
+                                       alert("@ViewBag.AlertMessage");
+                                       ViewBag.AlertMessage = "";
+                                    </script>
+                                }*@
+                            @if (ViewBag.status != null)
+                            {
+                                <div class="alert alert-success" role="alert">
+                                    @ViewBag.status
+                                </div>
+                            }
+                            @if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    @ViewBag.Error
+                                </div>
+                            }
+                            else
+                            {
+
+                                @*<pre class="json-card"></pre>*@
+                                <p>
+                                    @*@Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })*@
+
+                                </p>
+
+                            }
+                            <button id="btnsub" type="submit" class="btn btn-primary">送出</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script>
+        $("#btnsub").click(function () {
+            var sele = $("#FunSelect").val().toString();
+            var textdata = $("#databundlejson").val();
+            //alert(sele);
+            //alert(textdata);
+            console.log(sele);
+            console.log(textdata);
+            var data = Getdata();
+            $.ajax({
+                "url": "@Url.Action("Getpostman_Block", "Postmanweb")",
+                "type": "POST",
+                "data": data,
+                "datatype": "json",
+                "success": function (data) {
+                    //var a = JSON.stringify(data, null, 2);
+                    //var a = JSON.stringify(data);
+                    //$("#TxtResultlabel").attr("hidden", false)
+                    //$("#TxtResult").attr("hidden", false)
+                    //$("#TxtResult").text(data);
+                    if (JSON.stringify(data) == "999") {
+                        alert("Token和帳號密碼請則一!!");
+                    }
+                    else {
+                        $("#TxtResultlabel").attr("hidden", false)
+                        $("#TxtResult").attr("hidden", false)
+                        $("#TxtResult").text(data);
+                    }
+                    //$("#TxtResult").text(a);
+
+                },
+                "error": function () {
+                    alert("有錯誤");
+                },
+                "beforeSend": function () {
+                    $('.loadingdiv').show();
+                },
+                "complete": function () {
+                    $('.loadingdiv').hide();
+                }
+            });
+            function Getdata() {
+                var data = {};
+                data.url = $("#url").val();
+                data.fun = $("#FunSelect").val().toString();
+                data.TokenValue = $("#TokenValue").val();;
+                data.databundlejson = $("#databundlejson").val();
+                data.Username = $("#Username").val();
+                data.Password = $("#Password").val();
+                /*data.resource = $("#ResourceSelect").val();*/
+                return data;
+            }
+        });
+        
+    </script>
+    <script>
+        //select事件
+         @*$("#ResourceSelect").on('change', function () {
+            var sele = $(this).val().toString();
+            //alert(sele);
+            var pat_id = $("#Patient_id").val();
+            var data = Getdata();
+            var baseSiteURL = '@Url.Content("~/")';
+            $.ajax({
+                "url": "@Url.Action("Index", "Resource")",
+                "type": "POST",
+                "data": data,
+                "datatype": "json",
+                "success": function (msg) {
+                    var s = eval("(" + msg + ")");
+                    //alert(msg);
+                    if (sele == "Patient") {
+                        //alert("我是pat")
+                        console.log(s[0].resourceType);
+                        //alert("resourceType:" + JSON.stringify(s[1].resourceType) + "id:" + JSON.stringify(s[1].id));
+                        var resourceType = JSON.stringify(s[0].resourceType).replace('"', '');
+                        var resourceType1 = resourceType.replace('"', '');
+                        //alert(resourceType1);
+                        var resourceTypeid = JSON.stringify(s[0].id).replace('"', '');
+                        var resourceTypeid1 = resourceTypeid.replace('"', '');
+                        //alert(resourceTypeid1);
+                        //alert("哈囉~");//請求成功後執行的操作 alert(msg);
+
+                        //alert("成功~");
+                        var a = baseSiteURL + 'Resource/' + resourceType1 + '/' + resourceTypeid1;
+                        //alert(a);
+                        window.location.href = a;
+                    }
+                    else if (s[1] == null) {
+                        alert("找不到任何相關資料");
+                    }
+                    else if (s[1] != null) {
+                        console.log(s[1].resourceType);
+                        //alert("resourceType:" + JSON.stringify(s[1].resourceType) + "id:" + JSON.stringify(s[1].id));
+                        var resourceType = JSON.stringify(s[1].resourceType).replace('"', '');
+                        var resourceType1 = resourceType.replace('"', '');
+                        //alert(resourceType1);
+                        var resourceTypeid = JSON.stringify(s[1].id).replace('"', '');
+                        var resourceTypeid1 = resourceTypeid.replace('"', '');
+                        //alert(resourceTypeid1);
+                        //alert("哈囉~");//請求成功後執行的操作 alert(msg);
+
+                        //alert("成功~");
+                        var a = baseSiteURL + 'Resource/' + resourceType1 + '/' + resourceTypeid1;
+                        //alert(a);
+                        window.location.href = a;
+                    }
+
+
+
+                }
+            });
+            function Getdata() {
+                var data = {};
+                data.res = "Patient";
+                data.id = $("#Patient_id").val();
+                data.sele = sele;
+                /*data.resource = $("#ResourceSelect").val();*/
+                return data;
+            }
+        });*@
+    </script>
+
+}
