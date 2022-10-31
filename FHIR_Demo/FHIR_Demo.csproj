@@ -571,6 +571,7 @@
     <Content Include="Views\MedicationRequest\Details.cshtml" />
     <Content Include="Views\MedicationAdministration\Details.cshtml" />
     <Content Include="Views\MedicationRequest\update2.cshtml" />
+    <Content Include="Views\Home\Index2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
