@@ -120,6 +120,10 @@ namespace FHIR_Demo.Controllers
                 try
                 {
                     MedicationRequest medicationRequest = new MedicationRequest();
+                    medicationRequest.Meta = new Meta
+                    {
+                        Profile = new List<string> { model.meta }
+                    };
                     medicationRequest.Status = (medicationrequestStatus)model.status;
                     medicationRequest.Intent = (medicationRequestIntent)model.intent;
                     medicationRequest.Category = model.categorys.ToList();
@@ -148,7 +152,7 @@ namespace FHIR_Demo.Controllers
                         Quantity = model.dispenseRequest.quantity,
                         ExpectedSupplyDuration = model.dispenseRequest.expectedSupplyDuration
                     };
-
+                    var medicationRequest_ToJson = medicationRequest.ToJson();
                     var created_MedReq = client.Create<MedicationRequest>(medicationRequest);
                     TempData["status"] = "Create succcess! Reference url:" + created_MedReq.Id;
                     return RedirectToAction("Index");

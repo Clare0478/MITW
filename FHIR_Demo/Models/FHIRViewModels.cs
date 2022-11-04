@@ -412,6 +412,8 @@ namespace FHIR_Demo.Models
     {
         public string Id { get; set; }
 
+        public string meta { get; set; }
+
         [Required]
         [Display(Name = "狀態")]
         public medicationrequestStatus_Ch status { get; set; }
@@ -541,7 +543,7 @@ namespace FHIR_Demo.Models
     public class MedicationAdministrationViewModel
     {
         public string Id { get; set; }
-
+        public string meta { get; set; }
         [Required]
         [Display(Name = "狀態")]
         public MedicationAdministrationStatusCodes_Ch status { get; set; }
@@ -753,5 +755,86 @@ namespace FHIR_Demo.Models
     //    [Display(Name = "注射單位")]
     //    public ResourceReference Actor { get; set; }
     //}
+
+
+
+    public class CompositionViewModel
+    {
+        public string Id { get; set; }
+
+        public string meta { get; set; }
+
+        [Required]
+        [Display(Name = "日期")]
+        [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public string date { get; set; }
+
+        [Required]
+        [Display(Name = "title")]
+        public string title { get; set; }
+
+        [Display(Name = "subject")]
+        public string subject { get; set; }
+
+        [Display(Name = "author")]
+        public string author { get; set; }
+
+        [Display(Name = "section_Org")]
+        public string section_Org { get; set; }
+
+        [Display(Name = "section_Patient")]
+        public string section_Patient { get; set; }
+
+        [Display(Name = "section_Practitioner")]
+        public string section_Practitioner { get; set; }
+        [Display(Name = "section_Encounter")]
+        public string section_Encounter { get; set; }
+        [Display(Name = "section_Observation1")]
+        public string section_Observation1 { get; set; }
+        [Display(Name = "section_Observation2")]
+        public string section_Observation2 { get; set; }
+        [Display(Name = "section_Observation3")]
+        public string section_Observation3 { get; set; }
+        [Display(Name = "section_Observation4")]
+        public string section_Observation4 { get; set; }
+        [Display(Name = "section_Observation5")]
+        public string section_Observation5 { get; set; }
+        [Display(Name = "section_Observation6")]
+        public string section_Observation6 { get; set; }
+        [Display(Name = "section_Observation7")]
+        public string section_Observation7 { get; set; }
+        [Display(Name = "section_Observation8")]
+        public string section_Observation8 { get; set; }
+        [Display(Name = "section_AllergyIntolerance")]
+        public string section_AllergyIntolerance { get; set; }
+
+        [Display(Name = "section_Condition1")]
+        public string section_Condition1 { get; set; }
+        [Display(Name = "section_Condition2")]
+        public string section_Condition2 { get; set; }
+
+        public CompositionViewModel CompositionViewModelMapping(Composition Composition)
+        {
+            this.Id = Composition.Id;
+            this.date = Composition.Date ?? "";
+            //switch (patient.Gender) 
+            //{
+            //    case AdministrativeGender.Male:
+            //        patientView.Gender = Gender.男;
+            //        break;
+            //    case AdministrativeGender.Female:
+            //        patientView.Gender = Gender.女;
+            //        break;
+            //    case AdministrativeGender.Other:
+            //        patientView.Gender = Gender.其他;
+            //        break;
+            //    default:
+            //        patientView.Gender = Gender.不知道;
+            //        break;
+            //}
+            return this;
+        }
+    }
 
 }

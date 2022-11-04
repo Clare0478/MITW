@@ -75,7 +75,9 @@
                     <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Postmanweb" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
                         <a href="@Url.Action("Index", "Postmanweb")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Postmanweb DashBroad</span></a>
                     </li>
-
+                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Composition" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                        <a href="@Url.Action("Create", "Composition")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Composition DashBroad</span></a>
+                    </li>
                 </ul>
             </div>
         </div>

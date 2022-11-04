@@ -152,6 +152,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CompositionController.cs" />
     <Compile Include="Controllers\CookiesController.cs" />
     <Compile Include="Controllers\EMSController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -574,6 +575,8 @@
     <Content Include="Views\MedicationRequest\update2.cshtml" />
     <Content Include="Views\Home\Index2.cshtml" />
     <Content Include="Views\Postmanweb\Index.cshtml" />
+    <Content Include="Views\Composition\Create.cshtml" />
+    <Content Include="Views\Composition\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

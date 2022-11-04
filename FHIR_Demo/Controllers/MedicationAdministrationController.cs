@@ -1,6 +1,7 @@
 ﻿using FHIR_Demo.Models;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
+using Hl7.Fhir.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -122,6 +123,10 @@ namespace FHIR_Demo.Controllers
                 try
                 {
                     MedicationAdministration medicationAdministration = new MedicationAdministration();
+                    medicationAdministration.Meta = new Meta
+                    {
+                        Profile = new List<string> { model.meta }
+                    };
                     medicationAdministration.Status = (MedicationAdministrationStatusCodes)model.status;
                     if (model.medicationReference != null)
                         medicationAdministration.Medication = new ResourceReference(model.medicationReference);
@@ -131,7 +136,7 @@ namespace FHIR_Demo.Controllers
                     medicationAdministration.Effective = model.effectivePeriod;
                     medicationAdministration.Request = new ResourceReference(model.request);
                     medicationAdministration.Dosage = model.dosage;
-
+                    var medicationAdministration_ToJson = medicationAdministration.ToJson();
                     var created_MedAdmin = client.Create<MedicationAdministration>(medicationAdministration);
                     TempData["status"] = "Create succcess! Reference url:" + created_MedAdmin.Id;
                     return RedirectToAction("Index");
