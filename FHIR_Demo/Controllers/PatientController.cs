@@ -193,7 +193,8 @@ namespace FHIR_Demo.Controllers
                         {
                             new HumanName()
                             {
-                                Text = model.name,
+                                Text = model.familyname+model.name,
+                                Family=model.familyname,
                                 Given = new List<string>
                                 {
                                     model.name,
@@ -215,20 +216,26 @@ namespace FHIR_Demo.Controllers
                             new ContactPoint
                             {
                                 System = ContactPoint.ContactPointSystem.Phone,
-                                Value = model.telecom
+                                Value = model.telecom,
+                                Use=ContactPoint.ContactPointUse.Mobile,
                             },
                             new ContactPoint
                             {
                                 System = ContactPoint.ContactPointSystem.Email,
                                 Value = model.email
                             },
+                            new ContactPoint
+                            {
+                                System = ContactPoint.ContactPointSystem.Url,
+                                Value = "https://line.me/ti/p/34b2c384l5",
+                            },
                         },
                         Address = new List<Address>
                         {
                             new Address
                             {
-                                Text = model.zipcode+" 臺灣省"+model.city+model.town+model.address,
-                                Country = "臺灣省",
+                                Text = model.zipcode+" 臺灣"+model.city+model.town+model.address,
+                                Country = "臺灣",
                                 PostalCode = model.zipcode,
                                 City = model.city,
                                 District = model.town,
@@ -244,7 +251,8 @@ namespace FHIR_Demo.Controllers
                             {
                                 Name = new HumanName()
                                 {
-                                    Text = model.contact_name,
+                                    Text = model.contact_familyname+model.contact_name,
+                                    Family=model.contact_familyname,
                                     Given = new List<string>
                                     {
                                         model.contact_name,
@@ -259,8 +267,15 @@ namespace FHIR_Demo.Controllers
                                     new ContactPoint
                                     {
                                         System = ContactPoint.ContactPointSystem.Phone,
-                                        Value = model.contact_telecom
+                                        Value = model.contact_telecom,
+                                        Use=ContactPoint.ContactPointUse.Mobile,
                                     },
+                                    new ContactPoint
+                                    {
+                                        System = ContactPoint.ContactPointSystem.Url,
+                                        Value = "https://line.me/ti/p/34b2c384l5",
+                                    },
+
                                 }
 
                             },

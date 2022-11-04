@@ -15,10 +15,12 @@ namespace FHIR_Demo.Models
         public string Id { get; set; }
 
         public string meta { get; set; }
-
         [Required]
-        [Display(Name = "姓名")]
+        [Display(Name = "名字")]
         public string name { get; set; }
+
+        [Display(Name = "姓氏")]
+        public string familyname { get; set; }
 
         [Required]
         [Display(Name = "生日")]
@@ -45,8 +47,10 @@ namespace FHIR_Demo.Models
         public string town { get; set; }
         public string zipcode { get; set; }
 
-        [Display(Name = "緊急聯絡人")]
+        [Display(Name = "緊急聯絡人名字")]
         public string contact_name { get; set; }
+        [Display(Name = "緊急聯絡人姓氏")]
+        public string contact_familyname { get; set; }
 
         [Display(Name = "關係")]
         public string contact_relationship { get; set; }
