@@ -46,7 +46,8 @@ namespace FHIR_Demo.Controllers
                     ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     HttpClient client = new HttpClient();
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", TokenValue); //token寫法
+                    //client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", TokenValue); //token寫法
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TokenValue);
                     var response = await client.GetAsync(url);
                     if (response.Content.ReadAsStringAsync().Result != "")
                     {
@@ -66,7 +67,8 @@ namespace FHIR_Demo.Controllers
                     ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     HttpClient client = new HttpClient();
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", TokenValue); //token寫法
+                    //client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", TokenValue); //token寫法
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TokenValue);
                     //POST資料
                     var response = await client.PostAsync(url, data);
                     if (response.Content.ReadAsStringAsync().Result != "")
@@ -87,7 +89,8 @@ namespace FHIR_Demo.Controllers
                     ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     HttpClient client = new HttpClient();
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", TokenValue); //token寫法
+                    //client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", TokenValue); //token寫法
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TokenValue);
                     //PUT資料
                     var response = await client.PutAsync(url, data);
                     if (response.Content.ReadAsStringAsync().Result != "")
@@ -107,7 +110,8 @@ namespace FHIR_Demo.Controllers
                     ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     HttpClient client = new HttpClient();
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", TokenValue); //token寫法
+                    //client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", TokenValue); //token寫法
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TokenValue);
                     var response = await client.DeleteAsync(url);
                     if (response.Content.ReadAsStringAsync().Result != "")
                     {

@@ -193,6 +193,7 @@ namespace FHIR_Demo.Controllers
                         {
                             new HumanName()
                             {
+                                Use=HumanName.NameUse.Official,
                                 Text = model.familyname+model.name,
                                 Family=model.familyname,
                                 Given = new List<string>
@@ -207,8 +208,10 @@ namespace FHIR_Demo.Controllers
                         Identifier = new List<Identifier> {
                             new Identifier
                             {
+                                Use=Identifier.IdentifierUse.Official,
                                 System = "https://www.dicom.org.tw/cs/identityCardNumber_tw",
-                                Value = model.identifier
+                                Value = model.identifier,                   
+
                             }
                         },
                         Telecom = new List<ContactPoint>
@@ -251,6 +254,7 @@ namespace FHIR_Demo.Controllers
                             {
                                 Name = new HumanName()
                                 {
+                                    Use=HumanName.NameUse.Official,
                                     Text = model.contact_familyname+model.contact_name,
                                     Family=model.contact_familyname,
                                     Given = new List<string>
