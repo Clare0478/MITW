@@ -53,7 +53,6 @@ namespace FHIR_Demo.Controllers
         //解析健康存摺XML檔案
         public void XML_Path(string path)
         {
-
             if (path != null)
             {
                 XmlDocument doc = new XmlDocument();
