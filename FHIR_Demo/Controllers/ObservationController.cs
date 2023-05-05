@@ -17,7 +17,6 @@ namespace FHIR_Demo.Controllers
     {
         private CookiesController cookies = new CookiesController();
         private HttpClientEventHandler handler = new HttpClientEventHandler();
-
         // GET: Observation
         public ActionResult Index()                  
         {
