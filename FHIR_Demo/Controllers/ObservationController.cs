@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Web;
+using System.Text;
 using System.Web.Mvc;
 
 namespace FHIR_Demo.Controllers
@@ -18,11 +19,12 @@ namespace FHIR_Demo.Controllers
         private HttpClientEventHandler handler = new HttpClientEventHandler();
 
         // GET: Observation
-        public ActionResult Index()
+        public ActionResult Index()                  
         {
+            handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
             handler.OnBeforeRequest += (sender, e) =>
             {
-                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
             };
             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
             ViewBag.status = TempData["status"];
@@ -47,61 +49,65 @@ namespace FHIR_Demo.Controllers
             }
         }
 
+        
+
         [HttpPost]
-        public ActionResult GetRecord(string url, string token, string search)
-        {
-            handler.OnBeforeRequest += (sender, e) =>
-            {
-                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, token));
-            };
-            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings, handler);
-            try
-            {
-                var q = SearchParams.FromUriParamList(UriParamList.FromQueryString(search)).LimitTo(20);
+         public ActionResult GetRecord(string url, string token, string search)          
+         {
+             handler.OnBeforeRequest += (sender, e) =>
+             {
+                 e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, token));
+             };
+             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings, handler);
+             try
+             {
+                 var q = SearchParams.FromUriParamList(UriParamList.FromQueryString(search)).LimitTo(20);
 
-                Bundle ObservationBundle = client.Search<Observation>(q);
+                 Bundle ObservationBundle = client.Search<Observation>(q);
 
-                //var json = PatientSearchBundle.ToJson();
-                List<ObservationViewModel> observationViewModels = new List<ObservationViewModel>();
+                 //var json = PatientSearchBundle.ToJson();
+                 List<ObservationViewModel> observationViewModels = new List<ObservationViewModel>();
 
-                foreach (var entry in ObservationBundle.Entry)
-                {
-                    observationViewModels.Add(new ObservationViewModel().ObservationViewModelMapping((Observation)entry.Resource));
-                }
+                 foreach (var entry in ObservationBundle.Entry)
+                 {
+                     observationViewModels.Add(new ObservationViewModel().ObservationViewModelMapping((Observation)entry.Resource));
+                 }
 
-                return PartialView("_GetRecord", observationViewModels);
-            }
-            catch (Exception e)
-            {
-                ViewBag.Error = e.ToString();
-                return PartialView("_GetRecord");
-            }
-        }
+                 return PartialView("_GetRecord", observationViewModels);
+             }
+             catch (Exception e)
+             {
+                 ViewBag.Error = e.ToString();
+                 return PartialView("_GetRecord");
+             }
+         }
+
 
         // GET: Observation/Details/5
-        public ActionResult Details(string id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            handler.OnBeforeRequest += (sender, e) =>
-            {
-                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
-            };
-            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
-            try
-            {
-                var Obser = client.Read<Observation>("Observation/" + id);
-                var Obser_view = new ObservationViewModel().ObservationViewModelMapping(Obser);
+         public ActionResult Details(string id)
+         {
+             if (id == null)
+             {
+                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+             }
+             handler.OnBeforeRequest += (sender, e) =>
+             {
+                 e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+             };
+             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
+             try
+             {
+                 var Obser = client.Read<Observation>("Observation/" + id);
+                 var Obser_view = new ObservationViewModel().ObservationViewModelMapping(Obser);
 
-                return View(Obser_view);
-            }
-            catch
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-        }
+                 return View(Obser_view);
+             }
+             catch
+             {
+                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+             }
+         }
+
 
         // GET: Observation/Create
         public ActionResult Create()
@@ -310,5 +316,6 @@ namespace FHIR_Demo.Controllers
         //        return View();
         //    }
         //}
+
     }
 }

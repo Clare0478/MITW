@@ -931,16 +931,21 @@
                                     </td>
                                     <td></td>
                                 </tr>
+                                //  ? Res_Search.name[0].text : (Res_Search.name[0].given[0].ToString() + " " + Res_Search.name[0].family.ToString()) ?? "無"
                                 <tr>
                                     <th scope="row">姓名</th>
                                     <td>
                                         @if (Res_Search.name != null)
                                         {
-                                            @(Res_Search.name[0].text != null ? Res_Search.name[0].text : (Res_Search.name[0].given[0].ToString() + " " + Res_Search.name[0].family.ToString()) ?? "無")
+                                            @(Res_Search.name[0].text != null)
                                             <br>
-                                            @Res_Search.name[0].family
-                                            <br>
-                                            @Res_Search.name[0].given[0]
+                                            if (Res_Search.name?[0].family != null && Res_Search.name?[0].given[0] != null)
+                                            {
+                                                @Res_Search.name[0].family
+                                                <br>
+                                                @Res_Search.name[0].given[0]
+                                            }
+
                                         }
                                         else
                                         {
@@ -988,17 +993,18 @@
                                 <tr>
                                     <th scope="row">組織</th>
                                     <td>
-                                        @if (Res_Search.managingOrganization.reference != null)
+                                        @if (Res_Search.managingOrganization?.reference != null)
                                         {
                                             @Res_Search.managingOrganization.reference
                                         }
+
                                     </td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">國家</th>
                                     <td>
-                                        @if (Res_Search.address[0].country != null)
+                                        @if (Res_Search.address?[0].country != null)
                                         {
                                             @Res_Search.address[0].country
 
@@ -1009,7 +1015,7 @@
                                 <tr>
                                     <th scope="row">郵遞區號</th>
                                     <td>
-                                        @if (Res_Search.address[0].postalCode != null)
+                                        @if (Res_Search.address?[0].postalCode != null)
                                         {
                                             @Res_Search.address[0].postalCode
 
@@ -1020,7 +1026,7 @@
                                 <tr>
                                     <th scope="row">地址</th>
                                     <td>
-                                        @if (Res_Search.address[0].text != null)
+                                        @if (Res_Search.address?[0].text != null)
                                         {
                                             @Res_Search.address[0].text
 
@@ -1031,7 +1037,7 @@
                                 <tr>
                                     <th scope="row">電話</th>
                                     <td>
-                                        @if (Res_Search.telecom[0].value != null)
+                                        @if (Res_Search.telecom?[0].value != null)
                                         {
                                             if (Res_Search.telecom[0].system == "phone")
                                             {
@@ -1048,7 +1054,7 @@
                                 <tr>
                                     <th scope="row">Email</th>
                                     <td>
-                                        @if (Res_Search.telecom[1].system != null)
+                                        @if (Res_Search.telecom?[1].system != null)
                                         {
                                             if (Res_Search.telecom[1].system == "email")
                                             {
