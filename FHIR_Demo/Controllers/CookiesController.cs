@@ -15,9 +15,9 @@ namespace FHIR_Demo.Controllers
         //public string FHIR_url;
         //public string FHIR_Token;
         //public string FHIR_Server;
-        public string FHIR_url = "http://10.40.8.45:8080/fhir"; //https://hapi.fhir.org/baseR4/
-        public string FHIR_Token = "";
-        public string FHIR_Server = "HAPi";
+        public string FHIR_url = "https://10.20.15.157:9443/fhir-server/api/v4"; //https://hapi.fhir.org/baseR4/、"http://10.40.8.45:8080/fhir"
+        public string FHIR_Token = "fhiruser:change-password";
+        public string FHIR_Server = "IBM";//"HAPi"
 
         public FhirClientSettings settings = new FhirClientSettings
         {
