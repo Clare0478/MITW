@@ -376,7 +376,7 @@ namespace FHIR_Demo.Controllers
             if (ModelState.IsValid)
             {
                 //讓系統通過對於不安全的https連線
-                handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
+                //handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
                 if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
                 {
                     //使用Basic 登入

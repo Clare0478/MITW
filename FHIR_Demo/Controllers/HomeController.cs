@@ -269,7 +269,7 @@ namespace FHIR_Demo.Controllers
             //查看數值使用變數
             var a = q.ToParameters();
 
-            Bundle PatientSearchBundle = client.Search(q, FHIR_Resource);
+            Bundle PatientSearchBundle = client.Search(q, FHIR_Resource);//返回符合搜尋條件的資源(以Bundle)
 
             Bundle PatientBundle_total = client.Search(new SearchParams().Where("_total=accurate"), FHIR_Resource);
 
@@ -335,7 +335,7 @@ namespace FHIR_Demo.Controllers
             return parameter;
         }
 
-        public string DatatablesObjectDisplay_Change (string orderName) 
+        public string DatatablesObjectDisplay_Change (string orderName) //使用正則表達替換移除字符串中的特定部分[,]
         {
             string Pattern = @"\[, ].+";
             Regex regex = new Regex(Pattern);
