@@ -1,0 +1,136 @@
+﻿@using FHIR_Demo.Models
+@model LoginViewModel
+@{
+    ViewBag.Title = "登入";
+}
+
+<h2>@ViewBag.Title.</h2>
+<div class="row">
+    <div class="col-md-10">
+        <section id="loginForm">
+            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                @*<h4>使用本機帳戶進行登入。</h4>*@
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <div class="checkbox">
+                            @*@Html.CheckBoxFor(m => m.RememberMe)*@
+                            <input id="RememberMe" name="RememberMe" type="radio" value="true">
+                            @Html.LabelFor(m => m.RememberMe)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="登入" class="btn btn-primary" />
+                    </div>
+                </div>
+                <p>
+                    @Html.ActionLink("以新使用者身分註冊", "Register")
+                </p>
+                @* 只要您的密碼重設功能能夠進行帳戶確認，就啟用此項
+                    <p>
+                        @Html.ActionLink("忘記密碼?", "ForgotPassword")
+                    </p>*@
+            }
+        </section>
+    </div>
+    <div class="col-md-10">
+        <section id="socialLoginForm">
+            @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+
+@*@model FHIR_Demo.Models.User
+    @{
+        ViewBag.Title = "Login";
+        if (TempData["message"] != null)
+        {
+            <script type="text/javascript">
+            var message = @Html.Raw(Json.Encode(TempData.Peek("message")));
+            alert(message);
+            </script>
+        }
+    }
+
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <div class="col">
+                    <h3 class="f-bold">MI - FHIR 登入</h3>
+                    <hr />
+                </div>
+                <div class="col" style="margin-top:-2%">
+                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "mt-5 mb-5 login-input" }))
+                    {
+                        //ValidateAntiForgeryToken機制
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.UserName, new { @class = "font-weight-bold" })
+                            @Html.TextBoxFor(model => model.UserName, new { @class = "form-control ", @Value = Model?.UserName })
+                            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Password)
+                            @Html.PasswordFor(model => model.Password, new { @class = "form-control font-weight-bold", @Value = Model?.Password })
+                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger col-md-12" })
+                        </div>
+                        <div class="form-group">
+                            @if (TempData["validation"] != null)
+                            {//檢查是否有帳密錯誤
+                                <div class="text-danger">@TempData["validation"]</div>
+                            }
+                        </div>
+
+                        <div class="form-ground">
+                            @Html.CheckBoxFor(model => model.RememberMe)
+                            @Html.LabelFor(model => model.RememberMe, "記住密碼")
+                        </div>
+
+                        //隱藏的信息(模型有的欄位)
+                        <div class="form-ground">
+                            @Html.HiddenFor(model => model.AuthorizeUrl, new { @class = "form-control", placeholder = "", id = "AuthorizeUrl", @Value = "123" })
+                            @Html.HiddenFor(model => model.Role, new { @class = "form-control", placeholder = "", id = "Role", @Value = "0" })
+                        </div>
+
+                        <div class="form-group">
+                            <input type="submit" value="登入" class="btn btn-primary font-weight-bold" />
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+    @section Scripts {
+        <script src="~/Content/assets/js/vendor-all.min.js"></script>
+        <script src="~/Content/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+        <script src="~/Content/assets/js/pcoded.min.js"></script>
+    }*@
+
+

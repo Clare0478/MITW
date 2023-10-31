@@ -2,15 +2,34 @@
 
 @{
     ViewBag.Title = "Index";
+    //string FHIR_url = "";
+    //if (Request.Cookies["FHIR_url"] != null)
+    //{
+    //    FHIR_url = Request.Cookies["FHIR_url"].Value;
+    //}
+    //string FHIR_Token = "";
+    //if (Request.Cookies["FHIR_Token"] != null)
+    //{
+    //    FHIR_Token = Request.Cookies["FHIR_Token"].Value;
+    //}
     string FHIR_url = "";
-    if (Request.Cookies["FHIR_url"] != null)
+    if (Session["FhirServerUrl"] as string != null)
     {
-        FHIR_url = Request.Cookies["FHIR_url"].Value;
+        FHIR_url = Session["FhirServerUrl"] as string;
     }
-    string FHIR_Token = "";
-    if (Request.Cookies["FHIR_Token"] != null)
+    else// (Request.Cookies["FHIR_url"] != null)
     {
-        FHIR_Token = Request.Cookies["FHIR_Token"].Value;
+        FHIR_url = "http://10.20.15.157:4004/hapi-fhir-jpaserver/fhir/";
+    }
+
+    string FHIR_Token = "";
+    if (Session["Token"] as string != null)
+    {
+        FHIR_Token = Session["Token"] as string;
+    }
+    else //(Request.Cookies["FHIR_Token"] != null)
+    {
+        FHIR_Token = "";//Request.Cookies["FHIR_Token"].Value;
     }
 }
 <div class="row">

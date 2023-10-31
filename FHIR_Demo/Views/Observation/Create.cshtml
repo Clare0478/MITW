@@ -20,7 +20,7 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.meta, new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.meta, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.EditorFor(model => model.meta.value_text, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.meta, "", new { @class = "text-danger" })
                                 </div>
                             </div>
@@ -39,6 +39,14 @@
                                 <div class="col-md-10">
                                     @Html.EditorFor(model => model.basedOn, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.basedOn, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.performer, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.performer, new { htmlAttributes = new { @class = "form-control", @placeholder = "範例:Patient/1" } })
+                                    @Html.ValidationMessageFor(model => model.performer, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 

@@ -4,7 +4,33 @@
     ViewBag.Title = "Create - Observation";
     string Subject_ID = ViewBag.Subject_ID;
 }
+<style>
 
+    .Title {
+        font-weight: bold;
+        padding-left: 10px;
+    }
+
+    /* CreateView Title style */
+    .TitleLabel {
+        font-weight: bold;
+        padding-top: 15px;
+        margin-left: 15px;
+    }
+
+    .ItemTitle {
+        font-weight: bold;
+        font-size: larger;
+    }
+
+    .Ward_div_Top {
+        margin-top: 10px;
+    }
+
+    .Drugs_div_Top {
+        margin-top: 10px;
+    }
+</style>
 <div class="row">
     <div class="col-sm-12">
         <div class="card">
@@ -27,7 +53,7 @@
                             </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
                                 <div class="col-md-10">
                                     @Html.DropDownListFor(model => model.status, new SelectList(Enum.GetValues(typeof(Obser_Status))),
                                                                         "請選擇", new { @class = "form-control" })

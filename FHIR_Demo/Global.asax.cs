@@ -16,6 +16,12 @@ namespace FHIR_Demo
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            //RouteTable.Routes.MapRoute(
+            //    name: "HandleAuthCode",
+            //    url: "",
+            //    defaults: new { controller = "Account", action = "HandleAuthCode" }
+            //);
         }
         /// <summary>
         /// 上一頁 不儲存cache

@@ -1,0 +1,444 @@
+﻿@model FHIR_Demo.Models.EECModels
+@using FHIR_Demo.Models;
+@using Hl7.Fhir.Model;
+@using Hl7.Fhir.Serialization;
+@{
+    ViewBag.Title = "Create";
+    string Subject_ID = ViewBag.Subject_ID;
+}
+
+<style>
+    .Title {
+        font-weight: bold;
+        padding-left: 10px;
+    }
+
+    /* CreateView Title style */
+    .TitleLabel {
+        font-weight: bold;
+        padding-top: 15px;
+        margin-left: 15px;
+    }
+
+    .ItemTitle {
+        font-weight: bold;
+        font-size: larger;
+    }
+
+    .Ward_div_Top {
+        margin-top: 10px;
+    }
+
+    .Drugs_div_Top {
+        margin-top: 10px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="Title">Create EEC 檢驗檢查</h3>
+                <hr>
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("Create", "EEC_IC", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Meta, new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.Meta, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Meta, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="bundle_identifier">Value</label></div>
+                                    <div class="editor-field">
+                                        <input class="form-control text-box single-line" id="bundle_identifier" name="identifier.code_code" value="TW.0617060018.20220819143000889.001" type="text">
+                                        <span class="field-validation-valid" data-valmsg-for="identifier.code_code" data-valmsg-replace="true"></span>
+                                    </div>
+                                    @Html.Hidden("identifier.code_system", "https://www.vghtpe.gov.tw")
+                                    @Html.Hidden("identifier.code_display", "2022-08-19")
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.timestamp, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.timestamp, new { htmlAttributes = new { @class = "form-control",Type= "datetime-local", @Value = "2023-08-21T12:00:00+08:00" } })
+                                    @Html.ValidationMessageFor(model => model.timestamp, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.type, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.type, new SelectList(Enum.GetValues(typeof(BundleType))),
+                                   "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.type, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            //foreach (var val in Model.model.entry[0].Resource.eec_icresourcedata)
+                            //{
+
+                            // Create Practitioner 第一筆
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">I.Practitioner 醫事人員</h5>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.practitioners[0].pra_name, new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <input class="form-control text-box single-line" name="entry[0].Resource.eec_icresourcedata.practitioners[0].pra_name" value="醫事人員" type="text">
+                                    <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.practitioners[0].pra_name" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            // Create Practitioner第二筆
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">II.Practitioner 開立醫師</h5>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.practitioners[1].pra_name, new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <input class="form-control text-box single-line" name="entry[0].Resource.eec_icresourcedata.practitioners[1].pra_name" value="開立醫師" type="text">
+                                    <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.practitioners[1].pra_name" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            // Create Patient
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">III.Patient</h5>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.name, new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.TextBox("entry[0].Resource.eec_icresourcedata.name", "睿駿", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.birthDate, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.birthDate, new { htmlAttributes = new { @class = "form-control", @Value = "2023-08-21" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.birthDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.gender, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.eec_icresourcedata.gender, new SelectList(Enum.GetValues(typeof(Gender))),
+                                   "選擇性別", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.gender, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.identifier, new { htmlAttributes = new { @class = "form-control", @Value = "A123456789" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.identifier, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            // Create Encounter
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">III.Encounter</h5>
+                            </div>
+
+                            <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.en_identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @*<div class="editor-label"><label for="en_identifier_Type">Type</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="en_identifier_Type" name="entry[0].Resource.eec_icresourcedata.en_identifier.code_display" type="text" value="救災救護指揮中心指派案號"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.en_identifier.code_display" data-valmsg-replace="true"></span></div>*@
+                                <div class="editor-label"><label for="en_identifier_System">System</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="en_identifier_System" name="entry[0].Resource.eec_icresourcedata.en_identifier[0].code_system" type="text" value="https://www.vghtpe.gov.tw/Index.action"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.en_identifier[0].code_system" data-valmsg-replace="true"></span></div>
+                                <div class="editor-label"><label for="en_identifier_Value">Value</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="en_identifier_Value" name="entry[0].Resource.eec_icresourcedata.en_identifier[0].code_text" type="text" value="20221024100320001"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.en_identifier[0].code_text" data-valmsg-replace="true"></span></div>
+                            </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.en_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.eec_icresourcedata.en_status, new SelectList(Enum.GetValues(typeof(Encounter_Status))),
+                                   "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.en_status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            @Html.Hidden("entry[0].Resource.eec_icresourcedata.enc_subject", "Patient/7")
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.en_class, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                <div class="editor-label"><label for="en_class_System">System</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="en_class_system" name="entry[0].Resource.eec_icresourcedata.en_class.code_system" type="text" value="http://terminology.hl7.org/CodeSystem/v3-ActCode"> </div>
+                                <div class="editor-label"><label for="en_class_Code">Code</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="en_class_Code" name="entry[0].Resource.eec_icresourcedata.en_class.code_code" type="text" value="OBSENC"></div>
+                                <div class="editor-label"><label for="en_class_Display">Display</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="en_class_Display" name="entry[0].Resource.eec_icresourcedata.en_class.code_display" type="text" value="observation encounter"> </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.en_participant, htmlAttributes: new { @class = "control-label col-md-4 ItemTitle" })
+
+                                <div class="editor-label"><label for="en_participant_reference">reference</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="en_participant_reference" name="entry[0].Resource.eec_icresourcedata.en_participant" type="text" value="Practitioner/dfa90862-722c-43af-9c60-31e885668d14"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.period, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.period, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local", @Value = "2023-08-21T12:00:00+08:00" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.period, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.serviceProvider, htmlAttributes: new { @class = "control-label col-md-4 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.serviceProvider, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "Organization/917e73f6-d13e-4feb-a4c6-f73141a96ae0" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.serviceProvider, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.en_servicetype, htmlAttributes: new { @class = "control-label col-md-4 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.en_servicetype.code_code, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "01" } })
+                                    @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.en_servicetype.code_system, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "https://www.nhi.gov.tw" } })
+                                    @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.en_servicetype.code_text, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "檢驗科" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.serviceProvider, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                            // Create Organization
+                        <div class="form-group">
+                            <h5 for="myInput" class="TitleLabel">IV.Organization</h5>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.organ_identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                <div class="editor-label"><label for="organ_identifier_Coding">Coding</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="organ_identifier_Coding" name="entry[0].Resource.eec_icresourcedata.organ_identifier.code_system" type="text" value="https://twcore.mohw.gov.tw/fhir/CodeSystem/v2-0203"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.eec_icresourcedata.organ_identifier.code_system" data-valmsg-replace="true"></span></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="organ_identifier_Coding" name="entry[0].Resource.eec_icresourcedata.organ_identifier.code_code" type="text" value="PRN"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.eec_icresourcedata.organ_identifier.code_code" data-valmsg-replace="true"></span></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="organ_identifier_Coding" name="entry[0].Resource.eec_icresourcedata.organ_identifier.code_display" type="text" value="Healthcare Organization Identifier"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.eec_icresourcedata.organ_identifier.code_display" data-valmsg-replace="true"></span></div>
+                                <div class="editor-label"><label for="organ_identifier_Value">Value</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.eec_icresourcedata.organ_identifier.ob_value" value="0601160016" type="text"></div>
+                                <div class="editor-label"><label for="organ_identifier_System">System</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.eec_icresourcedata.organ_identifier.value_system" value="https://ma.mohw.gov.tw" type="text"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.organ_name, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.organ_name, new { htmlAttributes = new { @class = "form-control", @Value = "臺北榮民總醫院,Taipei Veterans General Hospital" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.organ_name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                            // Create Specimen
+                        <div class="form-group">
+                            <h5 for="myInput" class="TitleLabel">V.Specimen</h5>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.spe_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                <div class="editor-label"><label for="spe_code_System">System</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="spe_code_System" name="entry[0].Resource.eec_icresourcedata.spe_code.code_system" type="text" value="https://snomed.info"> </div>
+                                <div class="editor-label"><label for="spe_code_Code">Code</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="spe_code_Code" name="entry[0].Resource.eec_icresourcedata.spe_code.code_code" type="text" value="49852007"></div>
+                                <div class="editor-label"><label for="spe_code_Display">Display</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="spe_code_Display" name="entry[0].Resource.eec_icresourcedata.spe_code.code_display" type="text" value="Structure of median cubital vein (body structure)"> </div>
+                                <div class="editor-label"><label for="spe_code_Display">Text</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="spe_code_Text" name="entry[0].Resource.eec_icresourcedata.spe_code.code_text" type="text" value="靜脈"> </div>
+                            </div>
+                        </div>
+                            //spe_subject
+
+                            // Create Observation
+                        <div class="form-group">
+                            <h5 for="myInput" class="TitleLabel">VI.Observation</h5>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.ob_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.DropDownListFor(model => model.entry[0].Resource.eec_icresourcedata.ob_status, new SelectList(Enum.GetValues(typeof(Obser_Status))),
+                                      "請選擇", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.ob_status, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.effectivePeriod_star, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.effectivePeriod_star, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local", @Value = "2023-08-21T09:00" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.effectivePeriod_star, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.effectivePeriod_end, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.effectivePeriod_end, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local", @Value = "2023-08-21T09:00" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.effectivePeriod_end, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.ob_identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                <div class="editor-label"><label for="ob_identifier_System">System</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="ob_identifier_System" name="entry[0].Resource.eec_icresourcedata.ob_identifier.code_system" value="http://terminology.hl7.org/CodeSystem/v3-SpecimenType" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.ob_identifier.code_system" data-valmsg-replace="true"></span></div>
+                                <div class="editor-label"><label for="ob_identifier_Code">Code</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="ob_identifier_Code" name="entry[0].Resource.eec_icresourcedata.ob_identifier.code_code" value="BLD" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.ob_identifier.code_code" data-valmsg-replace="true"></span></div>
+                                <div class="editor-label"><label for="ob_identifier_Display">Display</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="ob_identifier_Display" name="entry[0].Resource.eec_icresourcedata.ob_identifier.code_display" value="Whole blood" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.ob_identifier.code_display" data-valmsg-replace="true"></span></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.ob_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                <div class="editor-label"><label for="ob_code_System">System</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_System" name="entry[0].Resource.eec_icresourcedata.ob_code.code_system" value="https://twcore.mohw.gov.tw/ig/twcore/CodeSystem/medical-service-payment-tw" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.ob_code.code_system" data-valmsg-replace="true"></span></div>
+                                <div class="editor-label"><label for="ob_code_Code">Code</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_Code" name="entry[0].Resource.eec_icresourcedata.ob_code.code_code" value="08011C" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.ob_code.code_code" data-valmsg-replace="true"></span></div>
+                                <div class="editor-label"><label for="ob_code_Display">Display</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="cob_code_Display" name="entry[0].Resource.eec_icresourcedata.ob_code.code_display" value="全套血液檢查I(八項)" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.ob_code.code_display" data-valmsg-replace="true"></span></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.interpretation, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                <div class="editor-label"><label for="ob_int_System">System</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="ob_int_System" name="entry[0].Resource.eec_icresourcedata.interpretation.code_system" value="https://loinc.org" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.interpretation.code_system" data-valmsg-replace="true"></span></div>
+                                <div class="editor-label"><label for="ob_int_Code">Code</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="ob_int_Code" name="entry[0].Resource.eec_icresourcedata.interpretation.code_code" value="30954-2" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.interpretation.code_code" data-valmsg-replace="true"></span></div>
+                                <div class="editor-label"><label for="ob_int_Display">Display</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="ob_int_Display" name="entry[0].Resource.eec_icresourcedata.interpretation.code_display" value="Relevant diagnostic tests/laboratory data Narrative" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.interpretation.code_display" data-valmsg-replace="true"></span></div>
+                                <div class="editor-label"><label for="ob_int_Text">Text</label></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" id="ob_int_Text" name="entry[0].Resource.eec_icresourcedata.interpretation.code_text" value="Relevant diagnostic tests/laboratory data Narrative" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.interpretation.code_text" data-valmsg-replace="true"></span></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.note, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.note, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "備註" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.note, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.method, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.method.code_code, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "0047" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.method.code_system, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "http://terminology.hl7.org/CodeSystem/v3-ObservationMethod" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.method.code_display, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "Automated count" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.method, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.ob_bodycode, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.ob_bodycode.code_code, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "49852007" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.ob_bodycode.code_system, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "https://snomed.info/sct" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.ob_bodycode.code_display, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "Structure of median cubital vein (body structure)" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.ob_bodycode, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.specimen, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.specimen, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "Specimen/8abb0ce3-52df-c38b-dcce-0547359ed116" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.specimen, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                            //encounter、subject
+                        <div class="form-group component_item">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.component, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.component[0].Code.Coding[0].Code, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "6690-2" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.component[0].Code.Coding[0].System, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "https://loinc.org" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.component[0].Code.Coding[0].Display, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "Leukocytes [#/volume] in Blood by Automated count" } })
+                                <p></p>
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.component[0].Code.Coding[1].Code, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "0047" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.component[0].Code.Coding[1].System, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "http://terminology.hl7.org/CodeSystem/v3-ObservationMethod" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.component[0].Code.Coding[1].Display, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "Automated count" } })
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 ItemTitle">實際劑量</label>
+                            <div class="col-md-10">
+                                <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.eec_icresourcedata.Code_value.value" type="number" value="7.33"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.Code_value.ob_value" data-valmsg-replace="true"></span></div>
+                                <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.eec_icresourcedata.Code_value.unit" type="text" value="10^3/ul"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.eec_icresourcedata.Code_value.unit" data-valmsg-replace="true"></span></div>
+                                @*@Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.component[0].Value.Unit, "", new { @class = "text-danger" })*@
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 ItemTitle">劑量範圍</label>
+                            <div class="col-md-10">
+                                <label class="control-label col-md-2 ItemTitle">Low</label>
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.ob_range.Low, new { htmlAttributes = new { @class = "form-control", @type = "number", @Value = "3.8" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.ob_range.unit, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "10^3/ul", @readonly = "readonly" } })<br />
+                                <label class="control-label col-md-2 ItemTitle">High</label>
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.ob_range.High, new { htmlAttributes = new { @class = "form-control", @type = "number", @Value = "10.0" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.ob_range.unit, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "10^3/ul", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.specimen, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <h5 for="myInput" class="TitleLabel">VII.Composition</h5>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.com_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.DropDownListFor(model => model.entry[0].Resource.eec_icresourcedata.com_status, new SelectList(Enum.GetValues(typeof(Composition_Status))),
+                                                                 "請選擇", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.com_status, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.com_type, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.com_type.code_code, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "11502-2" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.com_type.code_system, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "https://loinc.org" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.com_type.code_display, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "Laboratory report" } })
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.com_type.code_text, new { htmlAttributes = new { @class = "form-control", @type = "text", @Value = "檢驗檢查" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.com_type, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.com_title, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.com_title, new { htmlAttributes = new { @class = "form-control", @Value = "EEC_IC" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.com_title, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.entry[0].Resource.eec_icresourcedata.com_date, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.entry[0].Resource.eec_icresourcedata.com_date, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local", @Value = "2023-08-21T09:00" } })
+                                @Html.ValidationMessageFor(model => model.entry[0].Resource.eec_icresourcedata.com_date, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        //subject、encounter、author
+
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="Create" class="btn btn-info" />
+                            </div>
+                        </div>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-info" })
+    </div>
+</div>

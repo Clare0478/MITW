@@ -2,15 +2,26 @@
 @{
     ViewBag.Title = "Index";
     string FHIR_url = "";
-    if (Request.Cookies["FHIR_url"] != null)
+    if (Session["FhirServerUrl"] as string != null)
+    {
+        FHIR_url = Session["FhirServerUrl"] as string;
+    }
+    else// (Request.Cookies["FHIR_url"] != null)
     {
         FHIR_url = Request.Cookies["FHIR_url"].Value;
     }
+
     string FHIR_Token = "";
-    if (Request.Cookies["FHIR_Token"] != null)
+    if (Session["Token"] as string != null)
     {
-        FHIR_Token = Request.Cookies["FHIR_Token"].Value;
+        FHIR_Token = Session["Token"] as string;
     }
+    else //(Request.Cookies["FHIR_Token"] != null)
+    {
+        FHIR_Token = Request.Cookies["FHIR_Token"].Value;//Request.Cookies["FHIR_Token"].Value;
+    }
+
+
     if (TempData["message"] != null)
     {
         <script type="text/javascript">
@@ -18,6 +29,15 @@
         alert(message);
         </script>
     }
+    //舊登入
+    //Request.QueryString查詢URL裡?後面的部分，如果存在該參數名的資料就為true
+    //bool isLoggedIn = Request.QueryString["isLoggedIn"] == "True";
+    //if (!isLoggedIn)
+    //{
+    //    FHIR_url = "";
+    //    FHIR_Token = "";
+
+    //}
 }
 @section Styles{
     @*<link href="~/Content/datatables.min.css" rel="stylesheet" />*@
@@ -42,7 +62,14 @@
         <div class="card">
             <div class="card-header">
                 <h5><b>Server Link & Resource</b></h5>
-                <a href="~/Home/Index2">進階搜尋</a>
+                <div class="row">
+                    <div class="col-md-2 col-sm-3">
+                        <a href="~/Home/Index2">進階搜尋</a>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary" id="GetToken_btn" type="button" style="font-size: 12px; width: 100px; display: none;margin-top:-20px")>Get Token</button>
+                    </div>
+                </div>
             </div>
             <div class="card-block">
                 <div class="row">
@@ -59,29 +86,41 @@
                             <div class="col">
                                 <label for="inputPassword4">Token / IBM (Account:Password)</label>
                                 <div class="input-group mb-3">
+                                    @{
+                                        string setreadonly = !(string.IsNullOrEmpty(Convert.ToString(Session["UserName"]))) ? "readonly" : "";
+                                    }
                                     <input type="text" id="FHIR_Token" name="token" class="form-control" placeholder="token" value="@FHIR_Token">
                                     <div class="input-group-append">
-                                        <button class="btn btn-primary" id="Connect_btn" type="button">連線</button>
+                                        <button class="btn btn-primary" id="Connect_btn" type="button">連線</button>@* @(isLoggedIn ? "" : "disabled")*@
                                     </div>
                                 </div>
                             </div>
-
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label id="Smart_Clientid_Name">Client ID</label>
+                                <input type="url" id="Smart_Clientid" name="Smart_Clientid" class="form-control" placeholder="">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="ResourceSelect">Resource</label>
-                            <select class="form-control" id="ResourceSelect" name="resource">
-                                <option>Patient</option>
+                            <select class="form-control" id="ResourceSelect" name="resource"  value="@ViewBag.SelectedResourceType" >
+                                <!--<option>Patient</option>-->
                                 @*<option>Practitioner</option>*@
-                                <option>Encounter</option>
+                                <!--<option>Encounter</option>
                                 <option>Observation</option>
                                 <option>Procedure</option>
-                                <option>Condition</option>
+                                <option>Condition</option>-->
                                 @*<option>Medication</option>*@
-                                <option>MedicationRequest</option>
-                                <option>Composition</option>
+                                <!--<option>MedicationRequest</option>
+                                <option>Composition</option>-->
                                 @*<option>MedicationAdministration</option>*@
                                 @*<option>DiagnosticReport</option>
-                                <option>ServiceRequest</option>*@
+                                    <option>ServiceRequest</option>*@
+                                @foreach (var resourceType in ViewBag.ResourceTypes)
+                                { 
+                                    <option>@resourceType</option>
+                                }
                             </select>
                         </div>
                         @*}*@
@@ -146,7 +185,7 @@
     <script src="~/Scripts/FixedHeader/js/dataTables.fixedHeader.min.js"></script>
     <script type="text/javascript">
         var baseSiteURL = '@Url.Content("~/")';
-        var isbundle = false;
+        var isbundle = "null";
         var sele = null;
 
         @*取得SearchParameter 的json檔案 *@
@@ -159,8 +198,10 @@
                     //    $('#' + tag_id).tagsinput('add', this.value);
                 }
             });
+
         /*new_start 進階搜索選項配合下拉*/
-        var parameter_json = [
+        var parameter_json = [];
+        var parameter_json1 = [
             {
                 "resource": "Patient",
                 "searchParameters": [
@@ -525,7 +566,7 @@
                     },
                     {
                         "ch_Name": "醫師identifier",
-                        "parameter_name": "results-interpreter:Practitioner.identifier",
+                        "parameter_name": "results-interpreter:Practitioner.identifier",//這裡要問
                         "selected": false,
                         "input_content": {
                             "type": "text",
@@ -1069,12 +1110,125 @@
                     }
 
                 ]
+            },
+            {
+                "resource": "Composition",
+                "searchParameters": [
+                    {
+                        "ch_Name": "患者identifier",
+                        "parameter_name": "patient.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "就診identifier",
+                        "parameter_name": "encounter.identifier",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "臨床狀態",
+                        "parameter_name": "status",
+                        "selected": false,
+                        "input_content": {
+                            "type": "radio",
+                            "value_list": [
+                                {
+                                    "key": "Registered",
+                                    "value": "registered"
+                                },
+                                {
+                                    "key": "Partial",
+                                    "value": "partial"
+                                },
+                                {
+                                    "key": "Preliminary",
+                                    "value": "preliminary"
+                                },
+                                {
+                                    "key": "Final",
+                                    "value": "final"
+                                },
+                                {
+                                    "key": "Amended",
+                                    "value": "amended"
+                                },
+                                {
+                                    "key": "Corrected",
+                                    "value": "corrected"
+                                },
+                                {
+                                    "key": "Appended",
+                                    "value": "appended"
+                                },
+                                {
+                                    "key": "Cancelled",
+                                    "value": "cancelled"
+                                },
+                                {
+                                    "key": "Entered in Error",
+                                    "value": "entered-in-error"
+                                },
+                                {
+                                    "key": "Deprecated",
+                                    "value": "deprecated"
+                                },
+                                {
+                                    "key": "Unknown",
+                                    "value": "unknown"
+                                }
+                            ],
+                            "value": ""
+                        },
+                        "switched": true
+                    },
+                    {
+                        "ch_Name": "標題",
+                        "parameter_name": "title",
+                        "selected": false,
+                        "input_content": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "switched": true
+                    }
+                ]
             }
         ];
-        SearchParameter(GetUrlToken().resource, null);
-        $("#dropdown_item").on("click", ".dropdown-item", function () {
+        var initialResource = $("#ResourceSelect").val();
+        //console.log("initialResource", initialResource);
+        GetSearchParameters(initialResource);
+        //SearchParameter(GetUrlToken().resource, null);
+        $("#dropdown_item").on("click", ".dropdown-item", function () {//搜尋條件勾選小視窗
             SearchParameter(GetUrlToken().resource, $(this));
         });
+
+        //自動化顯示進階搜尋參數設置(parameter_json)
+        function GetSearchParameters(resourceType) {
+            $.ajax({
+                url:"@Url.Action("GetSearchColumns", "Home")",
+                type: "Get",
+                data: { resourcetype: resourceType },
+                dataType: "json",
+                success: function (data) {
+                    //console.log("parameter_json", data);
+                    parameter_json = data;
+                    //console.log("test", GetUrlToken().resource);
+                    SearchParameter(GetUrlToken().resource, null);
+                },
+                error: function (error) {
+                    console.log("Error:", error);
+                }
+            });
+        }
 
 
         /*new_end*/
@@ -1098,47 +1252,79 @@
         //產生篩選條件的條件區塊
         function SearchParameter(resource, element)
         {
+            //console.log("GET", parameter_json);
             //清空 "篩選條件"的清單
             $("#dropdown_item").empty();
             /*new_start*/
             $("#Parameter").empty();
             /*new_end*/
 
+
+            //根據JSON呈現各篩選條件清單(原版)
+            //$.each(parameter_json, function (i, item) {
+            //    //console.log("item: ",item);
+            //    if (item.resource == resource) {
+            //        //console.log("resource",resource);
+            //        $.each(item.searchParameters, function (i, parameter) {
+            //            //console.log("parameter",parameter);
+
+            //            //判斷篩選條件，在Json結構中的狀態，是否是被勾選狀態
+            //            if (element != null) {
+            //                //console.log(element);
+            //                if (element.text() == parameter.ch_Name) {
+            //                    if (parameter.selected == true)
+            //                        parameter.selected = false;
+            //                    else
+            //                        parameter.selected = true;
+            //                }
+            //            }
+            //            //建立篩選條件區塊
+            //            ParameterCreate(parameter);
+
+            //            //新增 篩選條件清單中的 項目
+            //            $("#dropdown_item").append(
+            //                $("<a/>", { "class": "dropdown-item" + (parameter.selected == true ? " dropdown-item-checked" : ""), "href": "#!", "text": parameter.ch_Name })
+            //            );
+            //            //console.log($("#dropdown_item").html());
+            //        });
+            //    }
+            //});
+
             //根據JSON呈現各篩選條件清單
-            $.each(parameter_json, function (i, item) {
-                //console.log(item);
-                if (item.resource == resource)
-                {
-                    //console.log(resource);
-                    $.each(item.searchParameters, function (i, parameter) {
-                        //console.log(parameter);
 
-                        //判斷篩選條件，在Json結構中的狀態，是否是被勾選狀態
-                        if (element != null) {
-                            //console.log(element);
-                            if (element.text() == parameter.ch_Name) {
-                                if (parameter.selected == true)
-                                    parameter.selected = false;
-                                else
-                                    parameter.selected = true;
-                            }
+            if (parameter_json.resource == resource)
+            {
+                //console.log("resource",resource);
+                $.each(parameter_json.searchParameters, function (i, parameter) {
+                    //console.log("parameter",parameter);//返回每個要查詢的值的設定內容
+
+                    //判斷篩選條件，在Json結構中的狀態，是否是被勾選狀態
+                    if (element != null) {
+                        //console.log(element);//項目選擇
+                        if (element.text() == parameter.ch_Name) {
+                            if (parameter.selected == true)
+                                parameter.selected = false;
+                            else
+                                parameter.selected = true;
                         }
-                        //建立篩選條件區塊
-                        ParameterCreate(parameter);
+                    }
+                    //建立篩選條件區塊
+                    ParameterCreate(parameter);
 
-                        //新增 篩選條件清單中的 項目
-                        $("#dropdown_item").append(
-                            $("<a/>", { "class": "dropdown-item" + (parameter.selected == true ? " dropdown-item-checked":""), "href": "#!", "text": parameter.ch_Name})
-                        );
-                        //console.log($("#dropdown_item").html());
-                    });
-                }
-            });
+                    //新增 篩選條件清單中的 項目
+                    $("#dropdown_item").append(
+                        $("<a/>", { "class": "dropdown-item" + (parameter.selected == true ? " dropdown-item-checked":""), "href": "#!", "text": parameter.ch_Name})
+                    );
+                    //console.log($("#dropdown_item").html());
+                });
+            }
         }
 
-        //搜尋條件 - 建立搜尋條件物件
+        //搜尋條件 - 建立搜尋條件物件(勾選選項後跑出的搜索輸入框)
         function ParameterCreate(searchParameter)
         {
+            //console.log("searchParameter.switched", searchParameter.switched);
+            //console.log("searchParameter", searchParameter);
             var param_div = $("<div/>", { "class": "col-sm-6", "id": (searchParameter.parameter_name) }).append([
                 $("<div/>", { "class": "card text-white bg-secondary" }).append([
                     $("<div/>", { "class": "card-header d-flex justify-content-between align-items-center" }).append([
@@ -1216,12 +1402,18 @@
             }
             else if ($("#" + searchParameter.parameter_name).length != 0 && !searchParameter.selected)
             {
+                console.log("close");
                 $("#" + searchParameter.parameter_name).remove();
             }
         }
 
         //連線按鈕
         $("#Connect_btn").on("click", function () {
+            var selectedResource = $("#ResourceSelect").val();
+            GetSearchParameters(selectedResource);
+            SearchParameter(selectedResource, $(this));
+            //console.log("selectedResource", $("#ResourceSelect").val());
+
             switch ($("#ResourceSelect").val()) {
                 case "Patient": Patient(); break;
                 case "Practitioner": Practitioner(); break;
@@ -1235,6 +1427,7 @@
                 //case "MedicationAdministration": MedicationAdministration(); break; //還沒建置
                 case "DiagnosticReport": DiagnosticReport(); break;
                 case "ServiceRequest": ServiceRequest(); break;
+                default: GetResourceTypeInfo(selectedResource); break;
             }
         });
 
@@ -1242,7 +1435,7 @@
         $("#search_form").submit(function () {
             //console.log($(this).find("div.card-body:not([type=date])").find("input, select").serialize());
             var search_query = $(this).find("div.card-body:not([type=date],[disabled=disabled])").find("input, select").serialize();
-            //console.log(search_query);
+            console.log("search_query",search_query);
             //送出有被勾選的資料
             $(this).find("div.card-body[type=date]:not([disabled=disabled])").find(".form-row").each(function (i) {
                 if ($(this).find("input[type=checkbox]").is(":checked"))
@@ -1265,11 +1458,11 @@
                 case "Condition": Condition(search_query); break;
                /* case "Medication": Medication(); break;*/ //還沒建置
                 case "MedicationRequest": MedicationRequest(search_query); break;
-                case "Composition": Composition(); break;
+                case "Composition": Composition(search_query); break;
                 //case "MedicationAdministration": MedicationAdministration(); break; //還沒建置
                 case "DiagnosticReport": DiagnosticReport(search_query); break;
                 case "ServiceRequest": ServiceRequest(search_query); break;
-
+                default: GetResourceTypeInfo(search_query); break;
             }
             return false;
         });
@@ -1289,30 +1482,29 @@
         //SWITCH功能-同時更新JSON
         $("#Parameter").on("change", "input[type='checkbox'][switch]", function () {
             var radio = $(this);
+            console.log("radio");
             var parameter_name = $(this).attr('id').split('_')[0];
-            //console.log(parameter_name);
-            $.each(parameter_json, function (i, item) {
-                if (item.resource == GetUrlToken().resource)
-                {
-                    //console.log(item);
-                    $.each(item.searchParameters, function (i, obj) {
-                        //console.log(obj);
-                        if (obj.parameter_name == parameter_name) {
-                            console.log(radio.is(':checked'));
-                            if (radio.is(':checked')) {
-                                obj.switched = true;
-                                radio.parents("div.col-sm-6").find("div.card-body").removeAttr("disabled")
-                                //console.log(obj);
-                            }
-                            else {
-                                obj.switched = false;
-                                radio.parents("div.col-sm-6").find("div.card-body").attr("disabled", "true")
-                                //console.log(obj);
-                            }
+            console.log("change parameter_name: ",parameter_name);
+
+            if (parameter_json.resource == GetUrlToken().resource) {
+                //console.log(item);
+                $.each(parameter_json.searchParameters, function (i, obj) {
+                    //console.log(obj);
+                    if (obj.parameter_name == parameter_name) {
+                        console.log(radio.is(':checked'));
+                        if (radio.is(':checked')) {
+                            obj.switched = true;
+                            radio.parents("div.col-sm-6").find("div.card-body").removeAttr("disabled")
+                            //console.log("true",obj);
                         }
-                    });
-                }
-            });
+                        else {
+                            obj.switched = false;
+                            radio.parents("div.col-sm-6").find("div.card-body").attr("disabled", "true")
+                            //console.log("false",obj);
+                        }
+                    }
+                });
+            }
         });
 
         $('#cutomerTable').tooltip({
@@ -1321,12 +1513,15 @@
         });
 
         //預設先執行Patient表單
-        Patient();
+        //Patient();
 
         //Resource下拉表單更動
         $("#ResourceSelect").on("change", function () {
             $("#Parameter").empty();
-            SearchParameter(GetUrlToken().resource, null)
+            //SearchParameter(GetUrlToken().resource, null)
+            var selectedResource = $(this).val();
+            GetSearchParameters(selectedResource);
+
             switch ($(this).val())
             {
                 case "Patient": Patient(); break;
@@ -1341,8 +1536,77 @@
                 //case "MedicationAdministration": MedicationAdministration(); break; //還沒建置
                 case "DiagnosticReport": DiagnosticReport(); break;
                 case "ServiceRequest": ServiceRequest(); break;
+                //根據選取字串動態生成欄位
+                default: GetResourceTypeInfo(); break;
             }
         });
+
+        function GetResourceTypeInfo(search)
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            //console.log(search);
+            if (search != null && search != "") {
+                data["search"] = search;
+                //console.log(data);
+            }
+            resourceType = data.resource;
+            var requiredColumns = [];
+
+            $.ajax({
+                url: "@Url.Action("GetRequiredColumnsForData", "Home")",
+                data: { resourceType: resourceType },
+                type: "Get",
+                dataType: "json",
+                success: function (response) {
+                    //console.log("123" + response);
+                    requiredColumns = response;//後端獲取必填欄位名稱
+                    var tableColumns = [
+                        { "data": "id", "name": "id", "title": "id" }
+                    ];
+
+                    //根據必填欄位名稱動態生成DataTable欄位
+                    for (var i = 0; i < requiredColumns.length; i++) {
+                        var columnName = requiredColumns[i];
+                        tableColumns.push({ "data": columnName, "name": columnName, "title": columnName });
+                    }
+
+                    // 保留 id 欄位的相關設定
+                    tableColumns.push({
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('text-center');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    });
+
+                    var table = $("#cutomerTable").DataTable({
+                        "searching": false,
+                        "fixedHeader": true,
+                        "proccessing": true,
+                        "serverSide": true,
+                        "ajax": {
+                            "url": "@Url.Action("GetResource", "Home")",
+                            "type": "POST",
+                            "data": data,
+                            "datatype": "json",
+                            "error": function () {
+                                alert("連線失敗，請檢查伺服器資料");
+                            }
+                        },
+                        "columnDefs": [{
+                            "targets": '_all',
+                            "defaultContent": ""
+                        }],
+                        "columns": tableColumns //動態欄位
+                    });
+                }
+            })
+
+
+        }
 
         //重建表單
         function ReBuilddatatable()
@@ -1361,7 +1625,7 @@
             //console.log(search);
             if (search != null && search != "") {
                 data["search"] = search;
-                //console.log(data);
+                console.log(search);
             }
 
             var table = $("#cutomerTable").DataTable({
@@ -1374,13 +1638,18 @@
                     "type": "POST",
                     "data": data,
                     "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
                     "defaultContent": ""
                 }],
                 "columns": [
-                    { "data": "id", "name": "id", "title": "id"},
+                    { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
                     { "data": "identifier[, ].value", "name": "identifier", "title": "Identifier"},
                     { "data": "name[, ].text", "name": "name", "title": "姓名"},
                     { "data": "gender", "name": "gender", "title": "性別"},
@@ -1391,7 +1660,7 @@
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
                             //$(nTd).html('<a class="test btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/?res=' + oData.resourceType + '&id=' + oData.id + '&sele=' + sele + '&isbundle=' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -1418,14 +1687,19 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
                     "defaultContent": ""
                 }],
                 "columns": [
-                    { "data": "id", "name": "id", "title": "id"},
+                    { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
                     { "data": "identifier[, ].value", "name": "identifier", "title": "醫師卡號"},
                     { "data": "name[, ].text", "name": "name", "title": "姓名"},
                     { "data": "gender", "name": "gender", "title": "性別"},
@@ -1435,7 +1709,8 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -1462,7 +1737,10 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
@@ -1470,6 +1748,8 @@
                 }],
                 "columns": [
                     { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
                     { "data": "identifier[, ].value", "name": "identifier", "title": "就醫序號" },
                     {
                         "data": "subject.reference",
@@ -1508,7 +1788,8 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -1535,7 +1816,10 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
@@ -1543,6 +1827,8 @@
                 }],
                 "columns": [
                     { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
                     {
                         "data": "subject.reference",
                         "name": "subject",
@@ -1608,8 +1894,8 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
-                            
+                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -1636,7 +1922,10 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
@@ -1644,6 +1933,8 @@
                 }],
                 "columns": [
                     { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
                     {
                         "data": "status",
                         "name": "status",
@@ -1725,12 +2016,14 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
             });
         }
+
         function Condition(search)
         {
             //重建資料
@@ -1751,7 +2044,10 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
@@ -1759,6 +2055,8 @@
                 }],
                 "columns": [
                     { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
                     {
                         "data": "encounter.reference",
                         "name": "encounter",
@@ -1809,7 +2107,8 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -1836,7 +2135,10 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
@@ -1844,6 +2146,8 @@
                 }],
                 "columns": [
                     { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
                     {
                         "data": "status",
                         "name": "status",
@@ -1863,7 +2167,7 @@
                             if (data != null)
                                 return data != null ? data.split('/')[1] : data;
                             else
-                                return row.medicationCodeableConcept.coding[0].display;
+                                return row.medicationCodeableConcept?.coding[0]?.display;
                         }
                     },
                     {
@@ -1909,7 +2213,8 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -1936,7 +2241,10 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
@@ -1944,7 +2252,17 @@
                 }],
                 "columns": [
                     { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
                     { "data": "identifier.value", "name": "identifier", "title": "Identifier" },
+                    {
+                        "data": "subject.reference",
+                        "name": "subject",
+                        "title": "患者ID",
+                        "render": function (data, type, row, meta) {
+                            return data != null ? data.split('/')[1] : data;
+                        }
+                    },
                     {
                         "data": "title",
                         "name": "title",
@@ -1991,10 +2309,10 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            isbundle = true;
+                            isbundle = "isComposition";
                             //console.log(baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id);
-                            $(nTd).html('<a class="test btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/?res=' + oData.resourceType + '&id=' + oData.id + '&sele=' + sele + '&isbundle=' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
-                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            //$(nTd).html('<a class="test btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/?res=' + oData.resourceType + '&id=' + oData.id + '&sele=' + sele + '&isbundle=' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -2021,7 +2339,10 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
@@ -2029,6 +2350,8 @@
                 }],
                 "columns": [
                     { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
                     {
                         "data": "status",
                         "name": "status",
@@ -2039,7 +2362,56 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                        }
+                    },
+                ]
+            });
+        }
+
+        function Bundle(search)
+        {
+            //重建資料
+            ReBuilddatatable();
+            var data = GetUrlToken();
+            //console.log(search);
+            if (search != null && search != "") {
+                data["search"] = search;
+                //console.log(data);
+            }
+
+            var table = $("#cutomerTable").DataTable({
+                "searching": false,
+                "fixedHeader": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("GetResource", "Home")",
+                    "type": "POST",
+                    "data": data,
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
+                },
+                "columnDefs": [{
+                    "targets": '_all',
+                    "defaultContent": ""
+                }],
+                "columns": [
+                    { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
+                    { "data": "type", "name": "type", "title": "type" },
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            isbundle = "isBundle";
+                            $(nTd).addClass('text-center');
+                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'ResourceInfo/' + oData.resourceType + '/' + oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'ResourceInfo/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -2067,7 +2439,10 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
@@ -2075,6 +2450,8 @@
                 }],
                 "columns": [
                     { "data": "id", "name": "id", "title": "id" },
+                    { "data": "meta.versionId", "name": "versionId", "title": "versionId" },
+                    { "data": "meta.profile[0]", "name": "mata", "title": "mata" },
                     { "data": "identifier[, ].value", "name": "identifier", "title": "申請序號" },
                     {
                         "data": "subject.reference",
@@ -2121,7 +2498,8 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -2148,7 +2526,10 @@
                     "url": "@Url.Action("GetResource", "Home")",
                     "type": "POST",
                     "data": data,
-                    "datatype": "json"
+                    "datatype": "json",
+                    "error": function () {
+                        alert("連線失敗，請檢查伺服器資料");
+                    }
                 },
                 "columnDefs": [{
                     "targets": '_all',
@@ -2205,7 +2586,8 @@
                         "name": "id",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).addClass('text-center');
-                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            //$(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="'+baseSiteURL+'Resource/' + oData.resourceType+'/'+ oData.id + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
+                            $(nTd).html('<a class="btn drp-icon btn-outline-info dropdown-toggle" href="' + baseSiteURL + 'Resource/' + oData.resourceType + '/' + oData.id + '/' + sele + '/' + isbundle + '"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span></a>');
                         }
                     },
                 ]
@@ -2222,6 +2604,103 @@
             data.resource = $("#ResourceSelect").val();
             console.log(data);
             return data;
+        }
+
+        //下拉更改按鈕是否出現
+        var dropdown = document.getElementById("FHIR_Server");
+        var button = document.getElementById("GetToken_btn");
+        $("#Smart_Clientid").prop("hidden", true);
+        $("#Smart_Clientid_Name").prop("hidden", true);
+
+        $("#FHIR_url").change(function () {
+            var selectedValue = dropdown.value;
+            var fhirurl = $("#FHIR_url").val();
+            var clientid = $("#Smart_Clientid").val();
+            console.log(selectedValue);
+
+            if (selectedValue === "Smart" && clientid != "") {
+                console.log("change");
+
+                getToken(fhirurl, clientid);
+                /*button.style.display = "block";*/
+            }
+            else if (selectedValue === "Smart" && clientid == "") {
+                alert("cliend id輸入為空");
+                //$("#FHIR_url").val('');
+            }
+            else {
+                console.log("22");
+                /*button.style.display = "none";*/
+            }
+
+        });
+
+        $("#Smart_Clientid").change(function () {
+            var selectedValue = dropdown.value;
+            var fhirurl = $("#FHIR_url").val();
+            var clientid = $("#Smart_Clientid").val();
+            console.log(clientid);
+
+            if (selectedValue === "Smart" && fhirurl != "" && clientid != "") {
+                console.log("change");
+
+                getToken(fhirurl, clientid);
+            }
+            else if (selectedValue === "Smart" && fhirurl == "") {
+                alert("FHIR Server輸入為空");
+            }
+            else if (clientid == "") {
+                alert("cliend id輸入為空");
+            }
+
+        });
+
+        dropdown.addEventListener("change", function () {
+            var selectedValue = dropdown.value;
+            console.log(selectedValue);
+            $("#FHIR_url").val('');//http://10.20.15.157:4013/v/r4/fhir
+            $("#FHIR_Token").val('');
+
+            if (selectedValue === "Smart") {
+                $("")
+                $("#Smart_Clientid").prop("hidden", false);
+                $("#Smart_Clientid_Name").prop("hidden", false);
+                /*button.style.display = "block";*/
+            } else {
+                $("#Smart_Clientid").val('');
+                $("#Smart_Clientid").prop("hidden", true);
+                $("#Smart_Clientid_Name").prop("hidden", true);
+                /*button.style.display = "none";*/
+            }
+        });
+
+        //取得Token
+        $("#GetToken_btn").click(function () {
+            getToken();
+        });
+
+        function getToken(fhirurl, clientid) {
+            console.log("success:", document.location.hostname);
+            $.ajax({
+                type: "Post",
+                url: "/Account/GetToken",
+                //url: "/Fhir_Demo/Account/GetToken",
+                data: { fhirurl: fhirurl, clientid: clientid},
+                success: function (data) {
+                    if (data != "error") {
+                        console.log("success:", document.location.hostname);
+                        $("#FHIR_Token").val(data);
+                    }
+                    else {
+                        alert("取回Token失敗!");
+                    }
+                },
+                "error": function () {
+                    $("#FHIR_Token").val('');
+                    alert("取回Token失敗!");
+
+                }
+            });
         }
 
         @*$(document).ready(function () {

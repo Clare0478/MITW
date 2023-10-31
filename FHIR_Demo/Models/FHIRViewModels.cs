@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using static Hl7.Fhir.Model.HumanName;
 using static Hl7.Fhir.Model.MedicationAdministration;
 
 namespace FHIR_Demo.Models
@@ -15,6 +16,7 @@ namespace FHIR_Demo.Models
         public string Id { get; set; }
 
         public string meta { get; set; }
+        public NameUse nameuse { get; set; }
         [Required]
         [Display(Name = "名字")]
         public string name { get; set; }
@@ -36,6 +38,9 @@ namespace FHIR_Demo.Models
         [Display(Name = "身分證/病歷號")]
         //[RegularExpression(@"^[A-Z]{1}[A-Da-d1289]{1}[0-9]{8}$", ErrorMessage = "身分證字號錯誤")]
         public string identifier { get; set; }
+
+        [Display(Name = "Identifier Code")]
+        public string identifier_code { get; set; }
 
         //以後要可以多個
         [Display(Name = "連絡電話")]
@@ -151,7 +156,7 @@ namespace FHIR_Demo.Models
     {
         public string Id { get; set; }
 
-        public string meta { get; set; }
+        public Obser_Code_Value meta { get; set; }
 
         [Required]
         [Display(Name = "狀態")]
@@ -162,6 +167,9 @@ namespace FHIR_Demo.Models
 
         [Display(Name = "基於")]
         public string basedOn { get; set; }
+
+        [Display(Name = "連結")]
+        public string performer { get; set; }
 
         [Required]
         [Display(Name = "受試者")]
@@ -181,6 +189,12 @@ namespace FHIR_Demo.Models
         public ObservationViewModel ObservationViewModelMapping(Observation observation)
         {
             this.Id = observation.Id;
+            //if(observation != null && observation.Meta.VersionId != null)
+            //    this.meta.value_code = observation?.Meta?.VersionId;
+            //if (observation.Meta.ProfileElement[0]?.Value != null && observation.Meta.ProfileElement.Count > 0)
+            //{
+            //    this.meta.value_text = observation.Meta.ProfileElement[0]?.Value?.ToString();
+            //}
             this.status = (Obser_Status)observation.Status;
             if (observation.BasedOn.Count > 0)
                 this.basedOn = observation.BasedOn[0].Reference;
@@ -221,7 +235,7 @@ namespace FHIR_Demo.Models
                 for (var i = 0; i < observation.Component.Count; i++)
                 {
                     this.component[i] = new Obser_Code_Value();
-                    if (observation.Component[i].Code.Coding.Count > 0) 
+                    if (observation?.Component[i]?.Code?.Coding.Count > 0) 
                     {
                         //this.component[i].code_display = new ObservationCode().observationCode().
                         //    Where(o => o.code.Contains(observation.Component[i].Code.Coding[0].Code)).FirstOrDefault()?.chinese ?? observation.Component[i].Code.Coding[0].Display ?? "";
@@ -246,12 +260,48 @@ namespace FHIR_Demo.Models
 
     public class Obser_Code_Value
     {
+        [Display(Name = "代碼")]
+        public string code_code { get; set; }
+
+        [Display(Name = "來源網址")]
+        public string code_system { get; set; }
+
         [Display(Name = "檢驗項目")]
         public string code_display { get; set; }
+
+        [Display(Name = "text")]
+        public string code_text { get; set; }
 
         [Display(Name = "數值")]
         public decimal? value { get; set; }
 
+        [Display(Name = "數值")]
+        public object ob_value { get; set; }
+
+        [Display(Name = "單位")]
+        public string unit { get; set; }
+
+        //component
+        [Display(Name = "代碼")]
+        public string value_code { get; set; }
+
+        [Display(Name = "來源網址")]
+        public string value_system { get; set; }
+
+        [Display(Name = "檢驗項目")]
+        public string value_display { get; set; }
+
+        [Display(Name = "檢驗數值")]
+        public string value_text { get; set; }
+
+        [Display(Name = "註記")]
+        public Markdown markdown_text { get; set; }
+    }
+
+    public class ReferenceRange
+    {
+        public decimal Low { get; set; }
+        public decimal High { get; set; }
         public string unit { get; set; }
     }
 
@@ -285,7 +335,7 @@ namespace FHIR_Demo.Models
                     {
                         new Coding
                         {
-                            System = "http://loinc.org",
+                            System = "https://loinc.org",
                             Code = coding_code,
                             Display = coding_display
                         }
@@ -294,7 +344,7 @@ namespace FHIR_Demo.Models
             Value = new Quantity
             {
                 Unit = unit,
-                System = "http://unitsofmeasure.org",
+                System = "https://unitsofmeasure.org",
                 Code = unit,
                 Value = value
             };
@@ -323,7 +373,7 @@ namespace FHIR_Demo.Models
                     {
                         new Coding
                         {
-                            System = "http://loinc.org",
+                            System = "https://loinc.org",
                             Code = coding_code,
                             Display = coding_display
                         }
@@ -332,7 +382,7 @@ namespace FHIR_Demo.Models
             Value = new Quantity
             {
                 Unit = unit,
-                System = "http://unitsofmeasure.org",
+                System = "https://unitsofmeasure.org",
                 Code = unit,
             };
 
@@ -346,7 +396,7 @@ namespace FHIR_Demo.Models
                             {
                                 new Coding
                                 {
-                                    System = "http://loinc.org",
+                                    System = "https://loinc.org",
                                     Code = coding_code_Systolic,
                                     Display = coding_display_Systolic
                                 }
@@ -355,7 +405,7 @@ namespace FHIR_Demo.Models
                     Value = new Quantity
                     {
                         Unit = unit,
-                        System = "http://unitsofmeasure.org",
+                        System = "https://unitsofmeasure.org",
                         Code = unit,
                         Value = value_Systolic
                     }
@@ -368,7 +418,7 @@ namespace FHIR_Demo.Models
                             {
                                 new Coding
                                 {
-                                    System = "http://loinc.org",
+                                    System = "https://loinc.org",
                                     Code = coding_code_Distolic,
                                     Display = coding_display_Distolic
                                 }
@@ -377,7 +427,7 @@ namespace FHIR_Demo.Models
                     Value = new Quantity
                     {
                         Unit = unit,
-                        System = "http://unitsofmeasure.org",
+                        System = "https://unitsofmeasure.org",
                         Code = unit,
                         Value = value_Distolic
                     }
@@ -387,18 +437,18 @@ namespace FHIR_Demo.Models
         }
 
 
-        public ObservationCategory_Value Body_Height(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "3137-7", "Body Height", "cm", value); }
+        public ObservationCategory_Value Body_Height(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "3137-7", "Body height Measured", "cm", value); }
         public ObservationCategory_Value Body_Weight(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "29463-7", "Body Weight", "kg", value); }
         public ObservationCategory_Value Body_Temperature(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8310-5", "Body Temperature", "Cel", value); }
-        public ObservationCategory_Value Blood_Glucose_Post_Meal(decimal? value) { return ObservationCategory_Data("laboratory", "Laboratory", "87422-2", "Blood Glucose Post Meal", "mg/dL", value); }
-        public ObservationCategory_Value Blood_Glucose_Pre_Meal(decimal? value) { return ObservationCategory_Data("laboratory", "Laboratory", "88365-2", "Blood Glucose Pre Meal", "mg/dL", value); }
+        public ObservationCategory_Value Blood_Glucose_Post_Meal(decimal? value) { return ObservationCategory_Data("laboratory", "Laboratory", "87422-2", "Glucose [Mass/volume] in Blood --post meal", "mg/dL", value); }
+        public ObservationCategory_Value Blood_Glucose_Pre_Meal(decimal? value) { return ObservationCategory_Data("laboratory", "Laboratory", "88365-2", "Glucose [Mass/volume] in Blood --pre-meal", "mg/dL", value); }
         public ObservationCategory_Value Percentage_of_body_fat_Measured(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "41982-0", "Percentage of body fat Measured", "%", value); }
         public ObservationCategory_Value Grip_strength_Hand_right_Dynamometer(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "83174-3", "Grip strength Hand - right Dynamometer", "kg", value); }
         public ObservationCategory_Value Oxygen_saturation_in_Arterial_blood_by_Pulse_oximetry(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "59408-5", "Oxygen saturation in Arterial blood by Pulse oximetry", "%", value); }
         public ObservationCategory_Value Heart_Rate(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8867-4", "Heart Rate", "{beats}/min", value); }
-        public ObservationCategory_Value Blood_Pressure_Panel(decimal? value_Systolic, decimal? value_Distolic) { return ObservationCategory_Data("vital-signs", "Vital Signs", "35094-2", "Blood Pressure Panel", "mmHg", "8480-6", "Systolic Blood Pressure", value_Systolic, "8462-4", "Distolic Blood Pressure", value_Distolic); }
+        public ObservationCategory_Value Blood_Pressure_Panel(decimal? value_Systolic, decimal? value_Distolic) { return ObservationCategory_Data("vital-signs", "Vital Signs", "35094-2", "Blood Pressure Panel", "mmHg", "8480-6", "Systolic Blood Pressure", value_Systolic, "8462-4", "Diastolic Blood Pressure", value_Distolic); }
         public ObservationCategory_Value Systolic_Blood_Pressure(decimal? value_Systolic) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8480-6", "Systolic Blood Pressure", "mmHg", value_Systolic); }
-        public ObservationCategory_Value Distolic_Blood_Pressure(decimal? value_Distolic) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8462-4", "Distolic Blood Pressure", "mmHg", value_Distolic); }
+        public ObservationCategory_Value Distolic_Blood_Pressure(decimal? value_Distolic) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8462-4", "Diastolic Blood Pressure", "mmHg", value_Distolic); }
 
         public ObservationCategory_Value Heart_Rate_EMS(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "8889-8", "Heart rate by Pulse oximeter", "{beats}/min", value); }
         public ObservationCategory_Value Respiratory_Rate_EMS(decimal? value) { return ObservationCategory_Data("vital-signs", "Vital Signs", "9279-1", "Respiratory Rate", "{breaths}/min", value); }
@@ -406,6 +456,15 @@ namespace FHIR_Demo.Models
         public ObservationCategory_Value Glucose_in_Blood_EMS(decimal? value) { return ObservationCategory_Data("laboratory", "Laboratory", "2339-0", "Glucose [Mass/volume] in Blood", "mg/dL", value); }
 
 
+    }
+
+    public class Encounter_Participant_Code
+    {
+        [Display(Name = "人員連結")]
+        public string en_reference { get; set; }
+
+        [Display(Name = "人員")]
+        public string en_display { get; set; }
     }
 
     public class MedicationRequestViewModel

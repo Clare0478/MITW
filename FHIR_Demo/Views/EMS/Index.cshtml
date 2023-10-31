@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FHIR_Demo.Models.PatientViewModel>
+﻿@model IEnumerable<FHIR_Demo.Models.BundleModel>
 @using FHIR_Demo.Models;
 @{
     ViewBag.Title = "Index";
@@ -41,13 +41,6 @@
                         }
                         <hr>
                         <div class="table-border-style" id="ajaxTargetDiv">
-                            @*@if (!string.IsNullOrEmpty(ViewBag.AlertMessage))
-                                {
-                                    <script type="text/javascript">
-                                       alert("@ViewBag.AlertMessage");
-                                       ViewBag.AlertMessage = "";
-                                    </script>
-                                }*@
                             @if (ViewBag.status != null)
                             {
                                 <div class="alert alert-success" role="alert">
@@ -73,37 +66,22 @@
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.name)
+                                                    @Html.DisplayNameFor(model => model.Id)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.birthDate)
+                                                    @Html.DisplayNameFor(model => model.Meta)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:5%">
                                                     @Html.DisplayNameFor(model => model.identifier)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.telecom)
+                                                    @Html.DisplayNameFor(model => model.type)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:10%">
-                                                    @Html.DisplayNameFor(model => model.address)
-                                                </th>
-                                                <th class="text-center align-middle" style="width:15%">
-                                                    @Html.DisplayNameFor(model => model.contact_name)
+                                                    @Html.DisplayNameFor(model => model.entry[0].Resource.resourcedata.com_title)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:10%">
-                                                    @Html.DisplayNameFor(model => model.contact_relationship)
-                                                </th>
-                                                <th class="text-center align-middle" style="width:10%">
-                                                    @Html.DisplayNameFor(model => model.contact_telecom)
-                                                </th>
-                                                <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.email)
-                                                </th>
-                                                <th class="text-center align-middle" style="width:5%">
-                                                    @Html.DisplayNameFor(model => model.deceased)
-                                                </th>
-                                                <th class="text-center align-middle" style="width:15%">
-                                                    @Html.DisplayNameFor(model => model.managingOrganization)
+                                                    @Html.DisplayNameFor(model => model.timestamp)
                                                 </th>
                                                 <th class="text-center align-middle" style="width:5%">Action</th>
                                             </tr>
@@ -111,46 +89,46 @@
                                         <tbody>
                                             @foreach (var item in Model)
                                             {
-                                                <tr>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.name)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.birthDate)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.identifier)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.telecom)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.address)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.contact_name)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.contact_relationship)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.contact_telecom)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.email)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.deceased)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @Html.DisplayFor(modelItem => item.managingOrganization)
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        @*@Html.ActionLink("Update", "Update", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })*@
-                                                        @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-secondary btn-sm" })
-                                                        @*@Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })*@
-                                                    </td>
-                                                </tr>
+                                            <tr>
+                                                <td class="text-center align-middle">
+                                                    @Html.DisplayFor(modelItem => item.Id)
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    @Html.DisplayFor(modelItem => item.Meta)
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    @Html.DisplayFor(modelItem => item.identifier)
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    @Html.DisplayFor(modelItem => item.type)
+                                                </td>
+                                                @{
+                                                    bool allComTitleNull = true;
+                                                }
+                                                @for (int i = 0; i < item.entry.Count(); i++)
+                                                {
+                                                    if (item.entry[i].Resource.resourcedata?.com_title != null)
+                                                    {
+                                                        allComTitleNull = false;
+                                                        <th class="text-center align-middle" style="width:10%">
+                                                            @Html.DisplayFor(model => item.entry[i].Resource.resourcedata.com_title)
+                                                        </th>
+                                                    }
+                                                }
+                                                @if (allComTitleNull)
+                                                {
+                                                    <th class="text-center align-middle" style="width:10%">
+                                                    </th>
+                                                }
+                                                <td class="text-center align-middle">
+                                                    @Html.DisplayFor(modelItem => item.timestamp)
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    @*@Html.ActionLink("Update", "Update", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })*@
+                                                    @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-secondary btn-sm" })
+                                                    @*@Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })*@
+                                                </td>
+                                            </tr>
                                             }
                                         </tbody>
                                     </table>

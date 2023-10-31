@@ -1,0 +1,979 @@
+﻿@model FHIR_Demo.Models.EECModels
+@using FHIR_Demo.Models
+@using Hl7.Fhir.Model;
+@using Hl7.Fhir.Serialization;
+
+@{
+    ViewBag.Title = "EEC_IC - Details";
+    List<ObservationViewModel> Obser_view = ViewBag.Obser_view;
+
+}
+
+<style>
+    .horizontal-table th, .horizontal-table td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .dd-container {
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 50%;
+    }
+</style>
+
+<h2>Details</h2>
+
+<div>
+    <h4>EEC_出院病摘 - Record</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Meta)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Meta)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.identifier)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.identifier.code_code)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.type)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.type)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.timestamp)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.timestamp)
+        </dd>
+
+    </dl>
+    @foreach (var val in Model.entry)
+    {
+        if (val.Resource.resourceType == "Patient")
+        {
+            <hr />
+            <h6>Patient</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.pat_id)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.pat_id)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.name)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.name)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.familyname)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.familyname)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.givename)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.givename)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.birthDate)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.birthDate)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.gender)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.gender)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.identifier)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.identifier)
+                </dd>
+
+
+            </dl>
+        }
+
+        else if (val.Resource.resourceType == "Organization")
+        {
+            <hr />
+            <h6>Organization</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                @foreach (var org in val.Resource.eec_icresourcedata.EEC_DMS_Organization)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].org_id)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].org_id)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].organ_identifier)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].organ_identifier.code_system)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].organ_identifier.code_code)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].organ_identifier.code_display)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].organ_identifier.code_text)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].organ_identifier.ob_value)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].organ_identifier.value_system)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].organ_name)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Organization[0].organ_name)
+                        </dd>
+                    }
+
+            </dl>
+
+        }
+
+        else if (val.Resource.resourceType == "Location")
+        {
+            <hr />
+            <h6> Location </h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    Location Id
+                </dt>
+                <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.loc_id)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.loc_iden)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.loc_iden.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.loc_iden.code_code)
+                </dd>
+            </dl>
+
+        }
+
+        else if (val.Resource.resourceType == "Practitioner")
+            {
+                <hr />
+                <h6>Practitioner</h6>
+                <hr />
+                <dl class="dl-horizontal">
+                    @foreach (var pra in val.Resource.eec_icresourcedata.practitioners)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => pra.pra_id)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => pra.pra_id)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => pra.pra_name)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => pra.pra_name)
+                        </dd>
+                    }
+                </dl>
+            }
+
+        else if (val.Resource.resourceType == "Encounter")
+        {
+            <hr />
+            <h6>Encounter</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.enc_id)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.enc_id)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.en_identifier)
+                </dt>
+                <dd>
+                    @foreach (var idenvalue in val.Resource.eec_icresourcedata.en_identifier)
+                    {
+                        @Html.DisplayFor(model => idenvalue.code_text)<br />
+                        @Html.DisplayFor(model => idenvalue.code_system)<br />
+                        @Html.DisplayFor(model => idenvalue.code_display)
+                        <p></p>
+                    }
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.en_status)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.en_status)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.en_class)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.en_class.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.en_class.code_code)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.en_class.code_display)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.en_participant)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.en_participant)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.period)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.period)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.serviceProvider)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.serviceProvider)
+                </dd>
+                @if (val.Resource.eec_icresourcedata.en_servicetype != null)
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.en_servicetype)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.en_servicetype.code_system)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.en_servicetype.code_code)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.en_servicetype.code_display)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.en_servicetype.code_text)
+                    </dd>
+                }
+
+            </dl>
+
+        }
+
+        else if (val.Resource.resourceType == "Procedure")
+            {
+                <hr />
+                <h6> Procedure </h6>
+                <hr />
+                <dl class="dl-horizontal">
+                    @foreach (var pro in val.Resource.eec_icresourcedata.EEC_DMS_Procedure)
+                    {
+                        <dt>
+                            Procedure Id
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_id)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_idenDetail)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_idenDetail.FirstOrDefault().code_system)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_idenDetail.FirstOrDefault().code_display)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_subject)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_subject)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_status)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_status)
+                        </dd>
+
+                        if (val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_performed != null)
+                        {
+                            <dt>
+                                @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_performed)
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_performed)
+                            </dd>
+                        }
+
+                        if (val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_performer != null)
+                        {
+                            <dt>
+                                @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_performer)
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_performer)
+                            </dd>
+                        }
+
+                        if (val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_category != null)
+                        {
+                            <dt>
+                                @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_category)
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_category.code_system)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_category.code_code)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_category.code_display)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_category.code_text)
+                            </dd>
+                        }
+                        if (val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_codeDetail != null)
+                        {
+                            <dt>
+                                @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_code)
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_codeDetail.code_system)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_codeDetail.code_code)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_codeDetail.code_display)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_codeDetail.code_text)
+                            </dd>
+                        }
+
+                        if (val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_bodysite != null)
+                        {
+                            <dt>
+                                @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_bodysite)
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_bodysite.code_system)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_bodysite.code_code)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_bodysite.code_display)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_bodysite.code_text)
+                            </dd>
+                        }
+                        if (val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_followUp != null)
+                        {
+                            <dt>
+                                @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_followUp)
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_followUp.FirstOrDefault().code_system)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_followUp.FirstOrDefault().code_code)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_followUp.FirstOrDefault().code_display)<br />
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_followUp.FirstOrDefault().code_text)
+                            </dd>
+                        }
+                        if (val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_noteDetail != null)
+                        {
+                            <dt>
+                                @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_noteDetail)
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMS_Procedure[0].pro_noteDetail)
+                            </dd>
+                        }
+                    }
+
+
+                </dl>
+
+            }
+
+        else if (val.Resource.resourceType == "Condition")
+        {
+            <hr />
+            <h6> Condition </h6>
+            <hr />
+            <dl class="dl-horizontal">
+                @foreach (var con in val.Resource.eec_icresourcedata.EEC_DMSCondition)
+                {
+                    <dt>
+                        Condition Id
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_id)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_iden)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_iden.FirstOrDefault().code_system)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_iden.FirstOrDefault().code_display)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_subject)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_subject)
+                    </dd>
+                    if (val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_verificationStatus != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_verificationStatus)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_verificationStatus.code_system)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_verificationStatus.code_code)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_verificationStatus.code_display)<br />
+
+                        </dd>
+                    }
+                    if (val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_category != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_category)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_category.code_system)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_category.code_code)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_category.code_display)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_category.code_text)
+                        </dd>
+                    }
+                    if (val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_codeDetail != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_codeDetail)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_codeDetail.code_system)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_codeDetail.code_code)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_codeDetail.code_display)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_codeDetail.code_text)
+                        </dd>
+                    }
+
+                    if (val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_clinicalStatus != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_clinicalStatus)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_clinicalStatus.code_system)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_clinicalStatus.code_code)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_clinicalStatus.code_display)
+                        </dd>
+                    }
+                    if (val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_noteDetail != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_noteDetail)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSCondition[0].con_noteDetail)
+                        </dd>
+                    }
+                }
+
+
+            </dl>
+
+        }
+
+        else if (val.Resource.resourceType == "ImagingStudy")
+        {
+            <hr />
+            <h6> ImagingStudy </h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    ImagingStudy Id
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_id)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ima_iden)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_iden.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_iden.code_code)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ima_status)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_status)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ima_subject)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_subject)
+                </dd>
+
+                if (val.Resource.eec_icresourcedata.ima_reffer != null)
+                {
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ima_reffer)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_reffer)
+                </dd>
+                }
+                if (val.Resource.eec_icresourcedata.img_stared != null)
+                {
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.img_stared)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.img_stared)
+                </dd>
+                }
+                if (val.Resource.eec_icresourcedata.ima_reason != null)
+                {
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ima_reason)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_reason.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_reason.code_code)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_reason.code_display)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_reason.code_text)
+                </dd>
+                }
+
+                if (val.Resource.eec_icresourcedata.ima_modality != null)
+                {
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ima_modality)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_modality.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_modality.code_code)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_modality.code_display)
+                </dd>
+                }
+                if (val.Resource.eec_icresourcedata.ima_bodysite != null)
+                {
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ima_bodysite)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_bodysite.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_bodysite.code_code)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ima_bodysite.code_display)
+                </dd>
+                }
+
+            </dl>
+
+        }
+
+        else if (val.Resource.resourceType == "Media")
+        {
+            <hr />
+            <h6> Media </h6>
+            <hr />
+            <dl class="dl-horizontal">
+                @foreach (var media in val.Resource.eec_icresourcedata.EEC_DMSMedia)
+                {
+                    <dt>
+                        Media Id
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].media_id)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_iden)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_iden.code_system)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_iden.code_code)
+                    </dd>
+
+                    if (val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_subject != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_subject)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_subject)
+                        </dd>
+                    }
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_Status)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_Status)
+                    </dd>
+
+                    if (val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_type != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_type)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_type.code_system)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_type.code_code)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_type.code_display)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_type.code_text)
+                        </dd>
+                    }
+
+                    if (val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_modality != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_modality)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_modality.code_system)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_modality.code_code)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_modality.code_display)<br />
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_modality.code_text)
+                        </dd>
+                    }
+
+                    if (val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_contentType != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_contentType)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_contentType)
+                        </dd>
+                    }
+                    if (val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_title != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_title)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.eec_icresourcedata.EEC_DMSMedia[0].med_title)
+                        </dd>
+                    }
+
+                    
+                }
+
+
+            </dl>
+
+        }
+
+        else if (val.Resource.resourceType == "Observation")
+        {
+            <hr />
+            <h6>Observation</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.obs_id)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.obs_id)
+                </dd>
+
+                @if (val.Resource.eec_icresourcedata.ob_identifier != null)
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ob_identifier)
+                    </dt>
+                    <dd>
+                        @foreach (var obiden in val.Resource.eec_icresourcedata.en_identifier)
+                        {
+                            @Html.DisplayFor(model => obiden.code_system)<br />
+                            @Html.DisplayFor(model => obiden.code_display)<br />
+                            @Html.DisplayFor(model => obiden.code_text)
+                            <p></p>
+                        }
+                    </dd>
+                }
+                @if (val.Resource.eec_icresourcedata.ob_code != null)
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ob_code)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ob_code.code_system)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ob_code.code_code)<br />
+                    </dd>
+                    <dt>
+                        健保代碼名稱@*code_Display*@
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ob_code.code_display)
+                    </dd>
+                    <dt>
+                        健保檢驗項目名稱 Test item Names@*code_Text*@
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ob_code.code_text)
+                    </dd>
+                }
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ob_status)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ob_status)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.effectivePeriod_star)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.effectivePeriod_star)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.effectivePeriod_end)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.effectivePeriod_end)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ob_subject)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ob_subject)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.encounter)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.encounter)
+                </dd>
+
+                @if (val.Resource.eec_icresourcedata.interpretation != null)
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.interpretation)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.interpretation.code_system)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.interpretation.code_code)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.interpretation.code_display)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.interpretation.code_text)
+                        <p></p>
+
+                    </dd>
+                }
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.note)
+                </dt>
+                <dd>
+
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.note)
+                </dd>
+
+                @if (val.Resource.eec_icresourcedata.ob_bodycode != null)
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.ob_bodycode)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ob_bodycode.code_system)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ob_bodycode.code_code)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ob_bodycode.code_display)<br />
+                        @Html.DisplayFor(model => val.Resource.eec_icresourcedata.ob_bodycode.code_text)
+                        <p></p>
+
+                    </dd>
+                }
+
+            </dl>
+
+            //component
+            <table class="horizontal-table">
+                <thead>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="font-weight-bold">代碼</td>
+                        <td class="font-weight-bold">項目</td>
+                    </tr>
+                    @foreach (var buncomponent in val.Resource.eec_icresourcedata.component)
+                    {
+                        if (buncomponent?.Code?.Coding != null)
+                        {
+                            foreach (var coding in buncomponent?.Code?.Coding)
+                            {
+                                <tr>
+                                    <td>@coding.Code</td>
+                                    <td>@coding.Display</td>
+                                </tr>
+                            }
+                        }
+                    }
+
+
+                    @*<tr>
+                            <td class="font-weight-bold">數值</td>
+                            @foreach (var buncomponent in val.Resource.eec_icresourcedata.component)
+                            {
+
+                                <td>@(buncomponent.Value )</td>
+                            }
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold">單位</td>
+                            @foreach (var buncomponent in val.Resource.eec_icresourcedata.component)
+                            {
+                                if(buncomponent.Value is Quantity quantity)
+                                {
+                                    <td>@(quantity.Unit.ToString())</td>
+                                }
+                            }
+                        </tr>*@
+                </tbody>
+            </table>
+            <p></p>
+            <dl>
+                <dt>數值 (單位)</dt>
+                <dd>
+                    @foreach (var buncomponent in val.Resource.eec_icresourcedata.component)
+                    {
+                        if (buncomponent.Value is Quantity quantity)
+                        {
+                            @($"{quantity.Value.ToString()}  ({quantity.Unit.ToString()})");
+                        }
+                    }
+                </dd>
+                <dt>劑量範圍</dt>
+                <dd>
+                    @foreach (var buncomponent in val.Resource.eec_icresourcedata.component)
+                    {
+                        foreach (var range in buncomponent.ReferenceRange)
+                        {
+                            @($"{range.Low.Value.ToString()} ({range.Low.Unit.ToString()})  ~  {range.High.Value.ToString()}  ({range.High.Unit.ToString()})");
+                        }
+                    }
+                </dd>
+            </dl>
+
+
+        }
+
+        else if (val.Resource.resourceType == "Composition")
+        {
+            <hr />
+            <h6>Composition</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.com_id)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.com_id)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.com_type)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.com_type.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.com_type.code_code)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.com_type.code_display)<br />
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.com_type.code_text)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.com_status)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.com_status)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.com_title)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.com_title)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.com_subject)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.com_subject)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.com_encounter)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.eec_icresourcedata.com_encounter)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.eec_icresourcedata.section)
+                </dt>
+
+                <dd class="dd-container">
+                    @foreach (var sectionval in val.Resource.eec_icresourcedata.section)
+                    {
+                        @Html.DisplayFor(model => sectionval.title)<br />
+                        if (sectionval.section_code.code_code != null)
+                        {
+                            @Html.DisplayFor(model => sectionval.section_code.code_system)<br />
+                            @Html.DisplayFor(model => sectionval.section_code.code_code)<br />
+                            @Html.DisplayFor(model => sectionval.section_code.code_display)<br />
+                        }
+                        foreach (var entryval in sectionval.entry)
+                        {
+                            @Html.DisplayFor(model => entryval)<br />
+                        }
+                        <p></p>
+                        foreach (var twosection in sectionval.section)
+                        {
+                            @Html.DisplayFor(model => twosection.title)
+                            <br />
+                            if (twosection.section_code.code_code != null)
+                            {
+                                @Html.DisplayFor(model => twosection.section_code.code_system)<br />
+                                @Html.DisplayFor(model => twosection.section_code.code_code)<br />
+                                @Html.DisplayFor(model => twosection.section_code.code_display)<br />
+                            }
+                            foreach (var twoentryval in twosection.entry)
+                            {
+                                @Html.DisplayFor(model => twoentryval)<br />
+                            }
+                        }
+                        <p>
+                            <hr class="hr-dashed-fixed" align="left" />
+                        </p>
+                        <p></p>
+                    }
+                </dd>
+            </dl>
+
+        }
+    }
+
+</div>
+<p>
+    @Html.ActionLink("Update", "Update", new { id = Model.Id }) |
+    @Html.ActionLink("Create Bundle", "CreateBundle", new { Patient = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

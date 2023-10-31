@@ -1,4 +1,8 @@
 ﻿<!DOCTYPE html>
+@{
+    //bool isLoggedIn = Request.QueryString["isLoggedIn"] == "True";
+    var isLogin = Request.IsAuthenticated ? "true" : "false";
+    }
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -37,7 +41,7 @@
     <nav class="pcoded-navbar">
         <div class="navbar-wrapper">
             <div class="navbar-brand header-logo">
-                <a href="@Url.Action("Index", "Home")" class="b-brand">
+                <a id="link" href="@Url.Action("Index", "Home")" class="b-brand">
                     <div class="b-bg">
                         <i class="feather icon-trending-up"></i>
                     </div>
@@ -47,37 +51,117 @@
             </div>
             <div class="navbar-content scroll-div">
                 <ul class="nav pcoded-inner-navbar">
-                    <li class="nav-item pcoded-menu-caption">
-                        <label>Home</label>
-                    </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Home" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a href="@Url.Action("Index", "Home")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">REST DashBroad</span></a>
-                    </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Patient" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a href="@Url.Action("Index", "Patient")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">Patient DashBroad</span></a>
-                    </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "EMS" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a href="@Url.Action("Index", "EMS")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">EMS DashBroad</span></a>
-                    </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Observation" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a href="@Url.Action("Index", "Observation")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-clipboard"></i></span><span class="pcoded-mtext">Observation DashBroad</span></a>
-                    </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "MedicationRequest" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a href="@Url.Action("Index", "MedicationRequest")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-shopping-cart"></i></span><span class="pcoded-mtext">MedicationRequest DashBroad</span></a>
-                    </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "MedicationAdministration" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a href="@Url.Action("Index", "MedicationAdministration")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">MedicationAdministration DashBroad</span></a>
-                    </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Immunization" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a href="@Url.Action("Index", "Immunization")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Immunization DashBroad</span></a>
-                    </li>
-                    @*後來新增*@
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Postmanweb" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a href="@Url.Action("Index", "Postmanweb")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Postmanweb DashBroad</span></a>
-                    </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Composition" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a href="@Url.Action("Create", "Composition")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Composition DashBroad</span></a>
-                    </li>
+                    @*登入、註冊*@
+                    @Html.Partial("_LoginPartial")
+                    @if (!string.IsNullOrEmpty(Convert.ToString(Session["UserName"])))
+                    {
+                        <li class="nav-item pcoded-menu-caption">
+                            <label>Home<br />歡迎 @Session["UserName"] 登入!</label>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Home" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "Home")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">REST DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "ServerTakeToken" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "ServerTakeToken")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">ServerTakeToken DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Patient" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "Patient")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">Patient DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "CreateResource" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "CreateResource")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">CreateResource DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "EMS" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "EMS")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">EMS DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "EEC_IC" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "EEC_IC")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">EEC_IC DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "EEC_DMS" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "EEC_DMS")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">EEC_DMS DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "EEC_PMR" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "EEC_PMR")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">EEC_PMR DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Observation" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "Observation")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-clipboard"></i></span><span class="pcoded-mtext">Observation DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "MedicationRequest" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "MedicationRequest")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-shopping-cart"></i></span><span class="pcoded-mtext">MedicationRequest DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "MedicationAdministration" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "MedicationAdministration")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">MedicationAdministration DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Immunization" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "Immunization")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Immunization DashBroad</span></a>
+                        </li>
+                        @*後來新增*@
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Postmanweb" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "Postmanweb")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Postmanweb DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Composition" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Create", "Composition")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Composition DashBroad</span></a>
+                        </li>
+                        @*登入*@
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Account" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("LogOff", "Account")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-log-in"></i></span><span class="pcoded-mtext">LogOut</span></a>
+                        </li>
+
+
+                    }
+                    else
+                    {
+                        <!--<li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Home" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "Home")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">REST DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "ServerTakeToken" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "ServerTakeToken")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">ServerTakeToken DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "CreateResource" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "CreateResource")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">CreateResource DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Patient" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "Patient")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">Patient DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "EMS" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "EMS")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">EMS DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "EEC_IC" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "EEC_IC")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">EEC_IC DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "EEC_DMS" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "EEC_DMS")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">EEC_DMS DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "EEC_PMR" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "EEC_PMR")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user"></i></span><span class="pcoded-mtext">EEC_PMR DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Observation" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "Observation")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-clipboard"></i></span><span class="pcoded-mtext">Observation DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "MedicationRequest" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "MedicationRequest")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-shopping-cart"></i></span><span class="pcoded-mtext">MedicationRequest DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "MedicationAdministration" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "MedicationAdministration")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">MedicationAdministration DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Immunization" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "Immunization")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Immunization DashBroad</span></a>
+                        </li>-->
+                        @*後來新增*@
+                        <!--<li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Postmanweb" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Index", "Postmanweb")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Postmanweb DashBroad</span></a>
+                        </li>
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Composition" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                            <a href="@Url.Action("Create", "Composition")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-check"></i></span><span class="pcoded-mtext">Composition DashBroad</span></a>
+                        </li>-->
+                        @*登入*@
+                        @*<li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Account" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                                <a href="@Url.Action("Register", "Account")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-plus"></i></span><span class="pcoded-mtext">Register</span></a>
+                            </li>
+                            <li class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString()== "Account" & ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                                <a href="@Url.Action("Login", "Account")" class="nav-link "><span class="pcoded-micon"><i class="feather icon-log-in"></i></span><span class="pcoded-mtext">Login</span></a>
+                            </li>*@
+
+                    }
                 </ul>
             </div>
         </div>
@@ -117,7 +201,7 @@
         </div>
 
 
-        <hr class="footer"/>
+        <hr class="footer" />
         <footer>
             <div class="footer-copyright text-center py-3">
                 &copy; @DateTime.Now.Year Copyright: Medical Integration Co., Ltd.
@@ -131,7 +215,23 @@
     <script src="~/Content/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="~/Content/assets/js/pcoded.min.js"></script>
     @*https://codedthemes.com/demos/admin-templates/datta-able/bootstrap/default/tbl_datatable.html*@
-    @RenderSection("scripts", required: false)
+<script type="text/javascript">
+    $(document).ready(function () {
+        var isLogined = @Html.Raw(isLogin);
+        console.log(isLogined);
 
+        $("#link").click(function () {
+            if (isLogined == true) {
+                return true;
+            }
+            else {
+                console.log("123");
+                return false;
+            }
+        });
+    });
+</script>
+    @RenderSection("scripts", required: false)
 </body>
+
 </html>

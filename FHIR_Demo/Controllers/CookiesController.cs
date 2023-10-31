@@ -15,9 +15,9 @@ namespace FHIR_Demo.Controllers
         //public string FHIR_url;
         //public string FHIR_Token;
         //public string FHIR_Server;
-        public string FHIR_url = "https://hapi.fhir.org/baseR4/"; //https://hapi.fhir.org/baseR4/、"http://10.40.8.45:8080/fhir"、"https://10.20.15.157:9443/fhir-server/api/v4"
-        public string FHIR_Token = "";//fhiruser:change-password
-        public string FHIR_Server = "HAPi";//"HAPi"、"IBM"
+        public string FHIR_url = "https://10.20.15.157:9443/fhir-server/api/v4"; //https://hapi.fhir.org/baseR4/、"http://10.40.8.45:8080/fhir"、"https://10.20.15.157:9443/fhir-server/api/v4"、"http://10.20.15.157:4004/hapi-fhir-jpaserver/fhir/"、"http://10.20.15.157:4004/hapi-fhir-jpaserver/fhir/"
+        public string FHIR_Token = "fhiruser:change-password";//fhiruser:change-password
+        public string FHIR_Server = "IBM";//"HAPi"、"IBM"
 
         public FhirClientSettings settings = new FhirClientSettings
         {
@@ -45,7 +45,12 @@ namespace FHIR_Demo.Controllers
         {
             string FHIR_URL_Cookie;
             HttpCookie Cookie = httpContext.Request.Cookies["FHIR_url"] ?? null;
-            if (Cookie == null || Cookie.Value == "")
+            if (HttpContext.Current.Session["FhirServerUrl"] as string != null)
+            {
+                FHIR_url = HttpContext.Current.Session["FhirServerUrl"] as string;
+                Cookie = new HttpCookie("FHIR_url", FHIR_url);
+            }
+            else if(Cookie == null || Cookie.Value == "")
             {
                 Cookie = new HttpCookie("FHIR_url", FHIR_url);
             }
@@ -90,7 +95,16 @@ namespace FHIR_Demo.Controllers
             {
                 Cookie = new HttpCookie("FHIR_Token", FHIR_Token);
             }
-            FHIR_Token_Cookie = Cookie.Value;
+            else if (HttpContext.Current != null && HttpContext.Current.Session["Token"] as string != null)
+            {
+                FHIR_Token = HttpContext.Current.Session["Token"] as string;
+                Cookie = new HttpCookie("FHIR_Token", FHIR_Token);
+            }
+            //else if (Cookie == null || Cookie.Value == "")
+            //{
+            //    Cookie = new HttpCookie("FHIR_Token", FHIR_Token);
+            //}
+            FHIR_Token_Cookie = Cookie?.Value;
             Cookie.Expires = DateTime.Now.AddDays(1); //設置Cookie到期時間
             httpContext.Response.Cookies.Add(Cookie);
             return FHIR_Token_Cookie;

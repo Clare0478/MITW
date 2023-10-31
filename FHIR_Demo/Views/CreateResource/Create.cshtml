@@ -1,0 +1,406 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+}
+@{
+    ViewBag.Title = "Index";
+    string FHIR_url = "";
+    if (Session["FhirServerUrl"] as string != null)
+    {
+        FHIR_url = Session["FhirServerUrl"] as string;
+    }
+    else// (Request.Cookies["FHIR_url"] != null)
+    {
+        FHIR_url = Request.Cookies["FHIR_url"].Value;
+    }
+
+    string FHIR_Token = "";
+    if (Session["Token"] as string != null)
+    {
+        FHIR_Token = Session["Token"] as string;
+    }
+    else //(Request.Cookies["FHIR_Token"] != null)
+    {
+        FHIR_Token = Request.Cookies["FHIR_Token"].Value;//Request.Cookies["FHIR_Token"].Value;
+    }
+
+    if (TempData["message"] != null)
+    {
+        <script type="text/javascript">
+        var message = @Html.Raw(Json.Encode(TempData.Peek("message")));
+        alert(message);
+        </script>
+    }
+}
+@section Styles{
+    @*<link href="~/Content/datatables.min.css" rel="stylesheet" />*@
+    <link href="~/Content/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/Content/FixedHeader/css/fixedHeader.bootstrap4.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <style>
+        .dropdown-item-checked::before {
+            position: absolute;
+            left: .4rem;
+            content: '✓';
+            font-weight: 600;
+        }
+
+        .dropdown-menu {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .labeltext{
+            margin-left:-15px;
+        }
+    </style>
+}
+
+
+<body>
+    <div class="container">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Create </h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="card col-md-12">
+                                    @*@using (Html.BeginForm("Create", "CreateResource", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+                                        <div id="inputFields" class="card-body">
+                                            @*動態輸入*@
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-md-offset-2 col-md-10">
+                                                <input id="submitButton" type="submit" value="Create" class="btn btn-info" />
+                                            </div>
+                                        </div>
+                                    @* } *@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row ml-3">
+            @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-info" })
+        </div>
+    </div>
+</body>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var resourceInfos =  @Html.Raw(ViewBag.ResourceInfo);
+        var datatypes = @Html.Raw(ViewBag.Datatype);
+        var resourcetype_data = "";
+        console.log(resourceInfos);
+        console.log(datatypes);
+
+        //// 取出整個資料的Datatype欄位組成新object
+        //var datatypesArray = datatypes.map(function (obj) {
+        //    return obj.Datatype;
+        //}).join(',').split(',');
+
+        //console.log(datatypesArray);
+
+        var inputFields = $("#inputFields");
+        inputFields.empty();
+
+        // 動態生成輸入字段
+        $.each(resourceInfos, function (index, resourceInfo) {
+            console.log("index:" + index + " resource:" + resourceInfo);
+            var datatypeinfos = false;//判斷是否有特殊型別
+            var ResourceLabel = false;
+
+            if (resourceInfo.Name.indexOf("[x]") == -1) {//不是有[x]的欄位(還要再做可以擇一處理)
+                
+                //判斷是否有符合型別表裡欄位
+                $.each(datatypes, function (index, datatypeinfo) {
+                    
+
+                    if (datatypeinfo.Datatype === resourceInfo.Type) {
+                        console.log("Matching datatype:", resourceInfo.Name+"."+datatypeinfo.Name);
+
+                        if (ResourceLabel == false) {//判斷母元素名字的顯示(有內層型別資料時)
+                            var ResourceLable = '<div class="control-label col-md-2 ItemTitle" >' +
+                                '<label class="control-label">' + resourceInfo.Name + '</label>'
+                                + '</div>';
+
+                            inputFields.append(ResourceLable);
+                            ResourceLabel = true;
+                        }
+
+                        datatypeinfos = true;
+                        ForInputData(datatypeinfo.Type, datatypeinfo.Name, datatypeinfo.Card, resourceInfo, datatypeinfos);
+                        
+
+                    }
+                });
+
+                if (datatypeinfos == false) {//沒有內層型別資料時
+                    ForInputData(resourceInfo.Type, resourceInfo.Name, resourceInfo.Card, resourceInfo, datatypeinfos);
+                }
+
+                
+            }
+        });
+
+        function ForInputData(Type, Name, Card, resourceInfo, datatypeinfos) {
+            resourcetype_data = resourceInfo.ResourceType;//判斷資源種類
+
+            console.log("1");
+            var Index_add = 0;
+            var latestInput;//判斷最新input
+            var datatypecolumn = "";
+
+            //每個input區塊
+            var formgroup = $("<div>")
+                .addClass("form-group col-md-12")
+                .attr("name", "Dynamic_div")
+
+            //var ResourceLable = '<div class="control-label col-md-2 ItemTitle" >' +
+            //    '<label class="control-label">' + resourceInfo_Name + '</label>'
+            //    + '</div>';
+
+            //欄位名稱
+            if (datatypeinfos == false) {//如果不是特殊型別的Label樣式
+                var label = '<div class="label ItemTitle" >' +
+                    '<label class="control-label labeltext">' + Name + '</label>'
+                    + '</div>';
+            }
+            else {
+                var label = '<div class="col-md-12">' +
+                    '<label class="control-label">' + Name + '</label>'
+                    + '</div>';
+            }
+
+            //input和按鈕區塊
+            var add_inputdiv = $("<div>")
+                .addClass("row justify-content-right Dynamic_Add_div")
+                .attr("name", "Dynamic_Add_div");
+
+            //input
+            var inputdiv = $("<div>")
+                .addClass("col-md-10")
+                .attr("name", "Dynamic_input");
+
+            if (Type === "date") {
+                var input = $("<input>")
+                    .attr("id", Name + "[" + Index_add + "]")
+                    .attr("type", "datetime-local")
+                    .attr("name", Name)
+                    .attr("value", "2023-08-21T12:00:00+08:00")
+                    .addClass("form-control col-lg-12");
+            }
+            else if (Name === "gender") {
+                var dropdown = $("<select>")
+                    .attr("id", Name + "[" + Index_add + "]")
+                    .addClass("form-control col-lg-12")
+                    .attr("name", Name);
+
+                dropdown.append($("<option>").text("男").val("0"));
+                dropdown.append($("<option>").text("女").val("1"));
+                dropdown.append($("<option>").text("其他").val("2"));
+                dropdown.append($("<option>").text("不知道").val("3"));
+
+                inputdiv.append(dropdown);
+
+                @*var dropdown = $("<select>")
+                    .addClass("form-control")
+                    .attr("name", Name);
+
+                var Gender =  @Html.Raw(ViewBag.GenderOptions);
+                // 添加性别
+                $.each(Gender, function (index, option) {
+                    dropdown.append($("<option>").text(option.Text).val(option.Value));
+                });
+
+                inputdiv.append(dropdown);*@
+                }
+            else if (resourcetype_data == "Observation" && Name == "status") {
+                var dropdown = $("<select>")
+                    .attr("id", Name + "[" + Index_add + "]")
+                    .addClass("form-control col-lg-12")
+                    .attr("name", Name);
+
+                dropdown.append($("<option>").text("registered").val("0"));
+                dropdown.append($("<option>").text("preliminary").val("1"));
+                dropdown.append($("<option>").text("final").val("2"));
+                dropdown.append($("<option>").text("amended").val("3"));
+                dropdown.append($("<option>").text("corrected").val("4"));
+                dropdown.append($("<option>").text("cancelled").val("5"));
+                dropdown.append($("<option>").text("entered-in-error").val("6"));
+                dropdown.append($("<option>").text("unknown").val("7"));
+
+                inputdiv.append(dropdown);
+            }
+            else if (Name === "identifier") {
+                var input = $("<input>")
+                    .attr("id", Name + "[" + Index_add + "]")
+                    .attr("type", "text")
+                    .attr("name", datatypeinfos ? resourceInfo.Name + "." + Name : Name)
+                    .attr("value", "A123456789")
+                    .addClass("form-control col-lg-12");
+            }
+            else {
+                var input = $("<input>")
+                    .attr("id", Name + "[" + Index_add + "]")
+                    .attr("type", "text")
+                    .attr("name", datatypeinfos ? resourceInfo.Name + "." + Name : Name)
+                    .addClass("form-control col-lg-12");
+            }
+
+            inputdiv.append(input);
+            add_inputdiv.append(inputdiv);
+            formgroup.append(label).append(add_inputdiv);
+
+            //判斷數量
+            if (Card.indexOf("*") !== -1) {
+                //格式包含*字號時(可以無限增加)
+                console.log(Name)
+
+                // 添加按钮，新增input
+                var addButton = $("<input>")
+                    .attr("type", "button")
+                    .attr("value", "+")
+                    .addClass("btn btn-success add-input-button")
+                    .attr("data-input-name", Name);
+
+                // 删除按钮
+                var deleteButton = $("<input>")
+                    .attr("type", "button")
+                    .attr("value", "-")
+                    .addClass("btn btn-danger delete-input-button")
+                    .attr("data-input-name", Name);
+
+                var buttonDiv = $("<div>")
+                    .addClass("col-md-2")
+                    .attr("name", "Dynamic_Button")
+                    .append(addButton)
+                    .append(deleteButton);
+
+                add_inputdiv.append(inputdiv).append(buttonDiv);
+
+                addButton.on("click", function () {
+                    Index_add++;
+                    var inputName = $(this).data("input-name");
+                    latestInput = add_inputdiv.find("input[id^='" + inputName + "']").last();
+                    console.log("add", latestInput)
+
+                    var newInput = $("<input>")
+                        .attr("id", Name + "[" + Index_add + "]")
+                        .attr("type", "text")
+                        .attr("name", datatypeinfos ? resourceInfo.Name + "." + Name : Name)
+                        .addClass("form-control col-lg-12 mt-2");
+
+                    //判斷新增的input並在最新的下方新增(append:元素內結尾處增加，after元素後增加)
+                    latestInput.after(newInput);
+                });
+
+                deleteButton.on("click", function () {
+                    
+                    var inputName = $(this).data("input-name");
+                    console.log(Index_add);
+
+                    // 找到最新增加的input
+                    latestInput = add_inputdiv.find("input[id^='" + inputName + "']").last();
+                    console.log(latestInput);
+
+                    // 删除最新的input
+                    if (Index_add != 0) {
+                        latestInput.remove();
+                        Index_add--;
+                    }
+                });
+
+
+
+            }
+
+            inputFields.append(formgroup);
+            
+        }
+
+        // 送出資料
+        $("#submitButton").click(function () {
+            var dataToSend = [];
+
+            // 動態資料進入
+            $("[name='Dynamic_input'] input").each(function () {
+                var fieldID = $(this).attr("id");
+                var fieldName = $(this).attr("name");
+                var value = $(this).val();
+
+                //dataToSend[fieldName] = value;
+                console.log(value);
+
+                dataToSend.push({ fieldName: fieldName, value: value });
+
+                //if (matches) {
+                //    var index = matches[2];
+
+                //    // dataToSend 中設List
+                //    //if (!dataToSend[index]) {
+                //    //    dataToSend[index] = {};
+                //    //}
+
+                //    //dataToSend[index][fieldName] = value;
+                //}
+            });
+
+            //$("[name='Dynamic_input'] select").each(function () {
+            //    var selectElement = $(this).find("select");
+            //    var fieldName = $(this).attr("name");
+            //    var value = $(this).val();
+
+            //    if (selectElement.length > 0) {
+            //        fieldName = selectElement.attr("name");
+            //        value = selectElement.val();
+
+            //        dataToSend.push({ fieldName: fieldName, value: value });
+
+            //    }
+            //});
+
+            console.log(dataToSend);
+
+            // dataToSend 轉成JSON
+            //var jsonData = JSON.stringify(dataToSend);
+            //console.log(jsonData);
+
+            //送到後端
+            $.ajax({
+                url: "/CreateResource/Create",
+                type: "POST",
+                contentType: "application/json",//網頁要送到Server的資料型態
+                //dataType: 'json', // 預期從server接收的資料型態
+                data: JSON.stringify({ resourceType: resourcetype_data, jsonData: dataToSend }),
+                success: function (response) {
+                    console.log("success");
+                },
+                error: function (error) {
+                    console.log("error", error);
+                }
+            });
+        });
+
+    });
+
+
+
+</script>
+
+

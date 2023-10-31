@@ -21,10 +21,21 @@ namespace FHIR_Demo.Controllers
         public ActionResult Index()                  
         {
             handler.ServerCertificateCustomValidationCallback += (sender2, cert, chain, sslPolicyErrors) => true;
-            handler.OnBeforeRequest += (sender, e) =>
+            if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
             {
-                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
-            };
+                //使用Basic 登入
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
+                };
+            }
+            else
+            {
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+            }
             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
             ViewBag.status = TempData["status"];
             try
@@ -53,11 +64,22 @@ namespace FHIR_Demo.Controllers
         [HttpPost]
          public ActionResult GetRecord(string url, string token, string search)          
          {
-             handler.OnBeforeRequest += (sender, e) =>
-             {
-                 e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext, token));
-             };
-             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings, handler);
+            if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
+            {
+                //使用Basic 登入
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
+                };
+            }
+            else
+            {
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+            }
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext, url), cookies.settings, handler);
              try
              {
                  var q = SearchParams.FromUriParamList(UriParamList.FromQueryString(search)).LimitTo(20);
@@ -89,11 +111,22 @@ namespace FHIR_Demo.Controllers
              {
                  return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
              }
-             handler.OnBeforeRequest += (sender, e) =>
-             {
-                 e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
-             };
-             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
+            if (cookies.FHIR_Server_Cookie(HttpContext) == "IBM")
+            {
+                //使用Basic 登入
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cookies.FHIR_Token_Cookie(HttpContext))));
+                };
+            }
+            else
+            {
+                handler.OnBeforeRequest += (sender, e) =>
+                {
+                    e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
+                };
+            }
+            FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
              try
              {
                  var Obser = client.Read<Observation>("Observation/" + id);
@@ -133,7 +166,15 @@ namespace FHIR_Demo.Controllers
                     //製作Observation
                     Observation observation = new Observation()
                     {
+                        //Id = "2023-Twcore-Ob",
                         Status = (ObservationStatus)model.status,
+                        Performer = new List<ResourceReference>
+                        {
+                            new ResourceReference
+                            {
+                                Reference = model.performer
+                            }
+                        },
                         BasedOn = new List<ResourceReference>
                         {
                             new ResourceReference
@@ -150,7 +191,7 @@ namespace FHIR_Demo.Controllers
 
                     observation.Meta = new Meta
                      {
-                         Profile = new List<string> { model.meta }
+                         Profile = new List<string> { model.meta.value_text.ToString() }
                      };
 
                     var observationCategory_Value = ObservationCode_Select_Switch(model.Code_value, model.component);

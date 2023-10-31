@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Collections.Generic;
+using static Hl7.Fhir.Model.HumanName;
 
 namespace FHIR_Demo.Controllers
 {
@@ -22,6 +24,18 @@ namespace FHIR_Demo.Controllers
         private CookiesController cookies = new CookiesController();
         private HttpClientEventHandler handler = new HttpClientEventHandler();
 
+        private FHIRResourceModel db = new FHIRResourceModel();
+
+        //public ActionResult Index()
+        //{
+        //    //List<FhirResource> fhirresource = _dbContext.FhirResources.ToList();
+        //    List<resourceinfo> resourceInfos = db.ResourceInfos
+        //        .Where(r => r.ResourceType == "Patient")
+        //        .ToList();
+        //    var searchs = db.searchparameters
+        //        .ToList();
+        //    return View(searchs);
+        //}
 
         // GET: Patient
         public ActionResult Index()
@@ -44,7 +58,7 @@ namespace FHIR_Demo.Controllers
                     e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", cookies.FHIR_Token_Cookie(HttpContext));
                 };
             }
-            
+
             FhirClient client = new FhirClient(cookies.FHIR_URL_Cookie(HttpContext), cookies.settings, handler);
             ViewBag.status = TempData["status"];
             ViewBag.Error = TempData["Error"];
@@ -189,16 +203,34 @@ namespace FHIR_Demo.Controllers
                     //製造Patient
                     Patient patient = new Patient()
                     {
+                        //Id = "pat-mitw-1003test1",
                         Name = new List<HumanName>()
                         {
                             new HumanName()
                             {
-                                Use=HumanName.NameUse.Official,
+                                Use= (NameUse)model.nameuse,
                                 Text = model.familyname+model.name,
                                 Family=model.familyname,
                                 Given = new List<string>
                                 {
                                     model.name,
+                                }
+                            }
+                        },
+                        Communication = new List<Patient.CommunicationComponent>
+                        {
+                            new Patient.CommunicationComponent
+                            {
+                                Language = new CodeableConcept
+                                {
+                                    Coding = new List<Coding>
+                                    {
+                                        new Coding
+                                        {
+                                            System = "urn:ietf:bcp:47",
+                                            Code = "zh-TW"
+                                        },
+                                    }
                                 }
                             }
                         },
@@ -208,8 +240,19 @@ namespace FHIR_Demo.Controllers
                         Identifier = new List<Identifier> {
                             new Identifier
                             {
+                                Type = new CodeableConcept
+                                {
+                                    Coding = new List<Coding>
+                                    {
+                                        new Coding
+                                        {
+                                            System = "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                            Code = model.identifier_code
+                                        }
+                                    }
+                                },
                                 Use=Identifier.IdentifierUse.Official,
-                                System = "https://www.dicom.org.tw/cs/identityCardNumber_tw",
+                                System = "https://www.tph.mohw.gov.tw/",
                                 Value = model.identifier,                   
 
                             }
@@ -400,14 +443,33 @@ namespace FHIR_Demo.Controllers
                 try
                 {
                     var pat_A = client.Read<Patient>("Patient/" + id);
+                    pat_A.Id = model.Id;
                     pat_A.Name = new List<HumanName>()
                     {
                         new HumanName()
                         {
+                            Use= (NameUse)model.nameuse,
                             Text = model.name,
                             Given = new List<string>
                             {
                                 model.name,
+                            }
+                        }
+                    };
+                    pat_A.Communication = new List<Patient.CommunicationComponent>
+                    {
+                        new Patient.CommunicationComponent
+                        {
+                            Language = new CodeableConcept
+                            {
+                                Coding = new List<Coding>
+                                {
+                                    new Coding
+                                    {
+                                        System = "urn:ietf:bcp:47",
+                                        Code = "zh-TW"
+                                    }
+                                }
                             }
                         }
                     };
@@ -417,7 +479,18 @@ namespace FHIR_Demo.Controllers
                     pat_A.Identifier = new List<Identifier> {
                         new Identifier
                         {
-                            System = "https://www.dicom.org.tw/cs/identityCardNumber_tw",
+                            Type = new CodeableConcept
+                            {
+                                Coding = new List<Coding>
+                                {
+                                    new Coding
+                                    {
+                                        System = "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                        Code = model.identifier_code
+                                    }
+                                }
+                            },
+                            System = "https://www.tph.mohw.gov.tw/",
                             Value = model.identifier
                         }
                     };
@@ -463,7 +536,7 @@ namespace FHIR_Demo.Controllers
                             },
                             Relationship = new List<CodeableConcept>
                             {
-                                new CodeableConcept("http://hl7.org/fhir/ValueSet/patient-contactrelationship", "N", model.contact_relationship)
+                                new CodeableConcept("http://terminology.hl7.org/CodeSystem/v2-0131", "N", model.contact_relationship)
                             },
                             Telecom = new List<ContactPoint>
                             {
@@ -495,7 +568,7 @@ namespace FHIR_Demo.Controllers
 
                     return RedirectToAction("Index");
                 }
-                catch
+                catch (Exception e)
                 {
                     return View(model);
                 }
@@ -551,5 +624,8 @@ namespace FHIR_Demo.Controllers
             var resultheader = response.Headers.Location.LocalPath.ToString();
             return resultheader;
         }
+
+
+
     }
 }

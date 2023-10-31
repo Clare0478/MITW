@@ -1,11 +1,27 @@
-﻿@model FHIR_Demo.Models.PatientViewModel
+﻿@model FHIR_Demo.Models.BundleModel
 @using FHIR_Demo.Models
+@using Hl7.Fhir.Model;
+@using Hl7.Fhir.Serialization;
 
 @{
     ViewBag.Title = "EMS - Details";
     List<ObservationViewModel> Obser_view = ViewBag.Obser_view;
 
 }
+<style>
+    .horizontal-table th, .horizontal-table td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .dd-container {
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 50%;
+    }
+</style>
 
 <h2>Details</h2>
 
@@ -14,19 +30,19 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.name)
+            @Html.DisplayNameFor(model => model.Id)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.name)
+            @Html.DisplayFor(model => model.Id)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.birthDate)
+            @Html.DisplayNameFor(model => model.Meta)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.birthDate)
+            @Html.DisplayFor(model => model.Meta)
         </dd>
 
         <dt>
@@ -38,160 +54,534 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.telecom)
+            @Html.DisplayNameFor(model => model.type)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.telecom)
+            @Html.DisplayFor(model => model.type)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.address)
+            @Html.DisplayNameFor(model => model.timestamp)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.address)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.contact_name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.contact_name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.contact_relationship)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.contact_relationship)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.contact_telecom)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.contact_telecom)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.email)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.email)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.deceased)
-        </dt>
-
-        <dd>
-            @if (Model.deceased != null)
-            {
-                if ((Model.deceased == "True"))
-                {
-                    @:死亡
-                }
-                else if (Model.deceased == "False")
-                {
-                    @:存活
-                }
-                else
-                {
-                    @Html.DisplayFor(model => model.deceased)
-                }
-            }
-            else
-            {
-                @:存活
-            }
-
+            @Html.DisplayFor(model => model.timestamp)
         </dd>
 
     </dl>
-    @if (Obser_view != null )
+    @foreach (var val in Model.entry)
     {
-        <div class="table-responsive">
-            <table class="table table-hover text-center align-middle align-content-center">
-                <thead class="thead-dark">
-                    <tr>
-                        <th class="text-center align-middle" style="width:5%">
-                            狀態
-                        </th>
-                        <th class="text-center align-middle" style="width:5%">
-                            基於
-                        </th>
-                        @*<th class="text-center align-middle" style="width:5%">
-                                @Html.DisplayNameFor(model => model.catogory)
-                            </th>*@
-                        <th class="text-center align-middle" style="width:5%">
-                            時間
-                        </th>
-                        <th class="text-center align-middle" style="width:5%">
-                            資料類型
-                        </th>
-                        <th class="text-center align-middle" style="width:5%">
-                            數值
-                        </th>
-                        <th class="text-center align-middle" style="width:5%">
-                            Component
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var obs in Obser_view)
+        if (val.Resource.resourceType == "Patient")
+        {
+            <hr />
+            <h6>Patient</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.name)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.name)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.familyname)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.familyname)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.givename)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.givename)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.birthDate)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.birthDate)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.gender)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.gender)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.identifier)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.identifier)
+                </dd>
+
+            </dl>
+        }
+
+        else if (val.Resource.resourceType == "Observation")
+        {
+            <hr />
+            <h6>Observation</h6>
+            <hr />
+            for (int i = 0; i < val.Resource.resourcedata.Observations.Count; i++)
+            {
+                <dl class="dl-horizontal">
+                    @if (val.Resource.resourcedata.Observations[i].ob_code != null)
                     {
-                        <tr>
-                            <td class="text-center align-middle">
-                                @obs.status
-                            </td>                            
-                            <td class="text-center align-middle">
-                                @obs.basedOn
-                            </td>
-                            @*<td class="text-center align-middle">
-                                    @Html.DisplayFor(modelItem => item.catogory)
-                                </td>*@
-                            <td class="text-center align-middle">
-                                @obs.effectiveDateTime
-                            </td>
-                            <td class="text-center align-middle">
-                                @obs.Code_value.code_display
-                            </td>
-                            <td class="text-center align-middle">
-                                @obs.Code_value.value
-                            </td>
-                            <td class="text-center align-middle">
-                                @if (obs.component != null)
-                                {
-                                    foreach (var com in obs.component)
-                                    {
-                                        <dt>
-                                            @com.code_display
-                                        </dt>
-                                        <dd>
-                                            @com.value @com.unit
-                                        </dd>
-                                    }
-                                }
-                            </td>
-                            @*<td class="text-center align-middle">
-                                @Html.ActionLink("Update", "Update", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })
-                                @Html.ActionLink("Details", "Details", new { id = obs.Id }, new { @class = "btn btn-secondary btn-sm" })
-                                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-                            </td>*@
-                        </tr>
+                        <dt>
+                            @Html.DisplayNameFor(model => val.Resource.resourcedata.Observations[i].ob_code)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].ob_code.code_system)<br />
+                            @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].ob_code.code_code)<br />
+                            @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].ob_code.code_display)
+                        </dd>
                     }
-                </tbody>
-            </table>
-        </div>
+
+                    @if (val.Resource.resourcedata?.Observations?[i]?.Code_value?.ob_value?.ToString() != null)
+                    {
+                        <dt>
+                            value[x]
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].Code_value.ob_value)<br />
+                            @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].Code_value.unit)
+                        </dd>
+                    }
+                    else if (val.Resource.resourcedata?.Observations?[i]?.Code_value?.code_code != null)
+                    {
+                        <dt>
+                            value[x]代碼
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].Code_value.code_system)<br />
+                            @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].Code_value.code_code)<br />
+                            @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].Code_value.code_display)
+                        </dd>
+                    }
+
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.Observations[i].ob_status)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].ob_status)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.Observations[i].effectiveDateTime)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].effectiveDateTime)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.Observations[i].Code_value.code_system)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].Code_value.code_system)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.Observations[i].Code_value.code_code)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].Code_value.code_code)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.Observations[i].Code_value.code_display)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.Observations[i].Code_value.code_display)
+                    </dd>
+                </dl>
+                //component
+                <table class="horizontal-table">
+                    <thead>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-weight-bold">代碼</td>
+                            @foreach (var buncomponent in val.Resource.resourcedata.Observations[i].component)
+                            {
+                                var displayValue = buncomponent.code_code != null ? buncomponent.code_code.ToString() : "-";
+                                <td>@Html.DisplayFor(model => displayValue)</td>
+                            }
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold">項目</td>
+                            @foreach (var buncomponent in val.Resource.resourcedata.Observations[i].component)
+                            {
+                                var displayValue = buncomponent.code_display != null ? buncomponent.code_display.ToString() : "-";
+                                <td>@Html.DisplayFor(model => displayValue)</td>
+                            }
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold">數值</td>
+                            @foreach (var buncomponent in val.Resource.resourcedata.Observations[i].component)
+                            {
+                                var displayValue = buncomponent.ob_value != null ? buncomponent.value.ToString() : "-";
+                                <td>@Html.DisplayFor(model => displayValue)</td>
+                            }
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold">單位</td>
+                            @foreach (var buncomponent in val.Resource.resourcedata.Observations[i].component)
+                            {
+                                var displayValue = buncomponent.unit != null ? buncomponent.unit.ToString() : "-";
+                                <td>@Html.DisplayFor(model => displayValue)</td>
+                            }
+                        </tr>
+                    </tbody>
+                </table>
+            }
+        }
+
+        else if (val.Resource.resourceType == "Encounter")
+        {
+            <hr />
+            <h6>Encounter</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.en_identifier)
+                </dt>
+                <dd>
+                    @foreach (var idenvalue in val.Resource.resourcedata.en_identifier)
+                    {
+                        @Html.DisplayFor(model => idenvalue.code_text)<br />
+                        @Html.DisplayFor(model => idenvalue.code_system)<br />
+                        @Html.DisplayFor(model => idenvalue.code_display)
+                        <p></p>
+                    }
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.en_status)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.en_status)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.en_class)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.en_class.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.resourcedata.en_class.code_code)<br />
+                    @Html.DisplayFor(model => val.Resource.resourcedata.en_class.code_display)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.en_participant)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.en_participant.en_reference)<br />
+                    @Html.DisplayFor(model => val.Resource.resourcedata.en_participant.en_display)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.en_period)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.en_period)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.serviceProvider)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.serviceProvider)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.location)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.location)
+                </dd>
+            </dl>
+
+        }
+
+        else if (val.Resource.resourceType == "Condition")
+        {
+            for (int i = 0; i < val.Resource.resourcedata.Conditions.Count; i++)
+            {
+                <hr />
+                <h6>Condition</h6>
+                <hr />
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.Conditions[i].con_code.code_code)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.Conditions[i].con_code.code_system)<br />
+                        @Html.DisplayFor(model => val.Resource.resourcedata.Conditions[i].con_code.code_code)<br />
+                        @Html.DisplayFor(model => val.Resource.resourcedata.Conditions[i].con_code.code_display)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.Conditions[i].subject)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.Conditions[i].subject)
+                    </dd>
+                </dl>
+            }
+        }
+
+        else if (val.Resource.resourceType == "RiskAssessment")
+        {
+            for (int i = 0; i < val.Resource.resourcedata.RiskAssessments.Count; i++)
+            {
+                <hr />
+                <h6>RiskAssessment</h6>
+                <hr />
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_status)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_status)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_code.code_system)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_code.code_system)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_code.code_code)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_code.code_code)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_code.code_display)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_code.code_display)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_code.code_text)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_code.code_text)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_encounter)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_encounter)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_subject)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_subject)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.RiskAssessments[i].occurrenceDateTime)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.RiskAssessments[i].occurrenceDateTime)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_prediction)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => val.Resource.resourcedata.RiskAssessments[i].risk_prediction)
+                    </dd>
+                </dl>
+            }
+        }
+
+        else if (val.Resource.resourceType == "Practitioner")
+        {
+            <hr />
+            <h6>Practitioner</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.pra_name)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.pra_name)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.pra_familyname)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.pra_familyname)
+                </dd>
+            </dl>
+
+        }
+
+        else if (val.Resource.resourceType == "AllergyIntolerance")
+        {
+            <hr />
+            <h6>AllergyIntolerance</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    verificationStatus
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.allergy_status.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.resourcedata.allergy_status.code_code)<br />
+                    @Html.DisplayFor(model => val.Resource.resourcedata.allergy_status.code_display)<br />
+                    @Html.DisplayFor(model => val.Resource.resourcedata.allergy_status.code_text)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.allergy_patient)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.allergy_patient)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.allergy_code.code_system)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.allergy_code.code_system)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.allergy_code.code_code)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.allergy_code.code_code)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.allergy_code.code_display)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.allergy_code.code_display)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.allergy_category)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.allergy_category)
+                </dd>
+            </dl>
+
+        }
+
+        else if (val.Resource.resourceType == "Organization")
+        {
+            <hr />
+            <h6>Organization</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.organ_identifier)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.organ_identifier.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.resourcedata.organ_identifier.code_code)<br />
+                    @Html.DisplayFor(model => val.Resource.resourcedata.organ_identifier.code_text)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.organ_active)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.organ_active)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.organ_name)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.organ_name)
+                </dd>
+            </dl>
+
+        }
+
+        else if (val.Resource.resourceType == "Composition")
+        {
+            <hr />
+            <h6>Composition</h6>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.com_type)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.com_type.code_system)<br />
+                    @Html.DisplayFor(model => val.Resource.resourcedata.com_type.code_code)<br />
+                    @Html.DisplayFor(model => val.Resource.resourcedata.com_type.code_display)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.com_status)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.com_status)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.com_title)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.com_title)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.com_subject)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.com_subject)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.com_encounter)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => val.Resource.resourcedata.com_encounter)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => val.Resource.resourcedata.section)
+                </dt>
+                <dd class="dd-container">
+                    @foreach (var sectionval in val.Resource.resourcedata.section)
+                    {
+                        @Html.DisplayFor(model => sectionval.title)<br />
+                        if (sectionval.section_code.code_code != null)
+                        {
+                            @Html.DisplayFor(model => sectionval.section_code.code_system)<br />
+                            @Html.DisplayFor(model => sectionval.section_code.code_code)<br />
+                            @Html.DisplayFor(model => sectionval.section_code.code_display)<br />
+                        }
+                        foreach (var entryval in sectionval.entry)
+                        {
+                            @Html.DisplayFor(model => entryval)<br />
+                        }
+                        <p></p>
+                        foreach (var twosection in sectionval.section)
+                        {
+                            @Html.DisplayFor(model => twosection.title)<br />
+                            if (twosection.section_code.code_code != null)
+                            {
+                                @Html.DisplayFor(model => twosection.section_code.code_system)<br />
+                                @Html.DisplayFor(model => twosection.section_code.code_code)<br />
+                                @Html.DisplayFor(model => twosection.section_code.code_display)<br />
+                            }
+                            foreach (var twoentryval in twosection.entry)
+                            {
+                                @Html.DisplayFor(model => twoentryval)<br />
+                            }
+                        }
+                        <p><hr class="hr-dashed-fixed" align="left" /></p><p></p>
+                    }
+                </dd>
+            </dl>
+
+        }
     }
+
 </div>
 <p>
     @Html.ActionLink("Update", "Update", new { id = Model.Id }) |
-    @Html.ActionLink("Create Observation", "CreateObservation", new { Patient = Model.Id }) |
+    @Html.ActionLink("Create Bundle", "CreateBundle", new { Patient = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>

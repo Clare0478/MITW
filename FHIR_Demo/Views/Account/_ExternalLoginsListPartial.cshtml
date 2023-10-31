@@ -1,0 +1,87 @@
+﻿@model FHIR_Demo.Models.ExternalLoginListViewModel
+@using Microsoft.Owin.Security
+<style>
+    .google {
+        color: #CD2626;
+        border: 2px brown solid;
+        border-radius: unset;
+        background-color: white;
+    }
+        .google:hover {
+            background-color: #ba0000;
+            color: white;
+        }
+
+    .link {
+        color: #00687d;
+        background-color: white;
+        border: 2px #00687d solid;
+        border-radius: unset;
+    }
+
+        .link:hover {
+            color: white;
+            background-color: #00687d;
+        }
+
+    .tw {
+        color: dodgerblue;
+        border: 2px dodgerblue solid;
+        border-radius: unset;
+        background-color: white;
+    }
+
+        .tw:hover {
+            color: white;
+            background-color: dodgerblue;
+        }
+</style>
+
+<hr class="col-12"/>
+@{
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+    if (loginProviders.Count() == 0)
+    {
+        <div>
+            <p>
+                未設定任何外部驗證服務。如需設定此 ASP.NET 應用程式
+                以支援透過外部服務登入的詳細資料，請參閱<a href="https://go.microsoft.com/fwlink/?LinkId=403804">此文章</a>。
+            </p>
+        </div>
+    }
+    else
+    {
+        using (Html.BeginForm("ExternalLogin", "Account", new { ReturnUrl = Model.ReturnUrl }))
+        {
+            @Html.AntiForgeryToken()
+            <div id="socialLoginList">
+                <p>
+                    @foreach (AuthenticationDescription p in loginProviders)
+                    {
+                        @*<button type="submit" class="btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="使用 @p.Caption 帳戶登入">@p.AuthenticationType</button>*@
+                        string res = p.AuthenticationType;
+                        if (res == "Google")
+                        {
+                            <button type="submit" class="btn be google mr-2" style="border-radius: unset;" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Use @p.Caption "><i class="fa-brands fa-square-google-plus fa-lg"></i>@p.AuthenticationType</button>
+                            <button type="submit" class="btn af " style="border-radius: unset; color: brown;" hidden="hidden" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="使用 @p.Caption 帳戶登入"><i class="fa-brands fa-square-google-plus fa-3x"></i></button>
+                        }
+                        else if (res == "LinkedIn")
+                        {
+                            <button type="submit" class="btn be link mr-2" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Use @p.Caption "><i class="fa-brands fa-linkedin"></i>  @p.AuthenticationType</button>
+                            <button type="submit" class="btn af" style="border-radius: unset; color: #00687d;" hidden="hidden" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="使用 @p.Caption 帳戶登入"><i class="fa-brands fa-linkedin fa-3x"></i></button>
+                        }
+                        else if (res == "Twitter")
+                        {
+                            <button type = "submit" class="btn be tw " id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Use @p.Caption "><i class="fa-brands fa-square-twitter"></i>  @p.AuthenticationType</button>
+                            <button type = "submit" class="btn af" style="border-radius: unset; color: dodgerblue;" hidden="hidden" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="使用 @p.Caption 帳戶登入"><i class="fa-brands fa-square-twitter fa-3x"></i></button>
+                        }
+
+                    }
+                </p>
+            </div>
+        }
+    }
+}
+
+<script src="https://kit.fontawesome.com/0855001004.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

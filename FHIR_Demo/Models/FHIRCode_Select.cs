@@ -26,6 +26,50 @@ namespace FHIR_Demo.Models
         未知 = 7
     }
 
+    public enum Encounter_Status
+    {
+        planned = 0,
+        arrived = 1,
+        triaged = 2,
+        in_progress = 3,
+        onleave = 4,
+        finished = 5,
+        cancelled = 6,
+        entered_in_error = 7,
+        unknown = 8
+    }
+
+    public enum BundleType
+    {
+        document = 0,
+        message = 1,
+        transaction = 2,
+        transaction_response = 3,
+        batch = 4,
+        batch_response = 5,
+        history = 6,
+        searchset = 7,
+        collection = 8
+    }
+
+    public enum Allergy_Category
+    {
+        food = 0,
+        medication = 1,
+        environment = 2,
+        biologic = 3
+    }
+
+
+    public enum Composition_Status
+    {
+
+        Preliminary = 0,
+        Final = 1,
+        Amended = 2,
+        EnteredInError = 3
+    }
+
     public enum Imm_Status
     {
         //
@@ -74,6 +118,7 @@ namespace FHIR_Demo.Models
                 new ObservationCode {code = "9279-1", display = "Respiratory Rate", chinese = "呼吸頻率(EMS)"},
                 new ObservationCode {code = "44963-7", display = "Capillary refill [Time] of Nail bed", chinese = "微血管充填時間(EMS)"},
                 new ObservationCode {code = "2339-0", display = "Glucose [Mass/volume] in Blood", chinese = "血糖(EMS)"},
+                new ObservationCode {code = "410429000", display = "isCardiacArrest", chinese = "是否到院前心肺功能停止(EMS)"},
             };
             return obser_code_lists;
         }

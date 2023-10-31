@@ -1,0 +1,309 @@
+﻿@model FHIR_Demo.Models.BundleModel
+@using Hl7.Fhir.Model;
+@using FHIR_Demo.Models;
+@{
+    ViewBag.Title = "Create";
+}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <h5>Create Patient</h5>
+                <hr>
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("Create_bundle", "EMS", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Meta, new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.Meta, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Meta, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.identifier.value_text, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.identifier, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.timestamp, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.timestamp, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.timestamp, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.type, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.type, new SelectList(Enum.GetValues(typeof(BundleType))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.type, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">I.Patient</h5>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.meta, new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.meta, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.meta, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.nameuse, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.nameuse, new SelectList(Enum.GetValues(typeof(HumanName.NameUse))),
+                                                                        "選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.nameuse, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.name, new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.name, new { htmlAttributes = new { @class = "form-control", @Value = "睿駿" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.familyname, new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.familyname, new { htmlAttributes = new { @class = "form-control", @Value = "黃" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.familyname, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.birthDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.birthDate, new { htmlAttributes = new { @class = "form-control", @Value = "1994-11-14" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.birthDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.gender, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.gender, new SelectList(Enum.GetValues(typeof(Gender))),
+                                                                        "選擇性別", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.gender, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.identifier, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.identifier, new { htmlAttributes = new { @class = "form-control", @Value = "A123456789" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.identifier, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.identifier_code, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.identifier_code, new { htmlAttributes = new { @class = "form-control", @Value = "A123456789" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.identifier_code, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.telecom, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.telecom, new { htmlAttributes = new { @class = "form-control", @Value = "0912123456" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.telecom, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.address, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @*@Html.EditorFor(model => model.entry[0].Resource.resourcedata.address, new { htmlAttributes = new { @class = "form-control", @Value = "明德路365號" } })
+                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.address, "", new { @class = "text-danger" })*@
+                                    <div id="zipcode3">
+                                        <div data-role="county">
+                                        </div>
+                                        <div data-role="district">
+                                        </div>
+                                    </div>
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.address, new { htmlAttributes = new { @class = "address form-control", @Value = "明德路365號" } })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.contact_name, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.contact_name, new { htmlAttributes = new { @class = "form-control", @Value = "王大每" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.contact_name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.contact_familyname, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.contact_familyname, new { htmlAttributes = new { @class = "form-control", @Value = "王" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.contact_familyname, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.contact_relationship, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.contact_relationship, new { htmlAttributes = new { @class = "form-control", @Value = "家人" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.contact_relationship, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.contact_telecom, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.contact_telecom, new { htmlAttributes = new { @class = "form-control", @Value = "0922123456" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.contact_telecom, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.email, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.email, new { htmlAttributes = new { @class = "form-control", @Value = "ABCV@abc.cd" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.email, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.managingOrganization, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.managingOrganization, new { htmlAttributes = new { @class = "form-control", @Value = "Organization/5e2d50b4-769c-418a-9bfb-88611a1ec61c" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.managingOrganization, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">II.Practitioner</h5>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.meta, new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.meta, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.meta, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.pra_name, new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.pra_name, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.pra_name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.pra_identifier.value_text, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="pra_identifier_Value">Value</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.pra_identifier.value_text" value="KP00017" type="text"></div>
+                                    @*@Html.Hidden("identifier.code_system", "https://www.vghtpe.gov.tw")
+                    @Html.Hidden("identifier.code_display", "2022-08-19")*@
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">III.Organization</h5>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.organ_identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="organ_identifier_System">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="organ_identifier_System" name="entry[0].Resource.resourcedata.organ_identifier.code_system" type="text" value="https://twcore.mohw.gov.tw/ig/twcore/CodeSystem/v2-0203"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.resourcedata.organ_identifier.code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="organ_identifier_Code">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="organ_identifier_Code" name="entry[0].Resource.resourcedata.organ_identifier.code_code" type="text" value="UBN"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.resourcedata.organ_identifier.code_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="organ_identifier_Value">Value</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.organ_identifier.value_text" value="03374707" type="text"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.organ_active, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.organ_active,
+                                     new List<SelectListItem>
+                                     {
+                                            new SelectListItem { Text = "使用", Value = "True" },
+                                            new SelectListItem { Text = "未使用", Value = "False" },
+                                     },
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.organ_active, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.organ_name, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.organ_name, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.organ_name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">IV.Composition</h5>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.com_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.com_status, new SelectList(Enum.GetValues(typeof(Composition_Status))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.com_status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.com_title, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.com_title, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.com_title, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.com_date, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.com_date, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.com_date, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="submit" value="Create" class="btn btn-default" />
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-info" })
+    </div>
+</div>
+
+@section scripts
+{
+    <script src="~/Scripts/jquery.twzipcode.min.js"></script>
+    <script>
+        $("#zipcode3").twzipcode({
+            "zipcodeIntoDistrict": true,
+            "css": ["city form-control", "town form-control"],
+            "countyName": "city", // 指定城市 select name
+            "districtName": "town" // 指定地區 select name
+        });
+    </script>
+}

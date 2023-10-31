@@ -15,15 +15,17 @@ namespace FHIR_Demo
 
             routes.MapRoute(
                 name: "Resource",
-                url: "Resource/{res}/{id}",
+                url: "Resource/{res}/{id}/{sele}/{isbundle}",
                 defaults: new { controller = "Resource", action = "Index", res = UrlParameter.Optional, id = UrlParameter.Optional }
             );
 
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Account", action = "Login", id = UrlParameter.Optional }
             );
+
+
 
         }
     }

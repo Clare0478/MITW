@@ -18,7 +18,6 @@ namespace FHIR_Demo.Controllers
         // GET: Postmanweb
         public ActionResult Index()
         {
-           
             return View();
         }
         [HttpPost]

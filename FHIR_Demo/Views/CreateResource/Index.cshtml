@@ -1,0 +1,246 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+@{
+    ViewBag.Title = "Index";
+    string FHIR_url = "";
+    if (Session["FhirServerUrl"] as string != null)
+    {
+        FHIR_url = Session["FhirServerUrl"] as string;
+    }
+    else// (Request.Cookies["FHIR_url"] != null)
+    {
+        FHIR_url = Request.Cookies["FHIR_url"].Value;
+    }
+
+    string FHIR_Token = "";
+    if (Session["Token"] as string != null)
+    {
+        FHIR_Token = Session["Token"] as string;
+    }
+    else //(Request.Cookies["FHIR_Token"] != null)
+    {
+        FHIR_Token = Request.Cookies["FHIR_Token"].Value;//Request.Cookies["FHIR_Token"].Value;
+    }
+
+    if (TempData["message"] != null)
+    {
+        <script type="text/javascript">
+        var message = @Html.Raw(Json.Encode(TempData.Peek("message")));
+        alert(message);
+        </script>
+    }
+}
+@section Styles{
+    @*<link href="~/Content/datatables.min.css" rel="stylesheet" />*@
+    <link href="~/Content/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/Content/FixedHeader/css/fixedHeader.bootstrap4.css" rel="stylesheet" />
+    <style>
+        .dropdown-item-checked::before {
+            position: absolute;
+            left: .4rem;
+            content: '✓';
+            font-weight: 600;
+        }
+
+        .dropdown-menu {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+    </style>
+}
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-block">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label for="inputEmail4">Server 類型</label>
+                                        @Html.DropDownList("FHIR_Server", (IEnumerable<SelectListItem>)ViewBag.Server_selectList, new { @class = "form-control", @id = "FHIR_Server" })
+                                    </div>
+                                    <div class="form-group col">
+                                        <label>FHIR Server</label>
+                                        <input type="url" id="FHIR_url" name="url" class="form-control" placeholder="http://hapi.fhir.org/baseR4" value="@FHIR_url">
+                                    </div>
+                                    <div class="col">
+                                        <label for="inputPassword4">Token / IBM (Account:Password)</label>
+                                        <div class="input-group mb-3">
+                                            @{
+                                                string setreadonly = !(string.IsNullOrEmpty(Convert.ToString(Session["UserName"]))) ? "readonly" : "";
+                                            }
+                                            <input type="text" id="FHIR_Token" name="token" class="form-control" placeholder="token" value="@FHIR_Token" @setreadonly>
+                                            @*<input type="number" step="0.01" min="1" maxlength="6" max="10000" id="FHIR_Token" name="token" class="form-control" onKeyPress="if((event.keyCode<48 || event.keyCode>57) && event.keyCode!=46 || /\.\d\d$/.test(value))event.preventDefault()=false" >*@
+                                            @*<div class="input-group-append">
+                                                    <button class="btn btn-primary" id="Connect_btn" type="button">連線</button>
+                                                </div>*@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group ">
+                                    <label for="resourceType">Select ResourceType:</label>
+                                    <select class="form-control" id="resourceType" name="resourceType">
+                                        @foreach (var resourceType in ViewBag.ResourceTypes)
+                                        {
+                                            <option value="@resourceType">@resourceType</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="table-border-style card-block" id="ajaxTargetDiv">
+                        @if (ViewBag.status != null)
+                        {
+                            <div class="alert alert-success" role="alert">
+                                @ViewBag.status
+                            </div>
+                        }
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @ViewBag.Error
+                            </div>
+                        }
+                        else
+                        {
+                            <p>
+                                @*@Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info", @id = "createButton" })*@
+                                <button type="button" class="btn btn-info" id="createButton">Create New</button>
+                            </p>
+                            <div class="table-responsive">
+                                <table id="resourceTable" class="table table-hover text-center align-middle align-content-center">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th class="text-center align-middle" style="width:5%">
+                                                <input type="checkbox" name="selectAll" id="selectAll" /> 全選
+                                            </th>
+                                            <th class="text-center align-middle" style="width:5%">
+                                                欄位名稱
+                                            </th>
+                                            <th class="text-center align-middle" style="width:5%">
+                                                欄位型別
+                                            </th>
+                                            <th class="text-center align-middle" style="width:5%">
+                                                數量
+                                            </th>
+                                            <th class="text-center align-middle" style="width:10%">
+                                                詳細內容
+                                            </th>
+                                            <th class="text-center align-middle" style="width:5%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resourceTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--<div class="row">
+            <div class="card col-md-12">
+                <div id="inputFields" class="card-body">-->
+        <!-- 這裡將動態生成的輸入字段放置在這個區域 -->
+        <!--</div>
+            </div>
+        </div>-->
+    </div>
+</body>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#resourceType").change(function () {
+            var selectedResourceType = $(this).val();
+            //console.log(selectedResourceType);
+            $.ajax({
+                url: "/CreateResource/GenerateFields",
+                type: "POST",
+                data: { selectedResourceType: selectedResourceType },
+                success: function (data) {
+                    // 解析 JSON 資源信息
+                    var resourceInfos = JSON.parse(data);
+
+                    // 重新載入表格
+                    loadTable(resourceInfos);
+                },
+                error: function () {
+                    alert("Error fetching resource information.");
+                }
+            });
+        });
+    });
+
+    function loadTable(resourceInfos) {
+        console.log(resourceInfos);
+
+        var tableresource = $("#resourceTableBody");
+
+        // 清除現有表格內容
+        tableresource.empty();
+
+        $.each(resourceInfos, function (index, resourceInfo) {
+            console.log("index:" + index + " resource:" + resourceInfo);
+
+            var tablebody = $("<tr>")
+                .append("<td class='text-center align-middle'><input type='checkbox' class='selectName' value='" + resourceInfo.Name + "' /></td>")
+                .append("<td class='text-center align-middle'>" + resourceInfo.Name + "</td>")
+                .append("<td class='text-center align-middle'>" + resourceInfo.Type + "</td>")
+                .append("<td class='text-center align-middle'>" + resourceInfo.Card + "</td>")
+                .append("<td class='text-center align-middle'>" + resourceInfo.Description + "</td>")
+                .append("<td class='text-center align-middle'><a class='btn btn-warning btn-sm' href='/Update/" + resourceInfo.Id + "'>Update</a> <a class='btn btn-secondary btn-sm' href='/Details/" + resourceInfo.Id + "'>Details</a></td>");
+
+            tableresource.append(tablebody);
+        });
+    }
+
+    $(document).ready(function () {
+        $("#selectAll").change(function () {
+            $("#resourceTableBody input[type='checkbox']").prop("checked", $(this).prop("checked"));
+        });
+
+        $("#createButton").click(function () {
+            var selected = $("#resourceType").val();
+            console.log(selected);
+
+            if (selected) {
+                window.location.href = "/CreateResource/Create?resourceType=" + selected;
+            }
+
+
+            //之後想怎麼添加選擇的欄位功能
+            //var selectedItems = [];
+
+            ////選擇
+            //$(".selectName:checked").each(function () {
+            //    // 获取复选框的值或其他相关数据
+            //    var value = $(this).val();
+            //    selectedItems.push(value);
+            //});
+
+            //console.log(selectedItems);
+        });
+    });
+
+
+    $(document).ready(function () {
+        $(".selectName").change(function () {
+            console.log("Yes");
+        });
+    });
+</script>
+
+
+
+

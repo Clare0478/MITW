@@ -28,20 +28,49 @@ namespace FHIR_Demo.Controllers
         private CookiesController cookies = new CookiesController();
         private HttpClientEventHandler handler = new HttpClientEventHandler();
 
+        private FHIRResourceModel db = new FHIRResourceModel();
         public ActionResult Index()
         {
+            //if (Session["UserName"] == "" || Session["UserName"] == null)
+            //{
+            //    TempData["message"] = "尚未登入，請登入後再做連線";
+            //    return RedirectToAction("Login","Account");
+            //}
+
+            // 從 Session 中取得 token 值
+            //if (Session["Token"] != null || Session["Token"] != "")
+            //{
+            //    ViewBag.token = Session["Token"] as string;
+            //    ViewBag.fhirServerUrl = Session["FhirServerUrl"] as string;
+            //}
+
             //預設Cookie值
             cookies.Init_Cookie(HttpContext);
+            //if(isLoggedIn == false)
+            //{
+            //    TempData["message"] = "未登入無法使用連線!";
+            //}
 
             //設定Server選單
             var Server_selectList = new List<SelectListItem>()
             {
                 new SelectListItem {Text="IBM", Value="IBM" },
                 new SelectListItem {Text="HAPi", Value="HAPi" },
+                new SelectListItem {Text="Smart on Fhir", Value="Smart" },
             };
             //預設選擇哪一筆
             Server_selectList.Where(q => q.Value == cookies.FHIR_Server_Cookie(HttpContext)).First().Selected = true;
             ViewBag.Server_selectList = Server_selectList;
+
+            //下拉ResourceType
+            var resourceTypes = db.ResourceInfos.Select(r => r.ResourceType).Distinct().ToList();
+            if (resourceTypes.Contains("Patient"))
+            {
+                resourceTypes.Remove("Patient");
+                resourceTypes.Insert(0, "Patient");
+            }
+            //ViewBag.SelectedResourceType = "Patient";
+            ViewBag.ResourceTypes = resourceTypes;
 
             return View();
         }
@@ -149,9 +178,10 @@ namespace FHIR_Demo.Controllers
 
 
         #region Datatable 表單功能
-        private string FHIR_url;
+        
         private string FHIR_Server;
         private string FHIR_token;
+        private string FHIR_url;
         private string FHIR_Resource;
         private string SearchParameter_query;
 
@@ -184,6 +214,262 @@ namespace FHIR_Demo.Controllers
                 data = result
             }).Data);
             
+        }
+
+        //尋找所有種類下面的必要欄位顯示
+        public List<string> GetRequiredColumns(string resourcetype)
+        {
+            List<string> requiredcolumnsData = new List<string>();
+
+            List<resourceinfo> resourceinfos = db.ResourceInfos
+                .Where(c => c.ResourceType == resourcetype)
+                .ToList();
+
+            foreach(var info in resourceinfos)
+            {
+                //尋找開頭為1的欄位且不為第二層的欄位
+                if (info.Card.StartsWith("1") && !info.Name.Contains('.') && !info.Card.Contains('*'))
+                {
+                    requiredcolumnsData.Add(info.Name);
+                }
+            }
+            return requiredcolumnsData;
+        }
+
+        public JsonResult GetRequiredColumnsForData(string resourceType)
+        {
+            List<string> requiredColumns = GetRequiredColumns(resourceType);
+            return Json(requiredColumns, JsonRequestBehavior.AllowGet);
+        }
+
+        //尋找每種ResourceType的進階搜尋欄位
+        public JsonResult GetSearchColumns(string resourcetype)
+        {
+            List<searchparameters> searchinfos = db.searchparameters
+                .Where(c => c.ResourceType == resourcetype)
+                .ToList();
+
+            Dictionary<string, dynamic> paramterJson = new Dictionary<string, dynamic>
+            {
+                {"resource", resourcetype },
+                {"searchParameters",new List<Dictionary<string, dynamic>>()}
+            };
+            // 先加入第一筆資料
+            var firstSearchParameter = new Dictionary<string, dynamic>
+            {
+                { "ch_Name", "id" },
+                { "parameter_name", "_id" },
+                { "selected", false },
+                { "input_content", new Dictionary<string, dynamic> { { "type", "text" }, { "value", "" } } },
+                { "switched", true }
+            };
+            paramterJson["searchParameters"].Add(firstSearchParameter);
+
+            if (resourcetype == "Composition")
+            {
+                var AddSearchParameter = new Dictionary<string, dynamic>
+                {
+                    { "ch_Name", "Patient_Name" },
+                    { "parameter_name", "_patient.name" },
+                    { "selected", false },
+                    { "input_content", new Dictionary<string, dynamic> { { "type", "text" }, { "value", "" } } },
+                    { "switched", true }
+                };
+                paramterJson["searchParameters"].Add(AddSearchParameter);
+
+                var AddSearchParameter2 = new Dictionary<string, dynamic>
+                {
+                    { "ch_Name", "Patient_Identifier" },
+                    { "parameter_name", "_patient.identifier" },
+                    { "selected", false },
+                    { "input_content", new Dictionary<string, dynamic> { { "type", "text" }, { "value", "" } } },
+                    { "switched", true }
+                };
+                paramterJson["searchParameters"].Add(AddSearchParameter2);
+
+                var AddSearchParameter3 = new Dictionary<string, dynamic>
+                {
+                    { "ch_Name", "Organization" },
+                    { "parameter_name", "_organization.id" },
+                    { "selected", false },
+                    { "input_content", new Dictionary<string, dynamic> { { "type", "text" }, { "value", "" } } },
+                    { "switched", true }
+                };
+                paramterJson["searchParameters"].Add(AddSearchParameter3);
+            }
+            else if (resourcetype == "Bundle")
+            {
+                var AddSearchParameter = new Dictionary<string, dynamic>
+                {
+                    { "ch_Name", "Patient_ID" },
+                    { "parameter_name", "_patient.id" },
+                    { "selected", false },
+                    { "input_content", new Dictionary<string, dynamic> { { "type", "text" }, { "value", "" } } },
+                    { "switched", true }
+                };
+                var AddSearchParameter2 = new Dictionary<string, dynamic>
+                {
+                    { "ch_Name", "Date" },
+                    { "parameter_name", "_date" },
+                    { "selected", false },
+                    { "input_content", new Dictionary<string, dynamic>{
+                        { "type","date"},
+                        { "key", new dynamic[]{
+                            new Dictionary<string, dynamic>
+                            {
+                                {"oncheck", true },
+                                {"input_content",new Dictionary<string, dynamic>
+                                    {
+                                        {"type","select"},
+                                        {"value_list", new[]
+                                            {
+                                                new Dictionary<string, dynamic> { { "key", "等於(=)" }, { "value", "eq" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "大於(>)" }, { "value", "gt" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "大於或等於(>=)" }, { "value", "ge" }, { "status", true } },
+                                                new Dictionary<string, dynamic> { { "key", "小於(<)" }, { "value", "lt" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "小於或等於(<=)" }, { "value", "le" }, { "status", false } }
+                                            }
+                                        },
+                                        {"value",""}
+                                    }
+                                }
+                            },
+                            new  Dictionary<string, dynamic>
+                            {
+                                { "oncheck", true },
+                                { "input_content", new Dictionary<string, dynamic>
+                                    {
+                                        { "type", "select" },
+                                        { "value_list", new[]
+                                            {
+                                                new Dictionary<string, dynamic> { { "key", "等於(=)" }, { "value", "eq" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "大於(>)" }, { "value", "gt" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "大於或等於(>=)" }, { "value", "ge" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "小於(<)" }, { "value", "lt" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "小於或等於(<=)" }, { "value", "le" }, { "status", true } }
+                                            } },
+                                        { "value", "" }
+                                    }
+                                }
+                            }
+                        } }
+                        }
+                    },
+                    { "switched", true }
+                };
+                var AddSearchParameter3 = new Dictionary<string, dynamic>
+                {
+                    { "ch_Name", "Organization" },
+                    { "parameter_name", "_organization.id" },
+                    { "selected", false },
+                    { "input_content", new Dictionary<string, dynamic> { { "type", "text" }, { "value", "" } } },
+                    { "switched", true }
+                };
+                paramterJson["searchParameters"].Add(AddSearchParameter2);
+                paramterJson["searchParameters"].Add(AddSearchParameter3);
+                paramterJson["searchParameters"].Add(AddSearchParameter);
+            }
+
+            foreach (var info in searchinfos)
+            {
+                //處理Name
+                if (info.Name.Contains("TU"))
+                {
+                    info.Name = info.Name.Replace("TU", "");
+                }
+                if (info.Name.Contains("-"))
+                {
+                    continue;
+                }
+
+                //reference跳過處理(資料格式不一難取)
+                if (info.Type == "reference" && info.Name != "subject" && info.Name != "organization")
+                {
+                    continue;
+                }
+
+
+                var searchParameter = new Dictionary<string, dynamic>
+                {
+                    { "ch_Name", info.Name},
+                    { "parameter_name", info.Name},
+                    { "selected", false },
+                    { "input_content", new Dictionary<string, dynamic>()}
+                };
+
+                //處理type
+                if (info.Name == "gender")
+                {
+                    searchParameter["input_content"] = new Dictionary<string, dynamic>
+                    {
+                        {"type","radio" },
+                        {"value_list", new dynamic[]{ 
+                            new Dictionary<string,string>{{"key","男生"},{"value","male" } },
+                            new Dictionary<string,string>{{"key","女生"},{"value","female" } }
+                        } },
+                        { "value",""}
+                    };
+                }
+                else if(info.Type == "date")
+                {
+                    searchParameter["input_content"] = new Dictionary<string, dynamic>
+                    {
+                        { "type","date"},
+                        { "key", new dynamic[]{
+                            new Dictionary<string, dynamic>
+                            {
+                                {"oncheck", true },
+                                {"input_content",new Dictionary<string, dynamic>
+                                    {
+                                        {"type","select"},
+                                        {"value_list", new[]
+                                            {
+                                                new Dictionary<string, dynamic> { { "key", "等於(=)" }, { "value", "eq" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "大於(>)" }, { "value", "gt" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "大於或等於(>=)" }, { "value", "ge" }, { "status", true } },
+                                                new Dictionary<string, dynamic> { { "key", "小於(<)" }, { "value", "lt" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "小於或等於(<=)" }, { "value", "le" }, { "status", false } }
+                                            } 
+                                        },
+                                        {"value",""}
+                                    } 
+                                }
+                            },
+                            new  Dictionary<string, dynamic>
+                            {
+                                { "oncheck", true },
+                                { "input_content", new Dictionary<string, dynamic>
+                                    {
+                                        { "type", "select" },
+                                        { "value_list", new[]
+                                            {
+                                                new Dictionary<string, dynamic> { { "key", "等於(=)" }, { "value", "eq" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "大於(>)" }, { "value", "gt" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "大於或等於(>=)" }, { "value", "ge" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "小於(<)" }, { "value", "lt" }, { "status", false } },
+                                                new Dictionary<string, dynamic> { { "key", "小於或等於(<=)" }, { "value", "le" }, { "status", true } }
+                                            } },
+                                        { "value", "" }
+                                    }
+                                }
+                            }
+                        } }
+                    };
+                }
+                else
+                {
+                    searchParameter["input_content"] = new Dictionary<string, string>
+                    {
+                        { "type", "text" },
+                        { "value", "" }
+                    };
+                }
+                searchParameter["switched"] = true;
+                paramterJson["searchParameters"].Add(searchParameter);
+            }
+
+
+            return Json(paramterJson, JsonRequestBehavior.AllowGet);
         }
 
         public IList<dynamic> YourCustomSearchFunc(DataTableAjaxPostModel model, out int filteredResultsCount, out int totalResultsCount)

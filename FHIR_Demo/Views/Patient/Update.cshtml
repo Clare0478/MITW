@@ -1,5 +1,6 @@
 ﻿@model FHIR_Demo.Models.PatientViewModel
 @using FHIR_Demo.Models;
+@using Hl7.Fhir.Model;
 
 <div class="row">
     <div class="col-sm-12">
@@ -14,7 +15,22 @@
                             @Html.AntiForgeryToken()
 
                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                            @Html.HiddenFor(model => model.Id)
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Id, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.nameuse, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.nameuse, new SelectList(Enum.GetValues(typeof(HumanName.NameUse))),
+                                                                        "選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.nameuse, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
 
                             <div class="form-group">
                                 @Html.LabelFor(model => model.name, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -60,9 +76,9 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.address, htmlAttributes: new { @class = "control-label col-md-2" })
                                 @*<div class="col-md-10">
-                                    @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })
-                                </div>*@
+                                        @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })
+                                    </div>*@
                                 <div class="col-md-10">
                                     @*@Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control", @Value = "明德路365號" } })
                                         @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })*@
@@ -108,7 +124,15 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                             <div class="form-group">
+                                @Html.LabelFor(model => model.managingOrganization, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.managingOrganization, new { htmlAttributes = new { @class = "form-control", @Value = "Organization/5e2d50b4-769c-418a-9bfb-88611a1ec61c" } })
+                                    @Html.ValidationMessageFor(model => model.managingOrganization, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            @*<div class="form-group">
                                 @Html.LabelFor(model => model.managingOrganization, htmlAttributes: new { @class = "control-label col-md-2" })
                                 <div class="col-md-10">
                                     @Html.DropDownListFor(model => model.managingOrganization,
@@ -122,7 +146,7 @@
                                                                         "請選擇", new { @class = "form-control" })
                                     @Html.ValidationMessageFor(model => model.managingOrganization, "", new { @class = "text-danger" })
                                 </div>
-                            </div>
+                            </div>*@
 
                             <div class="form-group">
                                 <div class="col-md-offset-2 col-md-10">

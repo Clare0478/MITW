@@ -1,13 +1,41 @@
-﻿@model FHIR_Demo.Models.PatientViewModel
+﻿@model FHIR_Demo.Models.BundleModel
 @using FHIR_Demo.Models;
 @{
     ViewBag.Title = "Create";
+    string Subject_ID = ViewBag.Subject_ID;
 }
+<style>
+    .Title {
+        font-weight: bold;
+        padding-left: 10px;
+    }
+
+    /* CreateView Title style */
+    .TitleLabel {
+        font-weight: bold;
+        padding-top: 15px;
+        margin-left: 15px;
+    }
+
+    .ItemTitle {
+        font-weight: bold;
+        font-size: larger;
+    }
+
+    .Ward_div_Top {
+        margin-top: 10px;
+    }
+
+    .Drugs_div_Top {
+        margin-top: 10px;
+    }
+</style>
+
 <div class="row">
     <div class="col-sm-12">
         <div class="card">
             <div class="card-body">
-                <h5>Create EMS Patient</h5>
+                <h3 class="Title">Create EMS</h3>
                 <hr>
                 <div class="row">
                     <div class="col-md-12">
@@ -16,134 +44,747 @@
                             @Html.AntiForgeryToken()
 
                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.meta, new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
-                                    @Html.EditorFor(model => model.meta, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.meta, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.name, new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
-                                    @Html.EditorFor(model => model.name, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.name, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.birthDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.Meta, new { @class = "control-label col-md-2 ItemTitle" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.birthDate, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.birthDate, "", new { @class = "text-danger" })
+                                    @Html.EditorFor(model => model.Meta, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Meta, "", new { @class = "text-danger" })
                                 </div>
                             </div>
-
                             <div class="form-group">
-                                @Html.LabelFor(model => model.birthDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
                                 <div class="col-md-10">
-                                    @Html.DropDownListFor(model => model.Gender, new SelectList(Enum.GetValues(typeof(Gender))),
-                                                                        "選擇性別", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.identifier, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
-                                    @Html.EditorFor(model => model.identifier, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.EditorFor(model => model.identifier.value_text, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.identifier, "", new { @class = "text-danger" })
                                 </div>
                             </div>
-
                             <div class="form-group">
-                                @Html.LabelFor(model => model.telecom, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.timestamp, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.telecom, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.telecom, "", new { @class = "text-danger" })
+                                    @Html.EditorFor(model => model.timestamp, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.timestamp, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.type, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.type, new SelectList(Enum.GetValues(typeof(BundleType))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.type, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            //foreach (var val in Model.model.entry[0].Resource.resourcedata)
+                            //{
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">I.Patient</h5>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.name, new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.name, new { htmlAttributes = new { @class = "form-control", @Value = "睿駿" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.birthDate, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.birthDate, new { htmlAttributes = new { @class = "form-control", @Value = "1994-11-14" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.birthDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.gender, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.gender, new SelectList(Enum.GetValues(typeof(Gender))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.gender, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.identifier, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.identifier, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.address, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.active, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
                                 <div class="col-md-10">
-                                    @*@Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control", @Value = "明德路365號" } })
-                    @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })*@
-                                    <div id="zipcode3">
-                                        <div data-role="county">
-                                        </div>
-                                        <div data-role="district">
-                                        </div>
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.active,
+                                     new List<SelectListItem>
+                                     {
+                                            new SelectListItem { Text = "使用", Value = "True" },
+                                            new SelectListItem { Text = "未使用", Value = "False" },
+                                     },
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.active, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            /*/Observations */
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">II.Observations</h5>
+                            </div>
+                            <h6 for="myInput" class="TitleLabe ml-3">◆ 各流程時間</h6>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[0].ob_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.Observations[0].ob_status, new SelectList(Enum.GetValues(typeof(Obser_Status))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[0].ob_status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            @*<div class="form-group">
+                                @Html.LabelFor(model => model.effectiveDateTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.effectiveDateTime, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+                                    @Html.ValidationMessageFor(model => model.effectiveDateTime, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[0].ob_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="ob_code_System">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_System" name="entry[0].Resource.resourcedata.Observations[0].ob_code.code_system" value="http://fhir.ch/ig/ch-ems/ValueSet/IVR-VS-missionTimeRole" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[0].ob_code.code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="ob_code_Code">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_Code" name="entry[0].Resource.resourcedata.Observations[0].ob_code.code_code" value="1000034" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[0].ob_code.code_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="cob_code_Display">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="cob_code_Display" name="entry[0].Resource.resourcedata.Observations[0].ob_code.code_display" value="disposition" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[0].ob_code.code_display" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">受理時間</label>
+                                <div class="col-md-10">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[0].component[0].code_system" value="https://snomed.info">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[0].component[0].code_code" value="410429000">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[0].component[0].code_display" value="isCardiacArrest">
+                                    @*@Html.EditorFor(model => model.entry[0].Resource.resourcedata.Observations[0].component[0].ob_value, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+        @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[0].component[0].ob_value, "", new { @class = "text-danger" })*@
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[0].component[0].ob_value" type="datetime-local" value="2023-08-21T09:00"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[0].component[0].ob_value" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+
+                            <br />
+                            <h6 for="myInput" class="TitleLabe ml-3">◆ 心肺功能停止登錄</h6>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[1].ob_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.Observations[1].ob_status, new SelectList(Enum.GetValues(typeof(Obser_Status))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[1].ob_status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[1].ob_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="ob_code_System2">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_System2" name="entry[0].Resource.resourcedata.Observations[1].ob_code.code_system" value="https://snomed.info" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[1].ob_code.code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="ob_code_Code2">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_Code2" name="entry[0].Resource.resourcedata.Observations[1].ob_code.code_code" value="410429000" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[1].ob_code.code_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="cob_code_Display2">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="cob_code_Display2" name="entry[0].Resource.resourcedata.Observations[1].ob_code.code_display" value="isCardiacArrest" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[1].ob_code.code_display" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[1].effectiveDateTime, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @*@Html.EditorFor(model => model.entry[0].Resource.resourcedata.Observations[1].effectiveDateTime, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[1].effectiveDateTime, "", new { @class = "text-danger" })*@
+                                    <div class="editor-field">
+                                        <input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[1].effectiveDateTime" type="datetime-local" value="2023-08-21T09:00">
+                                        <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[1].effectiveDateTime" data-valmsg-replace="true"></span>
                                     </div>
-                                    @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "address form-control", @Value = "明德路365號" } })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">是否停止</label>
+                                <div class="col-md-10">
+                                    @*component-code*@
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[1].component[0].code_system" value="http://snomed.info/sct">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[1].component[0].code_code" value="410429000">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[1].component[0].code_display" value="isCardiacArrest">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.Observations[1].component[0].ob_value,
+                                     new List<SelectListItem>
+                                     {
+                                            new SelectListItem { Text = "停止", Value = "True" },
+                                            new SelectListItem { Text = "未停止", Value = "False" },
+                                     },
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[1].component[0].ob_value, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <br />
+                            <h6 for="myInput" class="TitleLabe ml-3">◆ 生命徵象</h6>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[2].ob_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.Observations[2].ob_status, new SelectList(Enum.GetValues(typeof(Obser_Status))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[2].ob_status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[2].ob_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="ob_code_System3">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_System3" name="entry[0].Resource.resourcedata.Observations[2].ob_code.code_system" value="https://loinc.org" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].ob_code.code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="ob_code_Code3">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_Code3" name="entry[0].Resource.resourcedata.Observations[2].ob_code.code_code" value="85353-1" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].ob_code.code_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="cob_code_Display3">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="cob_code_Display3" name="entry[0].Resource.resourcedata.Observations[2].ob_code.code_display" value="Vital signs, weight, height, head circumference, oxygen saturation and BMI panel" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].ob_code.code_display" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[2].effectiveDateTime, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @*@Html.EditorFor(model => model.entry[0].Resource.resourcedata.Observations[2].effectiveDateTime, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[2].effectiveDateTime, "", new { @class = "text-danger" })*@
+                                    <div class="editor-field">
+                                        <input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].effectiveDateTime" type="datetime-local" value="2023-08-21T09:00">
+                                        <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].effectiveDateTime" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">意識狀態</label>
+                                <div class="col-md-10">
+                                    @*component-code*@
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[0].code_system" value="https://loinc.org">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[0].code_code" value="11454-6">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[0].code_display" value="avpu">
+
+                                    <div class="editor-label"><label for="ob_code_System4">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_System4" name="entry[0].Resource.resourcedata.Observations[2].component[0].value_system" value="https://loinc.org" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].component[0].value_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="ob_code_Code4">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_Code4" name="entry[0].Resource.resourcedata.Observations[2].component[0].value_code" value="LA9341-4" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].component[0].value_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="cob_code_Display4">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="cob_code_Display4" name="entry[0].Resource.resourcedata.Observations[2].component[0].value_display" value="2" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].component[0].value_display" data-valmsg-replace="true"></span></div>
+                                    @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[2].component[0].value_text, htmlAttributes: new { @class = "control-label pt-2" })
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[0].value_text" value="2 (Verbal response)" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].component[0].value_text" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">呼吸頻率</label>
+                                <div class="col-md-10">
+                                    @*component-code*@
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[1].code_system" value="https://loinc.org">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[1].code_code" value="9279-1">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[1].code_display" value="respiratoryRate">
+
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[1].ob_value" type="number"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].component[1].ob_value" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">脈搏頻率</label>
+                                <div class="col-md-10">
+                                    @*component-code*@
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[2].code_system" value="https://loinc.org">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[2].code_code" value="8867-4">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[2].code_display" value="heartRate">
+
+                                    <div class="editor-field">
+                                        <input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[2].ob_value" type="number"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].component[2].ob_value" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">體溫</label>
+                                <div class="col-md-10">
+                                    @*component-code*@
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[3].code_system" value="https://loinc.org">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[3].code_code" value="8310-5">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[3].code_display" value="bodyTemperature">
+
+                                    <div class="editor-field">
+                                        <input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[3].ob_value" type="number"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].component[3].ob_value" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">血糖</label>
+                                <div class="col-md-10">
+                                    @*component-code*@
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[4].code_system" value="https://loinc.org">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[4].code_code" value="2339-0">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[4].code_display" value="glucose">
+
+                                    <div class="editor-field">
+                                        <input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[4].ob_value" type="number"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].component[4].ob_value" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">血氧濃度</label>
+                                <div class="col-md-10">
+                                    @*component-code*@
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[5].code_system" value="https://loinc.org">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[5].code_code" value="2708-6">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[5].code_display" value="spo2">
+
+                                    <div class="editor-field">
+                                        <input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[2].component[5].ob_value" type="number"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[2].component[5].ob_value" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            //GCS 生命徵象
+                            <br />
+                            <h6 for="myInput" class="TitleLabe ml-3">◆ GCS生命徵象</h6>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[3].ob_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.Observations[3].ob_status, new SelectList(Enum.GetValues(typeof(Obser_Status))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[3].ob_status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[3].ob_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="ob_code_System5">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_System5" name="entry[0].Resource.resourcedata.Observations[3].ob_code.code_system" value="https://loinc.org" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].ob_code.code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="ob_code_Code5">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_Code5" name="entry[0].Resource.resourcedata.Observations[3].ob_code.code_code" value="9269-2" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].ob_code.code_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="cob_code_Display5">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="cob_code_Display5" name="entry[0].Resource.resourcedata.Observations[3].ob_code.code_display" value="Glasgow coma score total" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].ob_code.code_display" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">睜眼反應</label>
+                                <div class="col-md-10">
+                                    @*component-code*@
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[0].code_system" value="https://loinc.org">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[0].code_code" value="9267-6">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[0].code_display" value="Glasgow coma score eye opening">
+
+                                    <div class="editor-label"><label for="ob_code_System6">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_System6" name="entry[0].Resource.resourcedata.Observations[3].component[0].value_system" value="https://loinc.org" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[0].value_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="ob_code_Code6">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_Code6" name="entry[0].Resource.resourcedata.Observations[3].component[0].value_code" value="LL355-9" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[0].value_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="cob_code_Display6">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="cob_code_Display6" name="entry[0].Resource.resourcedata.Observations[3].component[0].value_display" value="Eyes open spontaneously" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[0].value_display" data-valmsg-replace="true"></span></div>
+                                    @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[3].component[0].value_text, htmlAttributes: new { @class = "control-label pt-2" })
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[0].value_text" value="4 (Opens eyes spontaneously)" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[0].value_text" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">言語反應</label>
+                                <div class="col-md-10">
+                                    @*component-code*@
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[1].code_system" value="https://loinc.org">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[1].code_code" value="9270-0">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[1].code_display" value="Glasgow coma score verbal">
+
+                                    <div class="editor-label"><label for="ob_code_System7">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_System7" name="entry[0].Resource.resourcedata.Observations[3].component[1].value_system" value="https://loinc.org" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[1].value_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="ob_code_Code7">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_Code7" name="entry[0].Resource.resourcedata.Observations[3].component[1].value_code" value="LL356-7" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[1].value_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="cob_code_Display7">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="cob_code_Display7" name="entry[0].Resource.resourcedata.Observations[3].component[1].value_display" value="Verbal" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[1].value_display" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="cob_code_text7">Text</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[1].value_text" value="4 (Confused)" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[1].value_text" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 ItemTitle">動作反應</label>
+                                <div class="col-md-10">
+                                    @*component-code*@
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[2].code_system" value="https://loinc.org">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[2].code_code" value="9268-4">
+                                    <input type="hidden" class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[2].code_display" value="Glasgow coma score motor">
+
+                                    <div class="editor-label"><label for="ob_code_System8">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_System8" name="entry[0].Resource.resourcedata.Observations[3].component[2].value_system" value="https://loinc.org" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[2].value_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="ob_code_Code8">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_Code8" name="entry[0].Resource.resourcedata.Observations[3].component[2].value_code" value="LL357-5" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[2].value_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="cob_code_Display8">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="cob_code_Display8" name="entry[0].Resource.resourcedata.Observations[3].component[2].value_display" value="Motor" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[2].value_display" data-valmsg-replace="true"></span></div>
+                                    @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[3].component[2].value_text, htmlAttributes: new { @class = "control-label pt-2" })
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[3].component[2].value_text" value="5 (Localizing pain)" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[3].component[2].value_text" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+
+                            //血壓
+                            <br />
+                            <h6 for="myInput" class="TitleLabe ml-3">◆ 血壓</h6>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[4].ob_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.Observations[4].ob_status, new SelectList(Enum.GetValues(typeof(Obser_Status))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[4].ob_status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[4].ob_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="ob_code_System9">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_System9" name="entry[0].Resource.resourcedata.Observations[4].ob_code.code_system" value="https://loinc.org" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[4].ob_code.code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="ob_code_Code9">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="ob_code_Code9" name="entry[0].Resource.resourcedata.Observations[4].ob_code.code_code" value="9269-2" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[4].ob_code.code_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="cob_code_Display9">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="cob_code_Display9" name="entry[0].Resource.resourcedata.Observations[4].ob_code.code_display" value="Blood pressure" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[4].ob_code.code_display" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group component_item">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[4].component[0].code_display, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.Observations[4].component[0].code_display, (SelectList)ViewBag.ObserCode_Select, "收縮壓", new { @class = "form-control", @disabled = "disabled" })
+                                    @Html.Hidden("entry[0].Resource.resourcedata.Observations[4].component[0].code_display", "收縮壓")
+                                    @Html.Hidden("entry[0].Resource.resourcedata.Observations[4].component[0].code_system", "https://loinc.org")
+                                    @Html.Hidden("entry[0].Resource.resourcedata.Observations[4].component[0].code_code", "8480-6")
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[4].component[0].code_display, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group component_item">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[4].component[0].ob_value, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-field">
+                                        <input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[4].component[0].ob_value" type="number"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[4].component[0].ob_value" data-valmsg-replace="true"></span>
+                                        @Html.Hidden("entry[0].Resource.resourcedata.Observations[4].component[0].unit", "mmHg")
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group component_item">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[4].component[1].code_display, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.Observations[4].component[1].code_display, (SelectList)ViewBag.ObserCode_Select, "舒張壓", new { @class = "form-control", @disabled = "disabled" })
+                                    @Html.Hidden("entry[0].Resource.resourcedata.Observations[4].component[1].code_display", "舒張壓")
+                                    @Html.Hidden("entry[0].Resource.resourcedata.Observations[4].component[1].code_system", "https://loinc.org")
+                                    @Html.Hidden("entry[0].Resource.resourcedata.Observations[4].component[1].code_code", "8462-4")
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.Observations[4].component[1].code_display, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group component_item">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Observations[4].component[1].ob_value, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-field">
+                                        <input class="form-control text-box single-line" name="entry[0].Resource.resourcedata.Observations[4].component[1].ob_value" type="number"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Observations[4].component[1].ob_value" data-valmsg-replace="true"></span>
+                                        @Html.Hidden("entry[0].Resource.resourcedata.Observations[4].component[1].unit", "mmHg")
+                                    </div>
+                                </div>
+                            </div>
+
+                            //Encounter
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">III.Encounter</h5>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.en_identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="en_identifier_Type">Type</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_identifier_Type" name="entry[0].Resource.resourcedata.en_identifier[0].code_text" type="text" value="救災救護指揮中心指派案號"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.en_identifier[0].code_text" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="en_identifier_System">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_identifier_System" name="entry[0].Resource.resourcedata.en_identifier[0].code_system" type="text" value="https://www.nfa.gov.tw/cht/"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.en_identifier[0].code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="en_identifier_Value">Value</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_identifier_Value" name="entry[0].Resource.resourcedata.en_identifier[0].code_display" type="text" value="20221024100320001"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.en_identifier[0].code_display" data-valmsg-replace="true"></span></div>
+                                </div>
+                                <div class="col-md-10 mt-2">
+                                    <div class="editor-label"><label for="en_identifier_Type2">Type</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_identifier_Type2" name="entry[0].Resource.resourcedata.en_identifier[1].code_text" type="text" value="編號"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.en_identifier[1].code_text" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="en_identifier_System2">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_identifier_System2" name="entry[0].Resource.resourcedata.en_identifier[1].code_system" type="text" value="https://www.nfa.gov.tw/cht/"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.en_identifier[1].code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="en_identifier_Value2">Value</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_identifier_Value2" name="entry[0].Resource.resourcedata.en_identifier[1].code_display" type="text" value="MITW20221024100320"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.en_identifier[1].code_display" data-valmsg-replace="true"></span></div>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.contact_name, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.en_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.contact_name, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.contact_name, "", new { @class = "text-danger" })
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.en_status, new SelectList(Enum.GetValues(typeof(Encounter_Status))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.en_status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.en_class, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="en_class_System">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_class_system" name="entry[0].Resource.resourcedata.en_class.code_system" type="text" value="http://terminology.hl7.org/CodeSystem/v3-ActCode"> </div>
+                                    <div class="editor-label"><label for="en_class_Code">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_class_Code" name="entry[0].Resource.resourcedata.en_class.code_code" type="text" value="FLD"></div>
+                                    <div class="editor-label"><label for="en_class_Display">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_class_Display" name="entry[0].Resource.resourcedata.en_class.code_display" type="text" value="field"> </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.entry[0].Resource.resourcedata.en_participant.en_reference, htmlAttributes: new { @class = "control-label col-md-4 ItemTitle" })
+
+                                    <div class="editor-label"><label for="en_identifier_Code">reference</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_participant_reference" name="entry[0].Resource.resourcedata.en_participant.en_reference" type="text" value="Practitioner/6692"></div>
+                                    <div class="editor-label"><label for="en_identifier_Display">備註</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="en_participant_Display" name="entry[0].Resource.resourcedata.en_participant.en_display" type="text" value="救護員87887"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.en_period, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.en_period, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local", @Value = "2023-08-26T09:00" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.en_period, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.location, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.location, new { htmlAttributes = new { @class = "form-control", @Value = "Location/62" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.location, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            @*@Html.Hidden("subject", "Organization/")//serviceProvider8*@
+
+                            //Condition
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">IV.Condition</h5>
+                            </div>
+                            <br />
+                            <h6 for="myInput" class="TitleLabe ml-3">◆ 現在狀況</h6>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Conditions[0].con_verificationStatus, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="con_status_System">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_status_System" name="entry[0].Resource.resourcedata.Conditions[0].con_verificationStatus.code_system" value="http://terminology.hl7.org/CodeSystem/condition-ver-status" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Conditions[0].con_verificationStatus.code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="con_status_Code">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_status_Code" name="entry[0].Resource.resourcedata.Conditions[0].con_verificationStatus.code_code" value="provisional" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Conditions[0].con_verificationStatus.code_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="con_status_Display">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_status_Display" name="entry[0].Resource.resourcedata.Conditions[0].con_verificationStatus.code_display" value="provisional" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Conditions[0].con_verificationStatus.code_display" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Conditions[0].con_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="con_code_System">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_code_System" name="entry[0].Resource.resourcedata.Conditions[0].con_code.code_system" value="https://www.nfa.gov.tw" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Conditions[0].con_code.code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="con_code_Code">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_code_Code" name="entry[0].Resource.resourcedata.Conditions[0].con_code.code_code" value="110027" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Conditions[0].con_code.code_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="con_code_Display">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_code_Display" name="entry[0].Resource.resourcedata.Conditions[0].con_code.code_display" value="電擊傷" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Conditions[0].con_code.code_display" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="con_code_Text">Text</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_code_Text" name="entry[0].Resource.resourcedata.Conditions[0].con_code.code_text" value="電擊傷" type="text"> <span class="field-validation-valid" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            @Html.Hidden("entry[0].Resource.resourcedata.Conditions[0].subject", "Patient/7" + Subject_ID)
+                            <br />
+                            <h6 for="myInput" class="TitleLabe ml-3">◆ 過去狀況</h6>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.Conditions[1].con_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    <div class="editor-label"><label for="con_code_System">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_code_System" name="entry[0].Resource.resourcedata.Conditions[1].con_code.code_system" value="https://snomed.info" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Conditions[0].con_code.code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="con_code_Code">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_code_Code" name="entry[0].Resource.resourcedata.Conditions[1].con_code.code_code" value="73211009" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Conditions[0].con_code.code_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="con_code_Display">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_code_Display" name="entry[0].Resource.resourcedata.Conditions[1].con_code.code_display" value="Diabetes mellitus (disorder)" type="text"> <span class="field-validation-valid" data-valmsg-for="entry[0].Resource.resourcedata.Conditions[0].con_code.code_display" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="con_code_Text">Text</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="con_code_Text" name="entry[0].Resource.resourcedata.Conditions[1].con_code.code_text" value="糖尿病" type="text"> <span class="field-validation-valid" data-valmsg-replace="true"></span></div>
+                                </div>
+                            </div>
+                            @Html.Hidden("entry[0].Resource.resourcedata.Conditions[1].subject", "Patient/7" + Subject_ID)
+
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">V.Practitioner</h5>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.pra_name, new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.pra_name, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.pra_name, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.contact_relationship, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <h5 for="myInput" class="TitleLabel">VI.RiskAssessment</h5>
+                            </div>
+                            <br />
+                            <h6 for="myInput" class="TitleLabe ml-3">◆ 檢傷分級</h6>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].risk_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.contact_relationship, new { htmlAttributes = new { @class = "form-control", @Value = "通報人" } })
-                                    @Html.ValidationMessageFor(model => model.contact_relationship, "", new { @class = "text-danger" })
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].risk_status, new SelectList(Enum.GetValues(typeof(Obser_Status))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].risk_status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].risk_code, htmlAttributes: new { @class = "control-label col-md-4 ItemTitle" })
+
+                                    <div class="editor-label"><label for="risk_code_system">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="risk_code_system" name="entry[0].Resource.resourcedata.RiskAssessments[0].risk_code.code_system" type="text" value="https://loinc.org/"></div>
+                                    <div class="editor-label"><label for="risk_code_code">Cpde</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="risk_code_code" name="entry[0].Resource.resourcedata.RiskAssessments[0].risk_code.code_code" type="text" value="75910-0"></div>
+                                    <div class="editor-label"><label for="risk_code_display">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="risk_code_display" name="entry[0].Resource.resourcedata.RiskAssessments[0].risk_code.code_display" type="text" value="Canadian triage and acuity scale [CTAS]"></div>
+                                    <div class="editor-label"><label for="risk_code_text">Text</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="risk_code_text" value="檢傷分級" type="text"></div>
+                                </div>
+                            </div>
+                            @*@Html.Hidden("subject", "Encounter/" + EnSubject_ID)//risk_encounter*@
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].occurrenceDateTime, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].occurrenceDateTime, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].occurrenceDateTime, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            @Html.Hidden("entry[0].Resource.resourcedata.RiskAssessments[0].risk_subject", "Patient/7" + Subject_ID)
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].risk_prediction, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].risk_prediction, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].risk_prediction, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 
+                            <br />
+                            <h6 for="myInput" class="TitleLabe ml-3">◆ 是否屬於危急個案</h6>
                             <div class="form-group">
-                                @Html.LabelFor(model => model.contact_telecom, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].occurrenceDateTime, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
                                 <div class="col-md-10">
-                                    @Html.EditorFor(model => model.contact_telecom, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.contact_telecom, "", new { @class = "text-danger" })
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].occurrenceDateTime, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[0].occurrenceDateTime, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[1].risk_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+
+                                    <div class="editor-label"><label for="risk_code_system1">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="risk_code_system1" name="entry[0].Resource.resourcedata.RiskAssessments[1].risk_code.code_system" type="text" value="https://loinc.org/"></div>
+                                    <div class="editor-label"><label for="risk_code_code">Cpde</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="risk_code_code" name="entry[0].Resource.resourcedata.RiskAssessments[1].risk_code.code_code" type="text" value="69464-6"></div>
+                                    <div class="editor-label"><label for="risk_code_display">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="risk_code_display" name="entry[0].Resource.resourcedata.RiskAssessments[1].risk_code.code_display" type="text" value="The CMS service level for this EMS encounter"></div>
+                                    <div class="editor-label"><label for="risk_code_text">Text</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="risk_code_text" value="是否屬於危急個案?" type="text"></div>
+                                </div>
+                            </div>
+                            @Html.Hidden("entry[0].Resource.resourcedata.RiskAssessments[1].risk_subject", "Patient/7" + Subject_ID)
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[1].risk_prediction, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[1].risk_prediction, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.RiskAssessments[1].risk_prediction, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 
+                            //AllergyIntolerance
                             <div class="form-group">
-                                @Html.LabelFor(model => model.email, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
-                                    @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
+                                <h5 for="myInput" class="TitleLabel">VII.AllergyIntolerance</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.entry[0].Resource.resourcedata.allergy_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+
+                                    <div class="editor-label"><label for="all_code_system1">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="all_code_system1" name="entry[0].Resource.resourcedata.allergy_code.code_system" type="text" value="http://terminology.hl7.org/CodeSystem/allergyintolerance-verification"></div>
+                                    <div class="editor-label"><label for="all_code_code">Cpde</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="all_code_code" name="entry[0].Resource.resourcedata.allergy_code.code_code" type="text" value="confirmed"></div>
+                                    <div class="editor-label"><label for="all_code_display">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="all_code_display" name="entry[0].Resource.resourcedata.allergy_code.code_display" type="text" value="confirmed"></div>
                                 </div>
                             </div>
+                            @Html.Hidden("subject", "Patient/" + Subject_ID)//allergy_patient
+                            @*<div class="form-group">
+                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.allergy_category, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.allergy_category, new SelectList(Enum.GetValues(typeof(Allergy_Category))),
+                                                     "請選擇", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.allergy_category, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+                            <div class="form-group">
+                                @Html.Hidden("entry[0].Resource.resourcedata.allergy_status.code_display", "Confirmed")
+                                @Html.Hidden("entry[0].Resource.resourcedata.allergy_status.code_system", "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification")
+                                @Html.Hidden("entry[0].Resource.resourcedata.allergy_status.code_code", "confirmed")
+                            </div>
+                            @*<div class="form-group">
+                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.allergy_code, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                <div class="col-md-10">
+                    <div class="editor-label"><label for="allergy_code_System">System</label></div>
+                    <div class="editor-field"><input class="form-control text-box single-line" id="allergy_code_system" name="entry[0].Resource.resourcedata.allergy_code.code_system" type="text" value="https://snomed.info"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.resourcedata.allergy_code.code_system" data-valmsg-replace="true"></span></div>
+                    <div class="editor-label"><label for="allergy_code_Code">Code</label></div>
+                    <div class="editor-field"><input class="form-control text-box single-line" id="allergy_code_Code" name="entry[0].Resource.resourcedata.allergy_code.code_code" type="text" value="293752008"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.resourcedata.allergy_code.code_code" data-valmsg-replace="true"></span></div>
+                    <div class="editor-label"><label for="allergy_code_Display">Display</label></div>
+                    <div class="editor-field"><input class="form-control text-box single-line" id="allergy_code_Display" name="entry[0].Resource.resourcedata.allergy_code.code_display" type="text" value="Estramustine allergy"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.resourcedata.allergy_code.code_display" data-valmsg-replace="true"></span></div>
+                </div>
+            </div>*@
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.managingOrganization, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <h5 for="myInput" class="TitleLabel">VII.Organization</h5>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.organ_identifier, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
                                 <div class="col-md-10">
-                                    @Html.DropDownListFor(model => model.managingOrganization,
-                                        new List<SelectListItem>
-                                        {
-                                            new SelectListItem { Text = "MITW.ForIdentifier", Value = "Organization/MITW.ForIdentifier" },
-                                            new SelectListItem { Text = "MITW.ForContact", Value = "Organization/MITW.ForContact" },
-                                            new SelectListItem { Text = "MITW.ForPHR", Value = "Organization/MITW.ForPHR" },
-                                            new SelectListItem { Text = "MITW.ForEMS", Value = "Organization/MITW.ForEMS" },
-                                        },
-                                                                        "請選擇", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.managingOrganization, "", new { @class = "text-danger" })
+                                    <div class="editor-label"><label for="organ_identifier_System">System</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="organ_identifier_System" name="entry[0].Resource.resourcedata.organ_identifier.code_system" type="text" value="https://twcore.mohw.gov.tw/fhir/CodeSystem/v2-0203"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.resourcedata.organ_identifier.code_system" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="organ_identifier_Code">Code</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="organ_identifier_Code" name="entry[0].Resource.resourcedata.organ_identifier.code_code" type="text" value="HOI"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.resourcedata.organ_identifier.code_code" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="organ_identifier_Display">Display</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" id="organ_identifier_Display" name="entry[0].Resource.resourcedata.organ_identifier.code_display" type="text" value="Healthcare Organization Identifier"> <span class="field-validation-valid" data-valmsg-for="model.entry[0].Resource.resourcedata.organ_identifier.code_display" data-valmsg-replace="true"></span></div>
+                                    <div class="editor-label"><label for="organ_identifier_Value">Value</label></div>
+                                    <div class="editor-field"><input class="form-control text-box single-line" name="organ_identifier.ob_value" value="132010014" type="text"></div>
                                 </div>
                             </div>
-
                             <div class="form-group">
-                                @Html.LabelFor(model => model.deceased, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.organ_active, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
                                 <div class="col-md-10">
-                                    @Html.DropDownListFor(model => model.deceased,
-                                        new List<SelectListItem>
-                                        {
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.organ_active,
+                                     new List<SelectListItem>
+                                     {
                                             new SelectListItem { Text = "死亡", Value = "True" },
                                             new SelectListItem { Text = "存活", Value = "False" },
-                                        },
-                                                                        "請選擇", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.deceased, "", new { @class = "text-danger" })
+                                     },
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.organ_active, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.organ_name, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.organ_name, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.organ_name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <h5 for="myInput" class="TitleLabel">VII.Composition</h5>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.com_status, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.entry[0].Resource.resourcedata.com_status, new SelectList(Enum.GetValues(typeof(Composition_Status))),
+                                                                     "請選擇", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.com_status, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.com_title, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.com_title, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.com_title, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.entry[0].Resource.resourcedata.com_date, htmlAttributes: new { @class = "control-label col-md-2 ItemTitle" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.entry[0].Resource.resourcedata.com_date, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+                                    @Html.ValidationMessageFor(model => model.entry[0].Resource.resourcedata.com_date, "", new { @class = "text-danger" })
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <div class="col-md-offset-2 col-md-10">
-                                    <input type="submit" value="Create" class="btn btn-default" />
+                                    <input type="submit" value="Create" class="btn btn-info" />
                                 </div>
                             </div>
                         }
